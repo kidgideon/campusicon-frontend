@@ -41,7 +41,7 @@ function App() {
         <Route path="/watch-video/:competitionId" element={<VideoWatch/>} />
         <Route path="/discovery-page" element={<DiscoveryPage/>} />
         <Route path="/menu" element={<Menu/>} />
-        <Route path="/home" element={<Home/>} />
+        <Route path="/" element={<Home/>} />
       </Routes>
       <Toaster />
     </Router>
