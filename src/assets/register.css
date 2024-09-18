@@ -1,0 +1,258 @@
+/* General Styling */
+
+
+.head {
+  margin-top: 30px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+
+}
+
+.direction-text {
+  color: #277AA4;
+  text-align: center;
+}
+
+.link {
+  color: #277AA4;
+  text-decoration: none;
+}
+.back-icon {
+  cursor: pointer;
+  color: #277AA4;
+  font-size: 24px;
+  margin-right: auto;
+}
+
+.logo img {
+  width: 100px;
+  border-radius: 50%;
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.svg-div {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+}
+
+.svg-div img {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+}
+
+.container-form {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.main-form {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.container-form h1 {
+  color: #277AA4;
+  text-align: center;
+}
+
+.container-form input, .container-form select {
+  width: 300px;
+  max-width: 300px;
+  height: 40px;
+  margin: 10px 0;
+  padding-left: 40px; /* Space for the icon */
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.container-form button {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: none;
+  background-color: #277AA4;
+  color: white;
+  cursor: pointer;
+  position: relative;
+}
+
+.container-form button:disabled {
+  background-color: #9ec0f3;
+  cursor: not-allowed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container-form button:hover:not(:disabled) {
+  background-color: #205e78;
+}
+
+.error-box {
+  color: red;
+  margin: 10px 0;
+}
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #277AA4; /* Using company color #277AA4 for the spinner top */
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+/* Font Awesome icon styling */
+.container-form .input-icon {
+  position: relative;
+}
+
+.container-form .input-icon i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ccc;
+}
+
+.container-form input::placeholder {
+  color: #aaa;
+}
+
+.container-form select {
+  padding-left: 45px; /* Space for the icon */
+}
+
+.back-icon {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #277AA4;
+}
+
+ .second-container {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+ }
+
+ .second-container button {
+  width: 50%;
+  max-width: 300px;
+  height: 40px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: none;
+  background-color: #277AA4;
+  color: white;
+  cursor: pointer;
+ }
+
+ .second-container h2 {
+  color: #277AA4;
+ }
+
+ .second-container input {
+  width: 300px;
+  max-width: 300px;
+  height: 40px;
+  margin: 10px 0;
+  padding-left: 40px; /* Space for the icon */
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  outline: none;
+  box-sizing: border-box;
+ }
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .overview {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .svg-div {
+    display: none;
+  }
+
+  .logo img {
+    width: 80px;
+  }
+
+  .container-form {
+    width: 100%;
+    min-width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container-form input, .container-form select {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .main-form {
+    width: 100%;
+  }
+
+  .main-form button {
+    width: 50%;
+  }
+}
+

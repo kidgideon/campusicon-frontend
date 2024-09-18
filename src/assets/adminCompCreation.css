@@ -1,0 +1,57 @@
+.admin-competition-interface {
+    padding: 20px;
+  }
+  
+  .competition-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+  
+  .competition-form label {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .competition-form input,
+  .competition-form select,
+  .competition-form textarea {
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .competition-form button {
+    padding: 10px;
+    background-color: #277AA4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .competition-form button:hover {
+    background-color: #205e78;
+  }
+  
+  .competitions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .competition-item {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 4px;
+  }
+  
+  .competition-image {
+    max-width: 100%;
+    height: auto;
+    margin-top: 10px;
+  }
+  

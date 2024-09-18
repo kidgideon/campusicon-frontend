@@ -1,0 +1,75 @@
+
+.performance-interface {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+  }
+  
+  .video-performance-preview-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .performance-video {
+    height: 500px;
+    width: 300px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    object-fit: cover; /* Ensures the video covers the container without stretching */
+  }
+  
+  .icons {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .icons div {
+    text-align: center;
+    font-size: 18px;
+  }
+  
+  .icons i {
+    font-size: 24px;
+    margin-bottom: 5px;
+    color: #277AA4;
+  }
+  
+  .list-standing,
+  .views-counts {
+    margin: 10px 0;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .competion-interface-footer {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    padding: 10px 0;
+    background-color: white;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .competion-interface-footer i {
+    font-size: 28px;
+    color: #205e78;
+  }
+  
+  .competion-interface-footer .add-icon {
+    cursor: pointer;
+  }
+  
+  .competion-interface-footer .add-icon:hover {
+    transform: scale(1.1);
+    transition: 0.2s;
+  }
+  

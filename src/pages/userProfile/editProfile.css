@@ -1,0 +1,111 @@
+.edit-layout {
+   width: 100%;
+   height: 100%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   flex-direction: column;
+}
+
+.top-area {
+   width: 100%;
+   display: flex;
+   justify-content: center;
+   align-items: start;
+   flex-direction: row;
+   height: 50px;
+}
+
+
+.profile-picture {
+   width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profilepicture {
+   width: 155px;
+   height: 155px;
+   border-radius: 100%;
+   border-color: #277aa4;
+   border: 5px solid  #277aa4;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   margin-bottom: 20px;
+   position: relative;
+}
+
+.fa-pencil-alt {
+   position: absolute;
+   bottom: -5px;
+}
+
+.profilepicture img {
+   width: 150px;
+   height: 150px;
+   border-radius: 100%;
+}
+
+
+.orther-informations {
+   display: flex;
+   flex-direction: column;
+   gap: 15px;
+   width: 100%;
+   max-width: 500px;
+ }
+ 
+ .orther-informations input {
+   padding: 12px;
+   border-radius: 8px;
+   border: 1px solid #ccc;
+   font-size: 1rem;
+   transition: border-color 0.3s ease;
+ }
+ 
+ .orther-informations input:focus {
+   outline: none;
+   border-color: #277aa4; /* Focus border color */
+ }
+ 
+ button {
+   background-color: #277aa4; /* Your brand color */
+   color: white;
+   padding: 10px 15px;
+   margin: 10px;
+   border-radius: 8px;
+   border: none;
+   font-size: 1rem;
+   cursor: pointer;
+   transition: background-color 0.3s ease;
+ }
+ 
+ button:hover {
+   background-color: #205e78; /* Darker shade on hover */
+ }
+ 
+ hobbies-list {
+   margin-top: 10px;
+ }
+ 
+ hobbies-list li {
+   display: flex;
+   justify-content: space-between;
+   padding: 10px;
+   background-color: #f1f1f1;
+   margin-bottom: 5px;
+   border-radius: 8px;
+ }
+ 
+ hobbies-list button {
+   background-color: red;
+   margin: 10px;
+   list-style-type: none;
+   color: white;
+   border: none;
+   padding: 5px 10px;
+   border-radius: 5px;
+   cursor: pointer;
+ }

@@ -1,0 +1,116 @@
+/* Hide the default file input */
+.upload-competition-interface {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 35px;
+}
+
+.upload-video-form {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.video-description {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+
+input[type="file"] {
+  display: none;
+}
+
+/* Style the label with the pencil icon */
+.file-input-label {
+  cursor: pointer;
+  display: inline-block;
+  margin: 10px 0;
+}
+
+.file-input-icon {
+  color: #205e78; /* Customize the color of the pencil icon */
+  transition: color 0.3s ease;
+}
+
+.file-input-icon:hover {
+  color: #277AA4; /* Hover effect */
+}
+
+.post-button  {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.post-top p {
+  text-align: center;
+}
+
+.post-button-btn {
+  padding: 10px 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.post-button button {
+  padding: 10px 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px;
+}
+
+.video-choice-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px
+}
+
+.video-body {
+  width: 300px;
+  height: 300px;
+ 
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.preview-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.progress-container {
+  width: 100%;
+  background-color: #f3f3f3;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+/* Styles for the progress bar itself */
+.progress-bar {
+  height: 10px;
+  background-color: #277AA4;
+  width: 0%; /* Will be dynamically updated */
+  transition: width 0.3s ease;
+}

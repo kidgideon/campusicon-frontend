@@ -1,0 +1,254 @@
+     /* .top-section
+    */
+
+ .layout {
+     width: 100%;
+     height: 100%;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     flex-direction: column;
+     font-family: "SUSE", sans-serif;
+     font-weight: 200;
+     font-size: 85%;
+ }
+ 
+.top-section{
+    height: 80px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: white;
+    z-index: 10;
+}
+
+ .user-dp {
+    width: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding-left: 5px;
+ }
+
+
+ 
+
+.user-dp img {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+}
+
+.company-logo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.company-logo img {
+    width: 65px;
+    height: 65px;
+    border-radius: 100%;
+}
+
+.nav-bar {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    padding-right: 5px;
+}
+
+.nav-bar i {
+   font-size: 30px;
+   color: rgb(184, 184, 184);
+}
+
+img {
+    width: 100px;
+}
+
+  /* top tab 
+    */
+
+    .top-tab {
+        position: fixed;
+        top: 10px;
+        left: 0px;
+        right: 0px;
+        width: 100%;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        flex-direction: row;
+        margin-top: 80px;
+        margin-bottom: 10px;
+        z-index: 10;
+        background-color: white;
+    }
+
+    .top-tab i {
+        font-size: 23px;
+        color: rgb(184, 184, 184);
+    }
+
+    
+
+ /* top users */
+
+ .h2-text {
+    text-align: center;
+    width: 100%;
+ }
+ a {
+   text-decoration: none; /* Removes underline */
+   color: inherit; /* Inherits the color of the parent element */
+ }
+ 
+ /* Optional: Remove any hover, active, or visited styling */
+ a:hover,
+ a:active,
+ a:visited {
+   text-decoration: none;
+   color: inherit;
+ }
+
+.user-list {
+ width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  overflow-x: auto;
+  padding: 10px 0; /* Padding around the list */
+  margin: 0 auto; /* Center the list */
+  list-style-type: none; /* Remove default list item markers */
+  padding-left: 0; /* Remove default padding */
+
+}
+ 
+.top-accounts {
+    width: 100%;
+    margin-top: 100px;
+}
+
+ .user-card {
+    width: 150px;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 5px;
+ }
+
+ .img-div {
+    width: 70px;
+    height: 70px;
+    border:  4px solid #205e78;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+ }
+
+ .user-card img {
+   width: 65px;
+   height: 65px;
+
+   border-radius: 100%;
+  
+ }
+
+ .name-div {
+    text-align: center;
+ }
+
+ .user-list::-webkit-scrollbar{
+    display: none;
+ }
+
+   /* //competion  */
+ .competion-list {
+    list-style-type: none;
+ }
+
+ .active-competitions {
+     width: 100%;
+     height: 100%;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     flex-direction: column;
+ }
+
+ .competion-list {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 10px 0; /* Padding around the list */
+    margin: 0 auto; /* Center the list */
+    list-style-type: none; /* Remove default list item markers */
+ }
+
+ .competion-list::-webkit-scrollbar{
+    display: none;
+ }
+
+ .competion {
+    width: 200px;
+    min-width: 200px;
+    height: 200px;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    border-radius: 10px;
+    gap: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), /* subtle shadow */
+    0 6px 20px rgba(0, 0, 0, 0.1); /* deeper shadow */
+ }
+
+
+
+ .competion-image {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+ }
+
+ .competion-image img {
+    object-fit: contain;
+    width: 100%;
+ }
+
+ .competion-name {
+    width: 100%;
+    height: 10%;
+    text-align: center;
+    font-weight: bold;
+ }
+
+ .competion-award {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+ }
+
+ .competion-award img {
+    width: 50px;
+    height: 50px;
+ }
