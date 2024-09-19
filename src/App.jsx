@@ -1,4 +1,4 @@
-import { HashRouter as Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Register from './pages/register_components/register';
 import Login from './pages/login_components/login';
@@ -21,7 +21,7 @@ import Home from './pages/HomePage/home';
 
 function App() {
   return (
-    <HashRouter>
+    <BrowserRouter basename="/campusicon-frontend/">
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
@@ -42,10 +42,10 @@ function App() {
         <Route path="/watch-video/:competitionId" element={<VideoWatch/>} />
         <Route path="/discovery-page" element={<DiscoveryPage/>} />
         <Route path="/menu" element={<Menu/>} />
-        <Route  path="/" element={<Home/>} />
+        <Route exact path="/campusicon-frontend/" element={<Home/>} />
       </Routes>
       <Toaster />
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 
