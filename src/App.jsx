@@ -21,7 +21,7 @@ import Home from './pages/HomePage/home';
 
 function App() {
   return (
-    <BrowserRouter basename="/campusicon-frontend/">
+    <BrowserRouter basename="/">
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
@@ -42,7 +42,7 @@ function App() {
         <Route path="/watch-video/:competitionId" element={<VideoWatch/>} />
         <Route path="/discovery-page" element={<DiscoveryPage/>} />
         <Route path="/menu" element={<Menu/>} />
-        <Route exact path="/campusicon-frontend/" element={<Home/>} />
+        <Route exact path="/" element={<Home/>} />
       </Routes>
       <Toaster />
     </BrowserRouter>
