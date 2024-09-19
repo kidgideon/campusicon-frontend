@@ -21,7 +21,7 @@ import Home from './pages/HomePage/home';
 
 function App() {
   return (
-    <BrowserRouter basename="/">
+    <BrowserRouter basename="/campusicon-frontend">
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
