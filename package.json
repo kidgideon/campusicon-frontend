@@ -1,7 +1,7 @@
 {
   "name": "vite-project",
   "homepage": "https://kidgideon.github.io/campusicon-frontend",
-  "private": true,
+  "private": false,
   "version": "0.0.0",
   "type": "module",
   "scripts": {

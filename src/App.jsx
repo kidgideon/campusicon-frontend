@@ -18,9 +18,10 @@ import VideoWatch from './pages/competition/videoWatch';
 import DiscoveryPage from './pages/discoveryPage/discoveryPage';
 import Menu from './pages/menuBar/menu';
 import Home from './pages/HomePage/home';
+
 function App() {
   return (
-    <Router>
+    <Router basename="/campusicon-frontend">
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
