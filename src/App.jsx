@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Register from './pages/register_components/register';
 import Login from './pages/login_components/login';
@@ -21,7 +21,7 @@ import Home from './pages/HomePage/home';
 
 function App() {
   return (
-    <Router basename="/campusicon-frontend">
+    <BrowserRouter basename="/campusicon-frontend">
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
@@ -45,7 +45,7 @@ function App() {
         <Route path="/" element={<Home/>} />
       </Routes>
       <Toaster />
-    </Router>
+    </BrowserRouter>
   );
 }
 
