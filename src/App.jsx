@@ -42,7 +42,7 @@ function App() {
         <Route path="/watch-video/:competitionId" element={<VideoWatch/>} />
         <Route path="/discovery-page" element={<DiscoveryPage/>} />
         <Route path="/menu" element={<Menu/>} />
-        <Route path="/" element={<Home/>} />
+        <Route exact path="/campusicon-frontend" element={<Home/>} />
       </Routes>
       <Toaster />
     </BrowserRouter>
