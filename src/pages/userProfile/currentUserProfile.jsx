@@ -85,7 +85,9 @@ const CurrentUserProfile = () => {
   if (!user) {
     return <div>No user logged in</div>;
   }
-
+  const goBack = () => {
+    navigate(-1)
+  }
   // Function to calculate campus status based on points
   function calculateCampusStatus(points) {
     const campusStatusTiers = [
@@ -117,6 +119,7 @@ const CurrentUserProfile = () => {
 
   return (
     <div className='profile-structure'>
+    <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
       <div className="profile-top">
         <div className="profile-pic-name">
           <div className="profile-pic">
@@ -146,13 +149,13 @@ const CurrentUserProfile = () => {
       </button>
       <div className="trophies">
         <div className="normal-star-award">
-          <img src={normalStarAwards} alt="Normal Star Award" />
+          <img className='award-img-profle' src={normalStarAwards} alt="Normal Star Award" />
         </div>
-        <div className='super-star-award'>
-          <img src={superCupAwards} alt="Super Star Award" />
+        <div  className='super-star-award'>
+          <img className='award-img-profle' src={superCupAwards} alt="Super Star Award" />
         </div>
         <div className='icon-award'>
-          <img src={iconAwards} alt="Icon Award" />
+          <img className='award-img-profle' src={iconAwards} alt="Icon Award" />
         </div>
       </div>
       <div className="trophy-count">

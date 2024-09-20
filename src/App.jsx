@@ -27,7 +27,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<CreateComp />} />
         <Route 
-          path="/dashboard" 
+          path="/" 
           element={<ProtectedRoute element={<UserDashboard />} />} 
         />
         <Route path='/fake-users' element={<AddFakeUsers />} />
@@ -42,7 +42,7 @@ function App() {
         <Route path="/watch-video/:competitionId" element={<VideoWatch/>} />
         <Route path="/discovery-page" element={<DiscoveryPage/>} />
         <Route path="/menu" element={<Menu/>} />
-        <Route path="/" element={<Home/>} />
+        <Route path="/home" element={<Home/>} />
       </Routes>
       <Toaster />
     </BrowserRouter>

@@ -76,6 +76,11 @@ const UserProfile = () => {
 
   if (!user) {
     return <div>User not found</div>;
+
+  }
+
+  const goBack = () => {
+    navigate(-1)
   }
 
   // Define the campus status tiers
@@ -106,6 +111,7 @@ const UserProfile = () => {
 
   return (
     <div className='profile-structure'>
+      
       <div className="profile-top">
         <div className="profile-pic-name">
           <div className="profile-pic">

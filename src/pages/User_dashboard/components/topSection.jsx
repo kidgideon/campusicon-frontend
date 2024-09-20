@@ -22,7 +22,8 @@ const TopSection = ({ userData }) => {
         <img src={icon} alt="logo" />
       </span>
       <span className="nav-bar">
-        <i className="fa-solid fa-bars"></i>
+        {/* Corrected Link to menu page */}
+        <Link to="/menu"><i className="fa-solid fa-bars"></i></Link>
       </span>
     </div>
   );

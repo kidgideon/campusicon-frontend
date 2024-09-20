@@ -1,8 +1,9 @@
 import React from 'react';
 import whitelogo from '../../assets/logo.png';
+import { Link } from 'react-router-dom';
 
 const LoginForm = ({ email, setEmail, password, setPassword, loading, error, handleSubmit, setForgotPassword }) => (
-  <form onSubmit={handleSubmit}>
+  <form className='theForm-for-Login' onSubmit={handleSubmit}>
     <div className="icon">
       <img src={whitelogo} alt="Logo" />
     </div>
@@ -31,7 +32,7 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading, error, han
     <button type="submit" disabled={loading}>
       {loading ? <div className="spinner"></div> : 'Login'}
     </button>
-    <p>Don't have an account? <a href="/register">Register</a></p>
+    <p>Don't have an account? <Link to="/register">register</Link></p>
   </form>
 );
 

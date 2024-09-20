@@ -19,7 +19,8 @@ a {
     align-items: center;
     flex-direction: column;
     font-family: "SUSE", sans-serif;
-    font-size: 85%;
+    font-size: 70%;
+    margin-top: 20px;
   }
 
 .profile-top {
@@ -29,6 +30,7 @@ a {
     justify-content: center;
     align-items: center;
     flex-direction: row;
+    margin-top: 5px;
 }
 
 .profile-pic-name {
@@ -42,9 +44,9 @@ a {
 }
 
 .profile-pic-name img {
-     width: 130px;
-     height: 130px;
-     border-radius: 50%;
+     width: 80px;
+     height: 80px;
+     border-radius: 100%;
 }
 
 .fullname {
@@ -53,7 +55,7 @@ a {
 
 .fullname p {
     font-weight: bold;
-    font-size: 20px;
+    text-align: center;
 }
 
 .points-status {
@@ -81,7 +83,7 @@ a {
     flex-direction: column;
     width: 100%;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 15px;
     text-align: center;
 }
 
@@ -89,13 +91,13 @@ a {
     font-weight: bold;
     text-align: center;
     margin: 0px;
-    font-size: 20px;
+    font-size: 15px; 
 }
 
 .p-text {
     text-align: end;
     margin: 0px;
-    margin-right: -15px;
+    margin-right: -20px;
 }
 
 .user-bio {
@@ -103,6 +105,10 @@ a {
     text-align: center;
 }
 
+.award-img-profle {
+    width: 50px;
+    height: 50px;
+}
 .trophies {
     width: 100%;
     height: 100%;
@@ -122,9 +128,16 @@ a {
 }
 
 .edit-profile-btn {
-    padding: 10px 20px;
+     width: 100px;
     background-color: #205e78;
     color: white;
     border: none;
     border-radius: 10px;
+    font-size: 70%;
+}
+
+.back-icon {
+    position: fixed;
+    left: 0px;
+    top: 0px;
 }

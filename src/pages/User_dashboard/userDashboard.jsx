@@ -16,7 +16,7 @@ const UserDashboard = () => {
   if (!userData) return <p>No user data available</p>;
 
   return (
-    <div className="layout">
+    <div className="layout-dashboard">
       <TopSection userData={userData} />
       <TopTab />
       <TopAccounts topUsers={topUsers} />

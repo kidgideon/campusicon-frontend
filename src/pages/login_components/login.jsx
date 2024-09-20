@@ -101,7 +101,7 @@ function Login() {
   };
 
   return (
-    <div className="balance">
+    <div className="login-page-interface">
       <i className="fas fa-arrow-left back-icon" onClick={() => window.history.back()}></i>
       {!forgotPassword ? (
         <LoginForm

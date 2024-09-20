@@ -4,7 +4,6 @@ import React from 'react';
 const Feeds = ({ feeds }) => {
   return (
     <div className="feeds">
-      <h2>Feeds</h2>
       <ul>
         {feeds.map(feed => (
           <li key={feed.id}>

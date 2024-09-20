@@ -1,5 +1,6 @@
 import React from "react";
 import svg from '../../assets/the.svg';
+import { Link } from "react-router-dom";
 
 const StepOne = ({
   firstName,
@@ -27,12 +28,10 @@ const StepOne = ({
   error,
 }) => {
   return (
-    <div className='container'>
-      <div className="svg-div">
-        <img className="design-svg" src={svg} alt="Design" />
-      </div>
+    <div className='register-interface'>
+
       <div className="container-form">
-        <div className="main-form">
+       
           <h1>Create Your Account</h1>
 
           <div className="input-icon">
@@ -99,7 +98,7 @@ const StepOne = ({
             <i className="fas fa-gift"></i>
             <input
               type="text"
-              placeholder="Referral code (optional)"
+              placeholder="username of referral (optional)"
               value={referralCode}
               onChange={(e) => setReferralCode(e.target.value)}
             />
@@ -120,10 +119,10 @@ const StepOne = ({
             {loading ? <div className="spinner"></div> : 'Get Code'}
           </button>
 
-          <p className="direction-text">Already have an account? <a className="link" href="login">Sign in</a></p>
+          <p className="direction-text">Already have an account?  <Link to="/login">Login</Link></p>
         </div>
       </div>
-    </div>
+   
   );
 };
 

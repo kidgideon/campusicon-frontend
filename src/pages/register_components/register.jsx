@@ -105,9 +105,9 @@ function Register() {
   };
 
   return (
-    <div className="overview">
+    <div className="register-page-whole-body">
       <div className="head">
-        <div className="logo">
+        <div className="register-page-logo">
           <img src={whitelogo} alt="Campus Icon Logo" />
         </div>
       </div>

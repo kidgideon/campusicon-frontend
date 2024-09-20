@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import ReactPlayer from 'react-player';
@@ -16,7 +16,6 @@ const DiscoveryPage = () => {
   const [creators, setCreators] = useState({});
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false); // State for spinner
-  const navigate = useNavigate();
   const db = getFirestore();
   const auth = getAuth();
 
@@ -42,7 +41,7 @@ const DiscoveryPage = () => {
 
   const handleSearch = async () => {
     setHasSearched(true);
-    
+
     if (searchTerm.trim().length >= 3) { // Enforce minimum of three characters
       setLoading(true); // Start loading spinner
       const competitionQuery = query(collection(db, 'competitions'), where('name', '>=', searchTerm));
@@ -118,20 +117,20 @@ const DiscoveryPage = () => {
 
       {/* Top navigation tabs */}
       <div className="top-tab">
-        <span className="home-tab" onClick={() => navigate('dashboard')}>
-          <i className="fa-solid fa-house"></i>
+        <span className="home-tab">
+          <Link to="/"><i className="fa-solid fa-house"></i></Link>
         </span>
-        <span className="discovery-tab" onClick={() => navigate('/discovery')}>
-          <i className="fa-solid fa-compass"></i>
+        <span className="discovery-tab">
+          <Link to="/discovery"><i className="fa-solid fa-compass"></i></Link>
         </span>
-        <span className="competition-tab" onClick={() => navigate('/competitions')}>
-          <i className="fa-solid fa-trophy"></i>
+        <span className="competition-tab">
+          <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
         </span>
-        <span className="notifications-tab" onClick={() => navigate('/notifications')}>
-          <i className="fa-solid fa-bell"></i>
+        <span className="notifications-tab">
+          <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
         </span>
-        <span className="ad-tab" onClick={() => navigate('/ads')}>
-          <i className="fa-solid fa-bullhorn"></i>
+        <span className="ad-tab">
+          <Link to="/ads"><i className="fa-solid fa-bullhorn"></i></Link>
         </span>
       </div>
 
