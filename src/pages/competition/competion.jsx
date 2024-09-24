@@ -42,9 +42,8 @@ const Competition = () => {
             const topThreeVideos = allVideos
               .sort((a, b) => b.votes.length - a.votes.length) // Sorting by the number of votes
               .slice(0, 3); // Take the top 3
-            
   
-
+              
             // Fetch the user information for each top competitor
             const competitors = await Promise.all(
               topThreeVideos.map(async (video) => {
@@ -135,8 +134,6 @@ const Competition = () => {
         <div className="end-date">End: {new Date(endDate.toDate()).toLocaleDateString()}</div>
       </div>
 
-    
-
       <div className="watch-button" onClick={() => navigate(`/watch-video/${competitionId}`)}>
         <i className="fa-solid fa-play"></i>
         <p>Watch videos and vote now!</p>
@@ -145,19 +142,19 @@ const Competition = () => {
     
 <div className="competion-interface-footer">
         <div onClick={() => navigate(`/competition/${competitionId}`)}>
-          <i className="fa-solid fa-trophy"></i>
+          <i className="fa-solid fa-trophy interface-icon"></i>
         </div>
         <div onClick={() => navigate(`/watch-video/${competitionId}`)}>
-        <i className="fa-solid fa-play"></i>
+        <i className="fa-solid fa-play interface-icon"></i>
         </div>
         <div className="top-users-icon" onClick={() => navigate(`/ranks/${competitionId}`)}>
-          <i className="fa-solid fa-sort"></i>
+          <i className="fa-solid fa-sort interface-icon"></i>
         </div>
         <div className="add-icon" onClick={() => navigate(`/upload/${competitionId}`)}>
-          <i className="fa-solid fa-plus"></i>
+          <i className="fa-solid fa-plus interface-icon"></i>
         </div>
-        <div className="to-see-video-performance" onClick={() => navigate(`/video-performance/${competitionId}`)}>
-          <i className="fa-solid fa-square-poll-vertical"></i>
+        <div className="to-see-video-performance interface-icon" onClick={() => navigate(`/video-performance/${competitionId}`)}>
+          <i className="fa-solid fa-square-poll-vertical interface-icon"></i>
         </div>
       </div>
     </div>

@@ -111,8 +111,8 @@ const UserProfile = () => {
 
   return (
     <div className='profile-structure'>
-      
       <div className="profile-top">
+      <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
         <div className="profile-pic-name">
           <div className="profile-pic">
             {/* Check if user profile picture exists, otherwise use the default */}

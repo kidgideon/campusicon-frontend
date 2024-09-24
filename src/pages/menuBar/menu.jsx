@@ -1,108 +1,143 @@
-  import { Navigate } from "react-router-dom"
-  import Logo from '../../assets/logo.png'
-import "./menu.css"
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { auth, db } from '../../../config/firebase_config'; // Firebase setup
+import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
+import Logo from '../../assets/logo.png';
+import "./menu.css";
+
 const Menu = () => {
+    const navigate = useNavigate();
+    const [user, setUser] = useState(null);
 
+    // Fetch current user data
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+                const userDocRef = doc(db, 'users', currentUser.uid); // Correct way to reference a document
+                const userDocSnap = await getDoc(userDocRef); // Fetch the document snapshot
+                if (userDocSnap.exists()) {
+                    setUser(userDocSnap.data()); // Set user data from Firestore
+                } else {
+                    console.error("No such document!");
+                }
+            }
+        };
+        fetchUserData();
+    }, []);
+
+    // Go back function
     const goBack = () => {
-        Navigate(-1);
-    }
+        navigate(-1);
+    };
 
-     return(
+    // Logout function
+    const handleLogout = () => {
+        auth.signOut().then(() => {
+            navigate("/home"); // Navigate to home page after logout
+        }).catch((error) => {
+            console.error("Logout error:", error);
+        });
+    };
+
+    return (
         <div className="menu-page-interface">
-  <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
-   <div className="menu-page-top-section">
- <div className="menu-page-user-profile">
-    <div className="menu-page-user-profile-picture">
-        <img src={Logo} alt="" />
+            <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
+            <div className="menu-page-top-section">
+                <div className="menu-page-user-profile">
+                    <div className="menu-page-user-profile-picture">
+                        <img src={user ? user.profilePicture : Logo} alt="User Profile" />
+                    </div>
+                    <div className="menu-page-username">
+                        {user ? user.firstName + ' ' + user.lastName : 'Loading...'}
+                    </div>
+                </div>
+            </div>
+          
+<div className="menu-page-menu-options">
+<div className="menu-page-option-list">
+    <div className="menu-page-option" onClick={() => navigate("/campus-rank")}>
+        <div className="menu-page-option-icon">
+            <i className="fa-solid fa-square-poll-vertical"></i>
+        </div>
+        <div className="menu-page-option-text">Campus Rank</div>
     </div>
-    <div className="meu-page-username">
-        Dennis Mikheme
+    <div className="menu-page-option" onClick={() => navigate("/competitions")}>
+        <div className="menu-page-option-icon">
+            <i className="fa-solid fa-trophy"></i>
+        </div>
+        <div className="menu-page-option-text">Competitions</div>
     </div>
- </div>
-   </div>
-   <div className="menu-page-menu-options">
-    <div className="menu-page-option-list">
-        <div className="menu-page-option">
-  <div className="menu-page-option-icon">
-  <i className="fa-solid fa-square-poll-vertical"></i></div>
-  <div className="menu-page-option-text">Campus Rank</div>
+</div>
+<div className="menu-page-option-list">
+    <div className="menu-page-option" onClick={() => navigate("/create-ad")}>
+        <div className="menu-page-option-icon">
+            <i className="fa-solid fa-bullhorn"></i>
         </div>
-        <div className="menu-page-option">
-  <div className="menu-page-option-icon">
-  <i className="fa-solid fa-trophy"></i>
-  </div>
-  <div className="menu-page-option-text">Competitions</div>
-        </div>
+        <div className="menu-page-option-text">Create Ad</div>
     </div>
-    <div className="menu-page-option-list">
-    <div className="menu-page-option">
-  <div className="menu-page-option-icon">
-  <i className="fa-solid fa-bullhorn"></i> 
-  </div>
-  <div className="menu-page-option-text">Create Ad</div>
+    <div className="menu-page-option" onClick={() => navigate("/match-of-day")}>
+        <div className="menu-page-option-icon">
+            <i className="fa-solid fa-star"></i>
         </div>
-        <div className="menu-page-option">
-  <div className="menu-page-option-icon">
-  <i class="fa-solid fa-star"></i>
-  </div>
-  <div className="menu-page-option-text">Match of Day</div>
-        </div>
+        <div className="menu-page-option-text">Match of Day</div>
     </div>
-    <div className="menu-page-option-list">
-    <div className="menu-page-option">
-  <div className="menu-page-option-icon">
-  <i class="fa-solid fa-user-group"></i>
-  </div>
-  <div className="menu-page-option-text">Friends</div>
+</div>
+<div className="menu-page-option-list">
+    <div className="menu-page-option" onClick={() => navigate("/friends")}>
+        <div className="menu-page-option-icon">
+            <i className="fa-solid fa-user-group"></i>
         </div>
-        <div className="menu-page-option">
-  <div className="menu-page-option-icon">
-  <i class="fa-solid fa-award"></i>
-  </div>
-  <div className="menu-page-option-text">Awards and Ranks</div>
-        </div>
+        <div className="menu-page-option-text">Friends</div>
     </div>
-  </div>
-   <div className="menu-page-settings-privacy">
-     <h3>settings and privacy</h3>
-    <div className="settings-block-menu-page">
-        <div className="settings-block-icon">
-        <i class="fa-solid fa-gear"></i>
+    <div className="menu-page-option" onClick={() => navigate("/awards-ranks")}>
+        <div className="menu-page-option-icon">
+            <i className="fa-solid fa-award"></i>
         </div>
-        <div className="settings-block-text">Settings</div>
+        <div className="menu-page-option-text">Awards and Ranks</div>
     </div>
-      <h3>help and support</h3>
-      <div className="settings-block-menu-page">
-        <div className="settings-block-icon"><i class="fa-solid fa-circle-xmark"></i></div>
-        <div className="settings-block-text">Report a Problem</div> 
+</div>
+</div>
+           
+<div className="menu-page-settings-privacy">
+<h3>Settings and Privacy</h3>
+<div className="settings-block-menu-page" onClick={() => navigate("/settings")}>
+    <div className="settings-block-icon">
+        <i className="fa-solid fa-gear"></i>
     </div>
-
-    <div className="settings-block-menu-page">
-        <div className="settings-block-icon">
-        <i class="fa-solid fa-file-contract"></i>
+    <div className="settings-block-text">Settings</div>
+</div>
+<h3>Help and Support</h3>
+<div className="settings-block-menu-page" onClick={() => navigate("/report-problem")}>
+    <div className="settings-block-icon">
+        <i className="fa-solid fa-circle-xmark"></i>
+    </div>
+    <div className="settings-block-text">Report a Problem</div>
+</div>
+<div className="settings-block-menu-page" onClick={() => navigate("/sponsorship")}>
+    <div className="settings-block-icon">
+        <i className="fa-solid fa-file-contract"></i>
+    </div>
+    <div className="settings-block-text">Sponsorship and Endorsement</div>
+</div>
+<div className="settings-block-menu-page" onClick={() => navigate("/about")}>
+    <div className="settings-block-icon">
+        <i className="fa-solid fa-address-card"></i>
+    </div>
+    <div className="settings-block-text">About</div>
+</div>
+<div className="settings-block-menu-page" onClick={handleLogout}>
+    <div className="settings-block-icon">
+        <i className="fa-solid fa-right-from-bracket"></i>
+    </div>
+    <div className="settings-block-text">Logout</div>
+</div>
+</div>
         </div>
-        <div className="settings-block-text">Sponsorship and endorsement</div>
-    </div>
-
-    <div className="settings-block-menu-page">
-        <div className="settings-block-icon">
-        <i class="fa-solid fa-address-card"></i>
-        </div>
-        <div className="settings-block-text">About</div>
-    </div>
-
-    <div className="settings-block-menu-page">
-        <div className="settings-block-icon">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        </div>
-        <div className="settings-block-text">Logout</div>
-    </div>
-
-   </div>
-        </div>
-     )
-}
+    );
+};
 
 export default Menu;
 
-// 
+
+

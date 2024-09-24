@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, initializeFirestore } from "firebase/firestore";
 import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
@@ -14,10 +14,14 @@ const firebaseConfig = {
   measurementId: "G-K67044JQM2"
 };
 
-// Initialize Firebase
+// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
 
-
+// Initialize Firebase services
 export const auth = getAuth(app);
-export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+// Initialize Firestore (this enables logging)
+export const db = initializeFirestore(app, {
+  ignoreUndefinedProperties: true // Avoids issues with undefined properties
+});

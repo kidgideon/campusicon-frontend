@@ -42,7 +42,7 @@ function Login() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast.success('Logged in successfully!');
-      navigate('/dashboard'); // Redirect to the dashboard
+      navigate('/'); // Redirect to the dashboard
     } catch (error) {
       toast.error('Error logging in: ' + error.message);
     } finally {

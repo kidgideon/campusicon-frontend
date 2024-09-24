@@ -16,6 +16,7 @@ const CurrentUserProfile = () => {
   const [awardCounts, setAwardCounts] = useState({ normal: 0, super: 0, icon: 0 });
   const navigate = useNavigate();
 
+  
   useEffect(() => {
     const fetchUser = async () => {
       setLoading(true); // Ensure loading state is set
@@ -47,6 +48,12 @@ const CurrentUserProfile = () => {
                 await updateDoc(doc(db, 'users', userDocId), updates);
                 Object.assign(userData, updates);
               }
+
+              
+  const goBack = () => {
+    navigate(-1)
+  }
+
 
               // Calculate award counts
               const counts = { normal: 0, super: 0, icon: 0 };
