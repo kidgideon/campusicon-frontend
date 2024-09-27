@@ -1,0 +1,92 @@
+.admin-feed-interface-page {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .admin-feed-interface-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .admin-feed-interface-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+  }
+  
+  .admin-feed-interface-label {
+    margin-bottom: 15px;
+  }
+  
+  .admin-feed-interface-textarea {
+    width: 100%;
+    height: 100px;
+    margin-top: 5px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .admin-feed-interface-media-input {
+    margin-top: 10px;
+  }
+  
+  .admin-feed-interface-submit-btn {
+    padding: 10px 20px;
+    background-color: #277AA4;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+  }
+  
+  .admin-feed-interface-submit-btn:hover {
+    background-color: #205e78;
+  }
+  
+  .admin-feed-interface-feeds-list {
+    margin-top: 30px;
+  }
+  
+  .admin-feed-interface-feeds-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .admin-feed-interface-feed-item {
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 5px;
+  }
+  
+  .admin-feed-interface-feed-content {
+    margin-bottom: 15px;
+  }
+  
+  .admin-feed-interface-feed-image,
+  .admin-feed-interface-feed-video {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .admin-feed-interface-delete-btn {
+    padding: 5px 10px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .admin-feed-interface-delete-btn:hover {
+    background-color: #c0392b;
+  }
+  

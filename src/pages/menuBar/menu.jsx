@@ -108,13 +108,13 @@ const Menu = () => {
     <div className="settings-block-text">Settings</div>
 </div>
 <h3>Help and Support</h3>
-<div className="settings-block-menu-page" onClick={() => navigate("/report-problem")}>
+<div className="settings-block-menu-page" onClick={() => window.location.href = 'mailto:campusicon.com@gmail.com?subject=Campus%20Icon%20Problem&body=Hello%20Campus%20Icon%20Team,'}>
     <div className="settings-block-icon">
         <i className="fa-solid fa-circle-xmark"></i>
     </div>
     <div className="settings-block-text">Report a Problem</div>
 </div>
-<div className="settings-block-menu-page" onClick={() => navigate("/sponsorship")}>
+<div className="settings-block-menu-page" onClick={() =>  window.location.href = 'mailto:campusicon.com@gmail.com?subject=Campus%20Icon%20Sponsorship&body=Hello%20Campus%20Icon%20Team,'}>
     <div className="settings-block-icon">
         <i className="fa-solid fa-file-contract"></i>
     </div>

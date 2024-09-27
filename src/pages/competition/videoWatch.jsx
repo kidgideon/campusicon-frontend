@@ -109,7 +109,7 @@ const VideoWatch = () => {
 
   // Handle send comment
   const handleSendComment = async (videoId) => {
-    if (newComment.trim()) {
+    if (commentPanelRef.current && newComment.trim()) {
       await handlePostComment(videoId, currentUser.uid, newComment, setComments);
       setNewComment('');
     } else {
@@ -123,7 +123,7 @@ const VideoWatch = () => {
 
   return (
     <div className="video-watch-area">
-      <div className="spiritual-boundary">
+  
         {videos.map((video) => (
           <div key={video.id} className="video-watch-item">
             <div className="video-watch-top">
@@ -179,70 +179,70 @@ const VideoWatch = () => {
             </div>
 
           {/* Comment Panel (only show if open) */}
-{showCommentPanel === video.id && (
+          {showCommentPanel === video.id && (
   <div className="comment-panel" id={`comment-panel-${video.id}`} ref={commentPanelRef}>
-    <div className="comment-panel-up">
+    
+    <div className="comment-header">
       <h3>Comments</h3>
-      <div className="close-panel" onClick={closeCommentPanel}>X</div> {/* Close Button */}
+      <i className="fa-solid fa-x" onClick={closeCommentPanel}></i>
     </div>
 
-    <div className="commenters">
-  <div className="commenter-body">
-    {commentLoading ? (
-      <Spinner />  // Show spinner while loading comments or performing edit/delete
-    ) : (
-      comments[video.id]?.map((comment) => (
-        <div key={comment.timestamp} className="commenter">
-          <div className="commenter-image">
-            <img src={comment.userProfilePicture || defaultProfilePictureURL} alt="User" />
-          </div>
-          <div className="comment-details-arrange">
-            <p className="commenters-name">{comment.username || 'me'}</p>
-            <p className="commenters-comment">{comment.text}</p>
-          </div>
-          <div className="like-comment-icon">
-            <i 
-              className="fa-solid fa-heart" 
-              onClick={() => handleCommentLike(video.id, comment.timestamp, currentUser.uid, setComments)} 
-              style={{ color: comment.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }}
-            />
-            <span>{comment.likes.length}</span>
-          </div>
-          {comment.userId === currentUser.uid && (
-            <>
-              <button onClick={() => handleDeleteComment(video.id, comment.timestamp, setComments, setCommentLoading)}>Delete</button>
-              <button onClick={() => handleEditComment(video.id, comment.timestamp, prompt('Edit your comment:', comment.text), setComments, setCommentLoading)}>
-                Edit
-              </button>
-            </>
-          )}
-        </div>
-      ))
-    )}
-  </div>
-</div>
-
-
-    <div className="commenter-message">
-      <textarea 
+    <div className="comment-input">
+      <input
         ref={commentPanelRef} 
-        rows="2" 
         placeholder="Type a comment"
-        value={newComment} 
-        onChange={(e) => setNewComment(e.target.value)} 
-        style={{ resize: 'none' }} 
+        value={newComment}
+        onChange={(e) => setNewComment(e.target.value)}
       />
-      <div className="send-comment">
-        <button onClick={() => handleSendComment(video.id)}>Send</button>
-      </div>
+      <button className="send-comment-btn" onClick={() => handleSendComment(video.id)}>
+        Send
+      </button>
+    </div>
+
+    <div className="comment-body">
+      {commentLoading ? (
+        <Spinner />
+      ) : (
+        comments[video.id]?.map((comment) => (
+          <div key={comment.timestamp} className="comment">
+            <img src={comment.userProfilePicture || defaultProfilePictureURL} alt="User" className="commenter-image"/>
+            
+            <div className="comment-details">
+              <p className="commenters-name">{comment.username || 'me'}</p>
+              <p className="commenters-comment">{comment.text}</p>
+            </div>
+
+            <div className="comment-actions">
+              <i 
+                className="fa-solid fa-heart" 
+                onClick={() => handleCommentLike(video.id, comment.timestamp, currentUser.uid, setComments)}
+                style={{ color: comment.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }}
+              />
+              <span>{comment.likes.length}</span>
+
+              {comment.userId === currentUser.uid && (
+                <>
+                  <i 
+                    className="fa-solid fa-pen-to-square" 
+                    onClick={() => handleEditComment(video.id, comment.timestamp, prompt('Edit your comment:', comment.text), setComments, setCommentLoading)}
+                  ></i>
+                  <i 
+                    className="fa-solid fa-trash" 
+                    onClick={() => handleDeleteComment(video.id, comment.timestamp, setComments, setCommentLoading)}
+                  ></i>
+                </>
+              )}
+            </div>
+          </div>
+        ))
+      )}
     </div>
   </div>
 )}
-
           </div>
         ))}
       </div>
-    </div>
+
   );
 };
 

@@ -61,11 +61,21 @@ const useFetchData = () => {
 
           setActiveCompetitions(filteredCompetitions);
 
-          // Fetch user feeds
-          const feedsQuery = query(collection(db, 'feeds'), orderBy('date', 'desc'));
-          const feedsSnapshot = await getDocs(feedsQuery);
-          const feedsList = feedsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setFeeds(feedsList);
+          // // Fetch user feeds
+          // const fetchFeeds = async () => {
+          //   try {
+          //     const feedsRef = collection(db, 'feeds');
+          //     const q = query(feedsRef, orderBy('createdAt', 'desc'), limit(10));
+          //     const querySnapshot = await getDocs(q);
+          //     const feedsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          //     console.log('Fetched Feeds:'); // Log the feedsList to check its contents
+          //     setFeeds(feedsList);
+          //   } catch (error) {
+          //     console.error('Error fetching feeds:', error);
+          //   }
+          // };
+          
+          // fetchFeeds();
         } else {
           setError('No user is signed in!');
         }

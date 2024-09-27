@@ -22,6 +22,63 @@ export const fetchCommentUserDetails = async (comment) => {
     };
   }
 };
+
+
+/**
+ * Function to handle posting a comment
+ * @param {string} videoId - ID of the video being commented on
+ * @param {string} userId - ID of the user posting the comment
+ * @param {string} commentText - Text of the comment
+ * @param {function} setComments - Function to update the state of comments
+ */
+export const handlePostComment = async (videoId, userId, commentText, setComments, commentPanelRef) => {
+  if (!commentText.trim()) {
+    toast.error('Comment cannot be empty');
+    return;
+  }
+
+  try {
+    // Fetch user details from Firestore (assuming users collection)
+    const userRef = doc(db, 'users', userId);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      toast.error('User not found');
+      return;
+    }
+
+    const userData = userSnap.data();
+    const newComment = {
+      userId,
+      userName: userData.firstName + " " + userData.lastName, // Add user's name
+      userProfilePicture: userData.profilePicture || '', // Add user's profile picture if available
+      text: commentText,
+      timestamp: Date.now(),
+      likes: [],
+    };
+
+    // Add comment to video document
+    const videoRef = doc(db, 'videos', videoId);
+    await updateDoc(videoRef, { comments: arrayUnion(newComment) });
+
+    // Update comments state
+    setComments(prevComments => ({
+      ...prevComments,
+      [videoId]: [newComment, ...(prevComments[videoId] || [])],
+    }));
+
+    // Scroll the comment panel to the top after posting (optional)
+    if (commentPanelRef?.current) {
+      commentPanelRef.current.scrollTop = 0;
+    }
+
+    toast.success('Comment posted!');
+  } catch (error) {
+    console.error('Error posting comment:', error);
+    toast.error('Error posting comment');
+  }
+};
+
 /**
  * Function to handle liking or unliking a video
  * @param {string} videoId - ID of the video being liked/unliked
@@ -113,47 +170,6 @@ export const handleVideoVote = async (videoId, currentUserId, setVideos, votedVi
   }
 };
 
-/**
- * Function to handle posting a comment
- * @param {string} videoId - ID of the video being commented on
- * @param {string} userId - ID of the user posting the comment
- * @param {string} commentText - Text of the comment
- * @param {function} setComments - Function to update the state of comments
- */
-export const handlePostComment = async (videoId, userId, commentText, setComments, commentPanelRef) => {
-  if (!commentText.trim()) {
-    toast.error('Comment cannot be empty');
-    return;
-  }
-
-  const newComment = {
-    userId,
-    text: commentText,
-    timestamp: Date.now(),
-    likes: [],
-  };
-
-  try {
-    const videoRef = doc(db, 'videos', videoId);
-    await updateDoc(videoRef, { comments: arrayUnion(newComment) });
-
-    // Update comments state
-    setComments(prevComments => ({
-      ...prevComments,
-      [videoId]: [newComment, ...(prevComments[videoId] || [])],
-    }));
-
-    // Scroll the comment panel to the top after posting
-    if (commentPanelRef.current) {
-      commentPanelRef.current.scrollTop = 0;
-    }
-
-    toast.success('Comment posted!');
-  } catch (error) {
-    console.error('Error posting comment:', error);
-    toast.error('Error posting comment');
-  }
-};
 
 
 

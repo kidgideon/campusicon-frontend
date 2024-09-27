@@ -18,7 +18,7 @@ import VideoWatch from './pages/competition/videoWatch';
 import DiscoveryPage from './pages/discoveryPage/discoveryPage';
 import Menu from './pages/menuBar/menu';
 import Home from './pages/HomePage/home';
-
+import AdminFeedPostInterface from './pages/ADMIN-SECTION/postFeed';
 function App() {
   return (
     <BrowserRouter basename="/campusicon-frontend">
@@ -26,6 +26,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<CreateComp />} />
+        <Route path="/admin/post" element={<AdminFeedPostInterface />} />
         <Route 
           path="/" 
           element={<ProtectedRoute element={<UserDashboard />} />} 

@@ -18,7 +18,7 @@
 }
 
 .menu-page-user-profile {
-    width: 100%;
+    width: 96%;
     height: 100%;
     display: flex;
     justify-content: center;
@@ -28,6 +28,13 @@
     border-radius: 20px;
     background-color: rgb(167, 167, 167);
     max-width: 500px;
+    gap: 20px;
+}
+
+.menu-page-user-profile img {
+    width: 60px;
+    height: 60px;
+    border-radius: 100%;
 }
 
 .menu-page-menu-options {
@@ -87,7 +94,7 @@
 }
 
 .settings-block-menu-page {
-    width: 100%;
+    width: 96%;
     height: 50px;
     background-color: rgb(167, 167, 167);
     display: flex;
