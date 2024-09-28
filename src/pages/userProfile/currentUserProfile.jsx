@@ -1,29 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc , getDoc} from 'firebase/firestore';
 import { auth, db } from '../../../config/firebase_config';
+import ReactPlayer from 'react-player';
 import '../userProfile/profile.css';
 import normalStarAwards from '../../assets/starCup.png';
 import superCupAwards from '../../assets/superCup.png';
 import iconAwards from '../../assets/iconCup.png';
+import Spinner from '../../assets/loadingSpinner'
 import LoadingScreen from '../../assets/loadingSpinner'; // Custom spinner component
-
+import {handleVideoLike, handleVideoVote, handlePostComment, handleCommentLike, handleDeleteComment, handleEditComment } from "../competition/videoUtils"
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
+
 
 const CurrentUserProfile = () => {
   const [user, setUser] = useState(null);
+  const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [creators, setCreators] = useState({});
   const [awardCounts, setAwardCounts] = useState({ normal: 0, super: 0, icon: 0 });
+  const [commentLoading, setCommentLoading] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [comments, setComments] = useState({});
+  const [showCommentPanel, setShowCommentPanel] = useState(null);
+  const [votedVideos, setVotedVideos] = useState({});
   const navigate = useNavigate();
+  const commentPanelRef = useRef(null);
+  const [currentUser, setCurrentUser] = useState(null); // Define currentUser state
+  const [likedComments, setLikedComments] = useState({});
 
-  
   useEffect(() => {
     const fetchUser = async () => {
-      setLoading(true); // Ensure loading state is set
+      setLoading(true); 
       try {
-        const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
-          if (currentUser) {
-            const q = query(collection(db, 'users'), where('email', '==', currentUser.email));
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+          if (user) {
+            setCurrentUser(user); // Set currentUser when authenticated
+            const q = query(collection(db, 'users'), where('email', '==', user.email));
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
@@ -31,31 +44,16 @@ const CurrentUserProfile = () => {
               const userData = userDoc.data();
               const userDocId = userDoc.id;
 
-              // Initialize missing fields if necessary
               const updates = {};
-              if (!userData.win) {
-                updates.win = [];
-              }
-              if (!userData.hobbies) {
-                updates.hobbies = [];
-              }
-              if (!userData.campus) {
-                updates.campus = "No campus added yet.";
-              }
+              if (!userData.win) updates.win = [];
+              if (!userData.hobbies) updates.hobbies = [];
+              if (!userData.campus) updates.campus = 'No campus added yet.';
 
-              // Update the Firestore document with missing fields
               if (Object.keys(updates).length > 0) {
                 await updateDoc(doc(db, 'users', userDocId), updates);
                 Object.assign(userData, updates);
               }
 
-              
-  const goBack = () => {
-    navigate(-1)
-  }
-
-
-              // Calculate award counts
               const counts = { normal: 0, super: 0, icon: 0 };
               userData.win.forEach((win) => {
                 if (win.awardType === 'Normal Star Award') counts.normal += 1;
@@ -65,6 +63,8 @@ const CurrentUserProfile = () => {
 
               setAwardCounts(counts);
               setUser(userData);
+
+              await fetchUserVideos(user.uid);
             } else {
               console.log('No user found');
             }
@@ -74,7 +74,6 @@ const CurrentUserProfile = () => {
           setLoading(false);
         });
 
-        // Cleanup subscription on unmount
         return () => unsubscribe();
       } catch (error) {
         console.error('Error fetching user:', error);
@@ -82,20 +81,109 @@ const CurrentUserProfile = () => {
       }
     };
 
+    const fetchUserVideos = async (userId) => {
+      const videosQuery = query(collection(db, 'videos'), where('userId', '==', userId));
+      const videoSnapshot = await getDocs(videosQuery);
+      const fetchedVideos = [];
+
+      const fetchedCreators = {};
+      for (const doc of videoSnapshot.docs) {
+        const videoData = doc.data();
+        videoData.id = doc.id;
+        fetchedVideos.push(videoData);
+
+        if (!fetchedCreators[videoData.userId]) {
+          const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', videoData.userId)));
+          if (!userDoc.empty) {
+            fetchedCreators[videoData.userId] = userDoc.docs[0].data();
+          }
+        }
+      }
+      setVideos(fetchedVideos);
+      setCreators(fetchedCreators);
+    };
+
     fetchUser();
   }, []);
 
+  // const handleVideoLike = async (videoId, liked, userId, setVideos) => {
+  //   // Handle video like/dislike
+  // };
+
+  // Open comment panel
+  const handleOpenComments = async (videoId) => {
+    setShowCommentPanel(videoId);
+    setNewComment('');
+    setLikedComments((prev) => ({ ...prev, [videoId]: {} })); // Reset liked comments state for the current video
+  
+    // Fetch comments and show loading spinner
+    setCommentLoading(true);
+    const videoRef = doc(db, 'videos', videoId);
+    const videoDoc = await getDoc(videoRef);
+    const videoData = videoDoc.data();
+    const fetchedComments = videoData.comments || [];
+  
+    // Retrieve the details of each comment's creator
+    const commentsWithUserDetails = await Promise.all(
+      fetchedComments.map(async (comment) => {
+        const userRef = doc(db, 'users', comment.userId);  // Get the user document based on userId
+        const userDoc = await getDoc(userRef);
+  
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          return {
+            ...comment,
+            username: userData.username || 'Unknown User',  // Add username from the user document
+            userProfilePicture: userData.profilePicture || defaultProfilePictureURL,  // Add profile picture
+          };
+        } else {
+          return {
+            ...comment,
+            username: 'Unknown User',
+            userProfilePicture: defaultProfilePictureURL,
+          };
+        }
+      })
+    );
+  
+    setComments((prevComments) => ({
+      ...prevComments,
+      [videoId]: commentsWithUserDetails,  // Save the comments with user details
+    }));
+  
+    setCommentLoading(false);  // Hide the loading spinner after fetching data
+  };
+  const handleSendComment = async (videoId) => {
+    if (commentPanelRef.current && newComment.trim()) {
+      await handlePostComment(videoId, currentUser.uid, newComment, setComments);
+      setNewComment('');
+    } else {
+      toast.error('Comment cannot be empty');
+    }
+  };
+
+ 
+
+  const handleVideoShare = (videoId) => {
+    // Handle sharing video
+  };
+
+  const closeCommentPanel = () => {
+    setShowCommentPanel(null);
+  };
+
+  const goBack = () => {
+    navigate(-1);
+  };
+
   if (loading) {
-    return <LoadingScreen />; // Use the custom spinner during loading
+    return <LoadingScreen />; 
   }
 
   if (!user) {
     return <div>No user logged in</div>;
   }
-  const goBack = () => {
-    navigate(-1)
-  }
-  // Function to calculate campus status based on points
+
   function calculateCampusStatus(points) {
     const campusStatusTiers = [
       { status: 'Lad', minPoints: 0, maxPoints: 499 },
@@ -121,17 +209,16 @@ const CurrentUserProfile = () => {
   const campusStatus = calculateCampusStatus(user.points);
 
   const handleEditProfile = () => {
-    navigate('/edit profile'); // Adjust the route as per your setup
+    navigate('/edit-profile');
   };
 
   return (
     <div className='profile-structure'>
-    <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
+      <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
       <div className="profile-top">
         <div className="profile-pic-name">
           <div className="profile-pic">
-            {/* Check for profile picture, else use default */}
-            <img src={user.profilePicture || defaultProfilePictureURL} alt={`${user.firstName}'s profile`} />
+            <img src={user.profilePicture || defaultProfilePictureURL} alt="Profile" />
           </div>
           <div className="fullname">
             <p>{user.firstName} {user.lastName}</p>
@@ -147,29 +234,28 @@ const CurrentUserProfile = () => {
           </div>
         </div>
       </div>
+
       <div className="user-bio">
         <p>{user.bio}</p>
       </div>
 
-      <button onClick={handleEditProfile} className="edit-profile-btn">
-        Edit Profile
-      </button>
+      <button onClick={handleEditProfile} className="edit-profile-btn">Edit Profile</button>
+
       <div className="trophies">
         <div className="normal-star-award">
           <img className='award-img-profle' src={normalStarAwards} alt="Normal Star Award" />
+          <p className='normal-star-count'>{awardCounts.normal}</p>
         </div>
-        <div  className='super-star-award'>
+        <div className='super-star-award'>
           <img className='award-img-profle' src={superCupAwards} alt="Super Star Award" />
+          <p className='super-star-count'>{awardCounts.super}</p>
         </div>
         <div className='icon-award'>
           <img className='award-img-profle' src={iconAwards} alt="Icon Award" />
+          <p className='icon-awards-count'>{awardCounts.icon}</p>
         </div>
       </div>
-      <div className="trophy-count">
-        <p className='normal-star-count'>{awardCounts.normal}</p>
-        <p className='super-star-count'>{awardCounts.super}</p>
-        <p className='icon-awards-count'>{awardCounts.icon}</p>
-      </div>
+
       <div className="user-campus-hobbies">
         <div className="user-campus">
           <strong>Campus: </strong>{user.campus}
@@ -178,6 +264,124 @@ const CurrentUserProfile = () => {
           <strong>Hobbies: </strong>{user.hobbies.length > 0 ? user.hobbies.join(', ') : "No hobbies added yet."}
         </div>
       </div>
+
+       <h3>posts</h3>
+
+      <div className="video-watch-area">
+  {videos.map((video) => (
+    <div key={video.id} className="video-watch-item">
+      <div className="video-watch-top">
+        <div className="video-creator-profile">
+          <div className="video-watch-profile-picture">
+            <img 
+              src={creators[video.userId]?.profilePicture || defaultProfilePictureURL} 
+              alt="Creator Profile" 
+            />
+          </div>
+          <div className="video-watch-username">
+            {creators[video.userId]?.username || 'Unknown User'}
+          </div>
+        </div>
+      </div>
+      
+      <div className="video-watch-video-body">
+        <ReactPlayer 
+          url={video.videoURL} 
+          controls 
+          width="100%" 
+          height="auto" 
+        />
+      </div>
+      
+      <div className="video-watch-video-data">
+        <p>{video.description}</p>
+      </div>
+      
+      <div className="video-watch-icon-and-button">
+      <div className="like" onClick={() => handleVideoLike(video.id, video.likes.includes(currentUser.uid), currentUser.uid, setVideos)}>
+                <i 
+                  className="fa-solid fa-heart" 
+                  style={{ color: video.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }} // Apply company color if liked
+                />
+                <span>{video.likes.length}</span>
+              </div>
+        <div className="comment" onClick={() => handleOpenComments(video.id)}>
+          <i className="fa-solid fa-comment" />
+          <span>{video.comments.length}</span>
+        </div>
+     
+        <div className="share" onClick={() => handleVideoShare(video.id)}>
+          <i className="fa-solid fa-share" />
+          <span>{video.shares.length}</span>
+        </div>
+      </div>
+
+    {/* Comment Panel (only show if open) */}
+    {showCommentPanel === video.id && (
+<div className="comment-panel" id={`comment-panel-${video.id}`} ref={commentPanelRef}>
+
+<div className="comment-header">
+<h3>Comments</h3>
+<i className="fa-solid fa-x" onClick={closeCommentPanel}></i>
+</div>
+
+<div className="comment-input">
+<input
+  ref={commentPanelRef} 
+  placeholder="Type a comment"
+  value={newComment}
+  onChange={(e) => setNewComment(e.target.value)}
+/>
+<button className="send-comment-btn" onClick={() => handleSendComment(video.id)}>
+  Send
+</button>
+</div>
+
+<div className="comment-body">
+{commentLoading ? (
+  <Spinner />
+) : (
+  comments[video.id]?.map((comment) => (
+    <div key={comment.timestamp} className="comment">
+      <img src={comment.userProfilePicture || defaultProfilePictureURL} alt="User" className="commenter-image"/>
+      
+      <div className="comment-details">
+        <p className="commenters-name">{comment.username || 'me'}</p>
+        <p className="commenters-comment">{comment.text}</p>
+      </div>
+
+      <div className="comment-actions">
+        <i 
+          className="fa-solid fa-heart" 
+          onClick={() => handleCommentLike(video.id, comment.timestamp, currentUser.uid, setComments)}
+          style={{ color: comment.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }}
+        />
+        <span>{comment.likes.length}</span>
+
+        {comment.userId === currentUser.uid && (
+          <>
+            <i 
+              className="fa-solid fa-pen-to-square" 
+              onClick={() => handleEditComment(video.id, comment.timestamp, prompt('Edit your comment:', comment.text), setComments, setCommentLoading)}
+            ></i>
+            <i 
+              className="fa-solid fa-trash" 
+              onClick={() => handleDeleteComment(video.id, comment.timestamp, setComments, setCommentLoading)}
+            ></i>
+          </>
+        )}
+      </div>
+    </div>
+  ))
+)}
+</div>
+</div>
+)}
+    </div>
+  ))}
+</div>
+
+   
     </div>
   );
 };

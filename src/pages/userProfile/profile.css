@@ -103,6 +103,7 @@ a {
 .user-bio {
     width: 100%;
     text-align: center;
+    margin-bottom: 10px;
 }
 
 .award-img-profle {
@@ -116,6 +117,7 @@ a {
     justify-content: space-evenly;
     align-items: center;
     flex-direction: row;
+    margin-bottom: 40px;
 }
 
 .trophy-count {
@@ -140,4 +142,16 @@ a {
     position: fixed;
     left: 0px;
     top: 0px;
+}
+
+.normal-star-award, .super-star-award, .icon-award {
+    position: relative;
+}
+
+.normal-star-count, .super-star-count, .icon-awards-count {
+    position: absolute;
+    top: 40px;
+    left: 20px;
+    font-size: 20px;
+    font-weight: bold;
 }

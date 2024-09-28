@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState , useRef} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs , getDoc} from 'firebase/firestore';
 import { auth, db } from '../../../config/firebase_config';
 import '../userProfile/profile.css';
 import normalStarAwards from '../../assets/starCup.png';
@@ -10,11 +10,22 @@ import iconAwards from '../../assets/iconCup.png';
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 
 const UserProfile = () => {
-  const { username } = useParams();
   const [user, setUser] = useState(null);
+  const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [creators, setCreators] = useState({});
   const [awardCounts, setAwardCounts] = useState({ normal: 0, super: 0, icon: 0 });
+  const [commentLoading, setCommentLoading] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [comments, setComments] = useState({});
+  const [showCommentPanel, setShowCommentPanel] = useState(null);
+  const [votedVideos, setVotedVideos] = useState({});
   const navigate = useNavigate();
+  const commentPanelRef = useRef(null);
+  const [currentUser, setCurrentUser] = useState(null); // Define currentUser state
+  const [likedComments, setLikedComments] = useState({});
+
+  const { username } = useParams()
 
   useEffect(() => {
     // Fetch user data from Firestore based on the username
@@ -79,82 +90,280 @@ const UserProfile = () => {
 
   }
 
+  // const handleVideoLike = async (videoId, liked, userId, setVideos) => {
+  //   // Handle video like/dislike
+  // };
+
+  // Open comment panel
+  const handleOpenComments = async (videoId) => {
+    setShowCommentPanel(videoId);
+    setNewComment('');
+    setLikedComments((prev) => ({ ...prev, [videoId]: {} })); // Reset liked comments state for the current video
+  
+    // Fetch comments and show loading spinner
+    setCommentLoading(true);
+    const videoRef = doc(db, 'videos', videoId);
+    const videoDoc = await getDoc(videoRef);
+    const videoData = videoDoc.data();
+    const fetchedComments = videoData.comments || [];
+  
+    // Retrieve the details of each comment's creator
+    const commentsWithUserDetails = await Promise.all(
+      fetchedComments.map(async (comment) => {
+        const userRef = doc(db, 'users', comment.userId);  // Get the user document based on userId
+        const userDoc = await getDoc(userRef);
+  
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          return {
+            ...comment,
+            username: userData.username || 'Unknown User',  // Add username from the user document
+            userProfilePicture: userData.profilePicture || defaultProfilePictureURL,  // Add profile picture
+          };
+        } else {
+          return {
+            ...comment,
+            username: 'Unknown User',
+            userProfilePicture: defaultProfilePictureURL,
+          };
+        }
+      })
+    );
+  
+    setComments((prevComments) => ({
+      ...prevComments,
+      [videoId]: commentsWithUserDetails,  // Save the comments with user details
+    }));
+  
+    setCommentLoading(false);  // Hide the loading spinner after fetching data
+  };
+  const handleSendComment = async (videoId) => {
+    if (commentPanelRef.current && newComment.trim()) {
+      await handlePostComment(videoId, currentUser.uid, newComment, setComments);
+      setNewComment('');
+    } else {
+      toast.error('Comment cannot be empty');
+    }
+  };
+
+ 
+
+  const handleVideoShare = (videoId) => {
+    // Handle sharing video
+  };
+
+  const closeCommentPanel = () => {
+    setShowCommentPanel(null);
+  };
+
   const goBack = () => {
-    navigate(-1)
+    navigate(-1);
+  };
+
+  if (loading) {
+    return <LoadingScreen />; 
   }
 
-  // Define the campus status tiers
-  const campusStatusTiers = [
-    { status: 'Lad', minPoints: 0, maxPoints: 499 },
-    { status: 'Rising Star', minPoints: 500, maxPoints: 1499 },
-    { status: 'Pace Setter', minPoints: 1500, maxPoints: 2499 },
-    { status: 'Influencer', minPoints: 2500, maxPoints: 3499 },
-    { status: 'Social Maven', minPoints: 3500, maxPoints: 4499 },
-    { status: 'Iconic Figure', minPoints: 4500, maxPoints: 5499 },
-    { status: 'Trailblazer', minPoints: 5500, maxPoints: 6499 },
-    { status: 'Legend', minPoints: 6500, maxPoints: 7499 },
-    { status: 'Campus Legend', minPoints: 7500, maxPoints: 8499 },
-    { status: 'Campus Icon', minPoints: 8500, maxPoints: 10000 },
-  ];
+  if (!user) {
+    return <div>No user logged in</div>;
+  }
 
-  // Function to calculate campus status based on points
   function calculateCampusStatus(points) {
+    const campusStatusTiers = [
+      { status: 'Lad', minPoints: 0, maxPoints: 499 },
+      { status: 'Rising Star', minPoints: 500, maxPoints: 1499 },
+      { status: 'Pace Setter', minPoints: 1500, maxPoints: 2499 },
+      { status: 'Influencer', minPoints: 2500, maxPoints: 3499 },
+      { status: 'Social Maven', minPoints: 3500, maxPoints: 4499 },
+      { status: 'Iconic Figure', minPoints: 4500, maxPoints: 5499 },
+      { status: 'Trailblazer', minPoints: 5500, maxPoints: 6499 },
+      { status: 'Legend', minPoints: 6500, maxPoints: 7499 },
+      { status: 'Campus Legend', minPoints: 7500, maxPoints: 8499 },
+      { status: 'Campus Icon', minPoints: 8500, maxPoints: 10000 },
+    ];
+
     for (const tier of campusStatusTiers) {
       if (points >= tier.minPoints && points <= tier.maxPoints) {
         return tier.status;
       }
     }
-    return 'Invalid Points'; // If points are out of the expected range
+    return 'Invalid Points';
   }
 
   const campusStatus = calculateCampusStatus(user.points);
 
+  const handleEditProfile = () => {
+    navigate('/edit-profile');
+  };
   return (
     <div className='profile-structure'>
-      <div className="profile-top">
-      <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
-        <div className="profile-pic-name">
-          <div className="profile-pic">
-            {/* Check if user profile picture exists, otherwise use the default */}
-            <img 
-              src={user.profilePicture ? user.profilePicture : defaultProfilePictureURL} 
-              alt={`${user.firstName}'s profile`} 
-            />
-          </div>
-          <div className="fullname">
-            <p>{user.firstName} {user.lastName}</p>
-          </div>
+    <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
+    <div className="profile-top">
+      <div className="profile-pic-name">
+        <div className="profile-pic">
+          <img src={user.profilePicture || defaultProfilePictureURL} alt="Profile" />
         </div>
-        <div className="points-status">
-          <div className="campus-points">
-            <p className='points'>{user.points}</p>
-            <p className='p-text'>campus points</p>
-          </div>
-          <div className="campus-status">
-            <p>{campusStatus}</p>
-          </div>
+        <div className="fullname">
+          <p>{user.firstName} {user.lastName}</p>
         </div>
       </div>
-      <div className="user-bio">
-        <p>{user.bio}</p>
-      </div>
-      <div className="trophies">
-        <div className="normal-star-award">
-          <img src={normalStarAwards} alt="Normal Star Award" />
+      <div className="points-status">
+        <div className="campus-points">
+          <p className='points'>{user.points}</p>
+          <p className='p-text'>campus points</p>
         </div>
-        <div className='super-star-award'>
-          <img src={superCupAwards} alt="Super Star Award" />
-        </div>
-        <div className='icon-award'>
-          <img src={iconAwards} alt="Icon Award" />
+        <div className="campus-status">
+          <p>{campusStatus}</p>
         </div>
       </div>
-      <div className="trophy-count">
+    </div>
+
+    <div className="user-bio">
+      <p>{user.bio}</p>
+    </div>
+
+
+    <div className="trophies">
+      <div className="normal-star-award">
+        <img className='award-img-profle' src={normalStarAwards} alt="Normal Star Award" />
         <p className='normal-star-count'>{awardCounts.normal}</p>
+      </div>
+      <div className='super-star-award'>
+        <img className='award-img-profle' src={superCupAwards} alt="Super Star Award" />
         <p className='super-star-count'>{awardCounts.super}</p>
+      </div>
+      <div className='icon-award'>
+        <img className='award-img-profle' src={iconAwards} alt="Icon Award" />
         <p className='icon-awards-count'>{awardCounts.icon}</p>
       </div>
     </div>
+
+    <div className="user-campus-hobbies">
+      <div className="user-campus">
+        <strong>Campus: </strong>{user.campus}
+      </div>
+      <div className="user-hobbies">
+        <strong>Hobbies: </strong>{user.hobbies.length > 0 ? user.hobbies.join(', ') : "No hobbies added yet."}
+      </div>
+    </div>
+
+     <h3>posts</h3>
+
+    <div className="video-watch-area">
+{videos.map((video) => (
+  <div key={video.id} className="video-watch-item">
+    <div className="video-watch-top">
+      <div className="video-creator-profile">
+        <div className="video-watch-profile-picture">
+          <img 
+            src={creators[video.userId]?.profilePicture || defaultProfilePictureURL} 
+            alt="Creator Profile" 
+          />
+        </div>
+        <div className="video-watch-username">
+          {creators[video.userId]?.username || 'Unknown User'}
+        </div>
+      </div>
+    </div>
+    
+    <div className="video-watch-video-body">
+      <ReactPlayer 
+        url={video.videoURL} 
+        controls 
+        width="100%" 
+        height="auto" 
+      />
+    </div>
+    
+    <div className="video-watch-video-data">
+      <p>{video.description}</p>
+    </div>
+    
+    <div className="video-watch-icon-and-button">
+    <div className="like" onClick={() => handleVideoLike(video.id, video.likes.includes(currentUser.uid), currentUser.uid, setVideos)}>
+              <i 
+                className="fa-solid fa-heart" 
+                style={{ color: video.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }} // Apply company color if liked
+              />
+              <span>{video.likes.length}</span>
+            </div>
+      <div className="comment" onClick={() => handleOpenComments(video.id)}>
+        <i className="fa-solid fa-comment" />
+        <span>{video.comments.length}</span>
+      </div>
+   
+      <div className="share" onClick={() => handleVideoShare(video.id)}>
+        <i className="fa-solid fa-share" />
+        <span>{video.shares.length}</span>
+      </div>
+    </div>
+
+  {/* Comment Panel (only show if open) */}
+  {showCommentPanel === video.id && (
+<div className="comment-panel" id={`comment-panel-${video.id}`} ref={commentPanelRef}>
+
+<div className="comment-header">
+<h3>Comments</h3>
+<i className="fa-solid fa-x" onClick={closeCommentPanel}></i>
+</div>
+
+<div className="comment-input">
+<input
+ref={commentPanelRef} 
+placeholder="Type a comment"
+value={newComment}
+onChange={(e) => setNewComment(e.target.value)}
+/>
+<button className="send-comment-btn" onClick={() => handleSendComment(video.id)}>
+Send
+</button>
+</div>
+
+<div className="comment-body">
+{commentLoading ? (
+<Spinner />
+) : (
+comments[video.id]?.map((comment) => (
+  <div key={comment.timestamp} className="comment">
+    <img src={comment.userProfilePicture || defaultProfilePictureURL} alt="User" className="commenter-image"/>
+    
+    <div className="comment-details">
+      <p className="commenters-name">{comment.username || 'me'}</p>
+      <p className="commenters-comment">{comment.text}</p>
+    </div>
+
+    <div className="comment-actions">
+      <i 
+        className="fa-solid fa-heart" 
+        onClick={() => handleCommentLike(video.id, comment.timestamp, currentUser.uid, setComments)}
+        style={{ color: comment.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }}
+      />
+      <span>{comment.likes.length}</span>
+
+      {comment.userId === currentUser.uid && (
+        <>
+          <i 
+            className="fa-solid fa-pen-to-square" 
+            onClick={() => handleEditComment(video.id, comment.timestamp, prompt('Edit your comment:', comment.text), setComments, setCommentLoading)}
+          ></i>
+          <i 
+            className="fa-solid fa-trash" 
+            onClick={() => handleDeleteComment(video.id, comment.timestamp, setComments, setCommentLoading)}
+          ></i>
+        </>
+      )}
+    </div>
+  </div>
+))
+)}
+</div>
+</div>
+)}
+  </div>
+))}
+</div>
+
+  </div>
   );
 };
 

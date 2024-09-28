@@ -66,12 +66,21 @@
   justify-content: center;
   align-items: center;
   flex-direction: row;
+  font-size: 15px;
  }
 
  .video-watch-icon-and-button i {
   margin: 10px 30px;
   font-size: 23px;
   color: gray;
+ }
+
+ .like , .comment , .share , .vote {
+   width: 100%;
+   height: 100%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
  }
 
 .comment-panel {
@@ -137,12 +146,12 @@
 /* Use flex-grow for the comment body to take up remaining space */
 .comment-body {
   flex-grow: 1; /* This allows the comment body to grow and fill available space */
-  overflow-y: auto; /* Scrollable area only for the comments */
-  /* padding: 10px 0; */
+  overflow-y: auto; 
   display: flex;
   flex-direction: column;
   gap: 10px;
   width: 95%;
+
 }
 
 .comment-body::-webkit-scrollbar {

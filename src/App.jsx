@@ -19,6 +19,8 @@ import DiscoveryPage from './pages/discoveryPage/discoveryPage';
 import Menu from './pages/menuBar/menu';
 import Home from './pages/HomePage/home';
 import AdminFeedPostInterface from './pages/ADMIN-SECTION/postFeed';
+import CampusRank from './pages/campusRank/CampusRank';
+import AwardsandRank from './pages/Awards-and-Rank/awards-and-rank';
 function App() {
   return (
     <BrowserRouter basename="/campusicon-frontend">
@@ -27,14 +29,16 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<CreateComp />} />
         <Route path="/admin/post" element={<AdminFeedPostInterface />} />
+        <Route path="/awards-ranks" element={<AwardsandRank />} />
         <Route 
           path="/" 
           element={<ProtectedRoute element={<UserDashboard />} />} 
         />
+         <Route path="/campus-rank" element={<CampusRank/>} />
         <Route path='/fake-users' element={<AddFakeUsers />} />
         <Route path="/profile/:username" element={<UserProfile />} />
         <Route path='/profile' element={<CurrentUserProfile/>} />
-        <Route path='/edit profile' element={<EditProfile/>} />
+        <Route path='/edit-profile' element={<EditProfile/>} />
         <Route path='competitions' element={<CompetitionsPage/>} />
         <Route path="/competition/:competitionId" element={<Competition />} />
         <Route path="/upload/:competitionId" element={<UploadVideoForm />} />

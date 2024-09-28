@@ -1,0 +1,103 @@
+.campus-rank-interface-page {
+    text-align: center;
+    margin-top: px;
+    position: relative;
+    font-family: "SUSE", sans-serif;
+    font-weight: 200;
+    font-size: 80%;
+    padding-top: 10px;
+}
+
+.campus-rank-interface-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.back-icon {
+    font-size: 24px;
+    color: #277AA4;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+.campus-rank-interface-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.campus-rank-interface-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+
+.campus-rank-interface-item.current-user {
+    background-color: #e0f7fa;
+}
+
+.campus-rank-interface-number {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.campus-rank-interface-profile-picture {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.campus-rank-interface-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.campus-rank-interface-username {
+    font-weight: bold;
+    font-size: 18px;
+    color: #277AA4;
+    text-decoration: none;
+}
+
+.campus-rank-interface-points {
+    font-size: 14px;
+    color: #555;
+}
+
+.campus-rank-interface-back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #277AA4;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.campus-rank-interface-back-to-top:hover {
+    background-color: #205e78;
+}
+
+.campus-rank-h1 {
+    text-align: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
