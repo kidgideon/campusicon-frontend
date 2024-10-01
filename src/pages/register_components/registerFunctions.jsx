@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, setDoc, doc } from 'firebase/firestore';
+import { getFirestore, setDoc, doc, getDoc, getDocs, collection, updateDoc, arrayUnion, increment} from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 import { auth, db } from '../../../config/firebase_config';
 
@@ -69,7 +69,7 @@ export const handleVerifyCode = async ({
   currentParticipatingCompetitions,
   setError,
   setLoading,
-  navigate, // Add navigate parameter
+  navigate,
 }) => {
   setLoading(true);
   try {
@@ -92,29 +92,78 @@ export const handleVerifyCode = async ({
         return "Lad";
       };
 
+   
       const status = getStatusFromPoints(0);
 
       // Add user to Firestore with uid
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid, // Save the user's UID here
+      const userDocRef = doc(db, 'users', user.uid);
+      await setDoc(userDocRef, {
+        uid: user.uid,
         email: user.email,
         username,
         firstName,
         surname,
-        referralCode,
+        referral: referralCode,
         bio,
-        profilePicture ,
+        profilePicture,
         campus,
         dateJoined,
         socialMediaLinks,
-        competitionsEntered,
-        competitionWins,
-        friends,
-        points: 0, 
+        friends: [],
+        points: 0,
         status: status,
-        // Initialize points
-        // Add additional user information here
+        hobbies: [],
+        wins: [],
+        notifications: [],
       });
+
+      // Handle referral logic
+      if (referralCode) {
+        const usersRef = collection(db, 'users');
+        const querySnapshot = await getDocs(usersRef);
+        let referrerUser = null;
+      
+        querySnapshot.forEach((doc) => {
+          const userData = doc.data();
+          if (userData.username === referralCode) {
+            referrerUser = { ...userData, uid: doc.id }; // Store found referrer data
+          }
+        });
+      
+        if (referrerUser) {
+          console.log("User found:", referrerUser.username); // Log the found user's username
+      
+          // Update points by incrementing by 3
+          await updateDoc(doc(db, 'users', referrerUser.uid), {
+            points: increment(3),
+          });
+      
+          // Create a notification for the referrer
+          const notification = {
+            type: "friend",
+            text: `${username} just signed in with your username!`,
+            read: false,
+            userId: user.uid, // ID of the user who just signed in
+          };
+
+          const friend = {
+            userId: user.uid, // ID of the user who just signed in
+          }
+      
+          // Update notifications array using arrayUnion
+          await updateDoc(doc(db, 'users', referrerUser.uid), {
+            notifications: arrayUnion(notification),
+          });
+
+          await updateDoc(doc(db, 'users', referrerUser.uid), {
+            friends: arrayUnion(friend),
+          });
+         
+        } else {
+          console.log("No user found with the given referral code.");
+        }
+      }
+
 
       toast.success('Registration successful!');
       navigate('/login'); // Redirect to login page
@@ -128,3 +177,4 @@ export const handleVerifyCode = async ({
     setLoading(false);
   }
 };
+

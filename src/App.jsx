@@ -21,11 +21,14 @@ import Home from './pages/HomePage/home';
 import AdminFeedPostInterface from './pages/ADMIN-SECTION/postFeed';
 import CampusRank from './pages/campusRank/CampusRank';
 import AwardsandRank from './pages/Awards-and-Rank/awards-and-rank';
+import Friends from './pages/Friends/friends';
+import Notifications from './pages/Notification/notification';
 function App() {
   return (
     <BrowserRouter basename="/campusicon-frontend">
       <Routes>
         <Route path="/register" element={<Register />} />
+        <Route path="/friends" element={<Friends/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<CreateComp />} />
         <Route path="/admin/post" element={<AdminFeedPostInterface />} />
@@ -48,6 +51,7 @@ function App() {
         <Route path="/discovery-page" element={<DiscoveryPage/>} />
         <Route path="/menu" element={<Menu/>} />
         <Route path="/home" element={<Home/>} />
+        <Route path="/notifications" element={<Notifications/>} />
       </Routes>
       <Toaster />
     </BrowserRouter>
