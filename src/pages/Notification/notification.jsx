@@ -35,7 +35,9 @@ const Notifications = () => {
 
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        setNotifications(userData.notifications || []);
+        // Sort notifications by timestamp (newest first)
+        const sortedNotifications = (userData.notifications || []).sort((a, b) => b.timestamp - a.timestamp);
+        setNotifications(sortedNotifications);
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -84,14 +86,14 @@ const Notifications = () => {
       }
     }
 
-    // Navigate based on notification type
+    // Navigate based on notification type and competitionId
     switch (notification.type) {
       case 'friend':
         navigate(`/profile/${notification.username}`);
         break;
       case 'like':
-      case 'vote':
       case 'comment':
+      case 'vote':
         navigate(`/video-performance/${notification.competitionId}`);
         break;
       case 'match':
@@ -154,10 +156,45 @@ const Notifications = () => {
             onClick={() => handleNotificationClick(notification, index)}
           >
             <div className="notification-content">
-              <p className="notification-text">{notification.text}</p>
-              {notification.type === 'friend' && (
-                <p className="notification-link">Go to {notification.username}'s profile</p>
-              )}
+              {/* Render appropriate icon and link based on notification type */}
+              <div className="icon-text-container">
+                {/* Dynamic Icons */}
+                {notification.type === 'friend' && (
+                  <i className="fa-solid fa-user-group notification-icon"></i>
+                )}
+                {(notification.type === 'like' || notification.type === 'comment' || notification.type === 'vote') && (
+                  <i className="fa-solid fa-thumbs-up notification-icon"></i>
+                )}
+                {(notification.type === 'match' || notification.type === 'competition') && (
+                  <i className="fa-solid fa-trophy notification-icon"></i>
+                )}
+
+                {/* Notification Text */}
+                <p className="notification-text">
+                  {notification.text}
+                  {/* Dynamic Links */}
+                  {notification.type === 'friend' && (
+                    <span className="notification-link">
+                      Go to {notification.username}'s profile
+                    </span>
+                  )}
+                  {(notification.type === 'like' || notification.type === 'comment' || notification.type === 'vote') && (
+                    <span className="notification-link">
+                      View the video performance
+                    </span>
+                  )}
+                  {notification.type === 'match' && (
+                    <span className="notification-link">
+                      View Match of the Day
+                    </span>
+                  )}
+                  {notification.type === 'competition' && (
+                    <span className="notification-link">
+                      View Competition Details
+                    </span>
+                  )}
+                </p>
+              </div>
             </div>
             {!notification.read && <span className="unread-badge">New</span>}
           </div>

@@ -7,7 +7,7 @@ import { handleVideoLike, handleVideoVote, handlePostComment, handleCommentLike,
 import './scrollable.css';
 import { toast } from 'react-hot-toast';
 import Spinner from '../../assets/loadingSpinner';  // Loading spinner component
-import TopSection from '../User_dashboard/components/topSection';
+
 
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 
@@ -241,6 +241,24 @@ const VideoWatch = () => {
 )}
           </div>
         ))}
+     
+     <div className="competion-interface-footer">
+        <div onClick={() => navigate(`/competition/${competitionId}`)}>
+          <i className="fa-solid fa-trophy interface-icon"></i>
+        </div>
+        <div onClick={() => navigate(`/watch-video/${competitionId}`)}>
+        <i className="fa-solid fa-play interface-icon"></i>
+        </div>
+        <div className="top-users-icon" onClick={() => navigate(`/ranks/${competitionId}`)}>
+          <i className="fa-solid fa-sort interface-icon"></i>
+        </div>
+        <div className="add-icon" onClick={() => navigate(`/upload/${competitionId}`)}>
+          <i className="fa-solid fa-plus interface-icon"></i>
+        </div>
+        <div className="to-see-video-performance interface-icon" onClick={() => navigate(`/video-performance/${competitionId}`)}>
+          <i className="fa-solid fa-square-poll-vertical interface-icon"></i>
+        </div>
+      </div>
       </div>
 
   );

@@ -26,12 +26,11 @@
     align-items: center;
     flex-direction: row;
     position: fixed;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    background-color: white;
+    top: 0;
+    left: 0;
+    right: 0;
     z-index: 10;
-  
+   background-color: white;
 }
 
  .user-dp {
