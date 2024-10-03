@@ -60,10 +60,14 @@ export const handlePostComment = async (videoId, userId, commentText, setComment
       return;
     }
 
+
     const userData = userSnap.data();
+
+    
+    console.log(userData.username)
     const newComment = {
       userId,
-      userName: userData.firstName + " " + userData.lastName,
+      username: userData.username,
       userProfilePicture: userData.profilePicture || 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media',
       text: commentText,
       timestamp: Date.now(),
@@ -159,79 +163,74 @@ export const handleVideoLike = async (videoId, isLiked, currentUserId, setVideos
   }
 };
 
-/**
- * Function to handle voting for a video
- * @param {string} videoId - ID of the video being voted
- * @param {string} currentUserId - The ID of the current user
- * @param {function} setVideos - Function to update the state of videos
- * @param {object} votedVideos - Current votes of the user
- */
 export const handleVideoVote = async (videoId, currentUserId, setVideos, votedVideos) => {
   try {
     const videoRef = doc(db, 'videos', videoId);
     const videoDoc = await getDoc(videoRef);
     const videoData = videoDoc.data();
     const votes = videoData.votes || [];
+    const competitionId = videoData.competitionId;
 
     const userRef = doc(db, 'users', currentUserId);
-    const userSnap = await getDoc(userRef);
-    const userData = userSnap.data();
+    const userDoc = await getDoc(userRef);
+    const userData = userDoc.data();
 
+    // Check if the user has already voted in this competition
+    const previousVoteVideoId = userData.votedCompetitions?.[competitionId];
 
-    // Handle unvoting if necessary
-    let previousVoteVideoId = Object.keys(votedVideos).find((id) => votedVideos[id] === true);
-    
+    // Handle unvoting from the previous video if the user voted for a different video
     if (previousVoteVideoId && previousVoteVideoId !== videoId) {
       const previousVideoRef = doc(db, 'videos', previousVoteVideoId);
       const previousVideoDoc = await getDoc(previousVideoRef);
       const previousVideoData = previousVideoDoc.data();
-      const previousVotes = previousVideoData.votes.filter(userId => userId !== currentUserId);
+      const updatedPreviousVotes = previousVideoData.votes.filter(userId => userId !== currentUserId);
+      await updateDoc(previousVideoRef, { votes: updatedPreviousVotes });
 
-      await updateDoc(previousVideoRef, { votes: previousVotes });
-
-      // Send unvote notification
-      const previousCreatorId = previousVideoData.userId; // Get the creator ID
+      // Send notification for the unvote
+      const previousCreatorId = previousVideoData.userId;
       const unvoteNotification = {
         read: false,
-        type: 'vote',
+        type: 'unvote',
         timestamp: Date.now(),
-        competitionId: previousVideoData.competitionId,
-        text: `${userData.username} unvoted you, you lost a vote!`, // Assuming videoData has a username field
+        competitionId,
+        text: `${userData.username} removed their vote from your video`,
       };
       await sendNotification(previousCreatorId, unvoteNotification);
-      
-      // Update the previous video state
+
+      // Update the state for the previously voted video
       setVideos(prevVideos => prevVideos.map(video => 
         video.id === previousVoteVideoId
-          ? { ...video, votes: previousVotes }
+          ? { ...video, votes: updatedPreviousVotes }
           : video
       ));
     }
 
-    // Determine updated votes
-    const updatedVotes = votes.includes(currentUserId) 
-      ? votes.filter(userId => userId !== currentUserId) 
-      : [...votes, currentUserId];
+    // Determine the updated votes for the current video
+    const updatedVotes = votes.includes(currentUserId)
+      ? votes.filter(userId => userId !== currentUserId) // Unvote
+      : [...votes, currentUserId]; // Vote
 
-    // Update the votes in Firestore
+    // Update the votes for the current video in Firestore
     await updateDoc(videoRef, { votes: updatedVotes });
 
-   
-
-    // Send notification for new vote
+    // Send a new vote notification if the user voted
     if (!votes.includes(currentUserId)) {
-      const creatorId = videoData.userId; // Get the creator ID
-      const notification = {
+      const creatorId = videoData.userId;
+      const voteNotification = {
         read: false,
         type: 'vote',
         timestamp: Date.now(),
-        competitionId: videoData.competitionId,
-        text: `You got a vote! ${userData.username} voted for you`, // Assuming videoData has a username field
+        competitionId,
+        text: `${userData.username} voted for your video!`,
       };
-      await sendNotification(creatorId, notification);
+      await sendNotification(creatorId, voteNotification);
     }
 
-    // Update the state in the VideoWatch component
+    // Update the user's votedCompetitions field in Firestore
+    const updatedVotedCompetitions = { ...userData.votedCompetitions, [competitionId]: videoId };
+    await updateDoc(userRef, { votedCompetitions: updatedVotedCompetitions });
+
+    // Update the state for the current video
     setVideos(prevVideos => prevVideos.map(video => 
       video.id === videoId
         ? { ...video, votes: updatedVotes }
@@ -244,6 +243,7 @@ export const handleVideoVote = async (videoId, currentUserId, setVideos, votedVi
     toast.error('Error handling vote');
   }
 };
+
 
 /**
  * Function to handle liking or unliking a comment
@@ -313,8 +313,8 @@ export const handleCommentLike = async (videoId, commentTimestamp, currentUserId
  * @param {number} commentTimestamp - Timestamp of the comment to be deleted
  * @param {function} setComments - Function to update the comments state
  */
-export const handleDeleteComment = async (videoId, commentTimestamp, setComments) => {
- 
+ export const handleDeleteComment = async (videoId, commentTimestamp, setComments, setCommentLoading) => {
+  setCommentLoading(true);
   try {
     const videoRef = doc(db, 'videos', videoId);
     const videoDoc = await getDoc(videoRef);
@@ -335,7 +335,7 @@ export const handleDeleteComment = async (videoId, commentTimestamp, setComments
     console.error('Error deleting comment:', error);
     toast.error('Error deleting comment');
   } finally {
-
+    setCommentLoading(false);
   }
 };
 
@@ -379,4 +379,17 @@ export const handleEditComment = async (videoId, commentTimestamp, newText, setC
     toast.error('Error editing comment');
   }
 };
+
+// Function to handle video sharing by copying the URL to the clipboard
+export const handleVideoShare = async (videoUrl) => {
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    toast.success('Current link copied to clipboard!');
+  } catch (error) {
+    console.error('Failed to copy the current link:', error);
+    toast.error('Failed to copy the current link');
+  }
+};
+
+
 

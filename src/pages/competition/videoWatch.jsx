@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { query, collection, where, onSnapshot, doc, getDoc, updateDoc, arrayUnion, disableNetwork } from 'firebase/firestore';
 import { db, auth } from '../../../config/firebase_config';
 import ReactPlayer from 'react-player';
-import { handleVideoLike, handleVideoVote, handlePostComment, handleCommentLike, handleDeleteComment, handleEditComment } from '../competition/videoUtils';  // Import like, vote, and comment functions
+import { handleVideoLike, handleVideoVote, handlePostComment, handleCommentLike, handleDeleteComment, handleEditComment, handleVideoShare } from '../competition/videoUtils';  // Import like, vote, and comment functions
 import './scrollable.css';
 import { toast } from 'react-hot-toast';
 import Spinner from '../../assets/loadingSpinner';  // Loading spinner component
@@ -25,6 +25,8 @@ const VideoWatch = () => {
   const [commentLoading, setCommentLoading] = useState(false);  // Loading state for comments
   const commentPanelRef = useRef(null);
   const navigate = useNavigate();
+  const [loadingVotes, setLoadingVotes] = useState(false);
+  const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
 
   // Fetch videos
   useEffect(() => {
@@ -51,12 +53,13 @@ const VideoWatch = () => {
     return () => unsubscribe && unsubscribe();
   }, [competitionId]);
 
-  // Handle vote click
   const handleVoteClick = (videoId) => {
-    handleVideoVote(videoId, currentUser.uid, setVideos, votedVideos);
-    setVotedVideos(prev => ({ ...prev, [videoId]: !prev[videoId] }));  // Update the voted state
-  };
-
+  if (loadingVotes) return;  // Prevent multiple clicks while loading
+  setLoadingVotes(true);  // Start loading
+  handleVideoVote(videoId, currentUser.uid, setVideos, votedVideos)
+    .finally(() => setLoadingVotes(false));  // End loading after the process is done
+};
+  
   // Open comment panel
   const handleOpenComments = async (videoId) => {
     setShowCommentPanel(videoId);
@@ -107,15 +110,39 @@ const VideoWatch = () => {
     setShowCommentPanel(null);
   };
 
-  // Handle send comment
+  // Middle function to manage the like action
+ const handleCommentLikeClick = async (videoId, commentTimestamp, currentUserId, setComments) => {
+  setLoadingCommentLikes(true); // Start loading
+
+  try {
+    await handleCommentLike(videoId, commentTimestamp, currentUserId, setComments);
+  } catch (error) {
+    console.error('Error liking comment:', error);
+    toast.error('Error liking comment');
+  } finally {
+    setLoadingCommentLikes(false); // Stop loading
+  }
+};
+
+
   const handleSendComment = async (videoId) => {
-    if (commentPanelRef.current && newComment.trim()) {
-      await handlePostComment(videoId, currentUser.uid, newComment, setComments);
-      setNewComment('');
-    } else {
+    if (!newComment.trim()) {
       toast.error('Comment cannot be empty');
+      return;
+    }
+
+    setCommentLoading(true);  // Set loading to true
+
+    try {
+      await handlePostComment(videoId, currentUser.uid, newComment, setComments, commentPanelRef);
+      setNewComment('');  // Clear the comment input after successful post
+    } catch (error) {
+      console.error('Error posting comment:', error);
+    } finally {
+      setCommentLoading(false);  // Stop loading after the process completes
     }
   };
+
 
   if (loading) {
     return <Spinner />;  // Show spinner while loading videos
@@ -166,12 +193,16 @@ const VideoWatch = () => {
                 <span>{video.comments.length}</span>
               </div>
               <div className="vote" onClick={() => handleVoteClick(video.id)}>
-                <i 
-                  className="fa-solid fa-check" 
-                  style={{ color: votedVideos[video.id] ? '#277AA4' : 'inherit' }} // Apply company color if voted
-                />
-                <span>{video.votes.length}</span>
-              </div>
+    <i 
+      className="fa-solid fa-thumbs-up"
+      style={{ 
+        color: votedVideos[video.id] ? '#277AA4' : 'inherit', 
+        pointerEvents: loadingVotes ? 'none' : 'auto'  // Disable button while loading
+      }} 
+    />
+    <span>{video.votes.length}</span>
+  </div>
+
               <div className="share" onClick={() => handleVideoShare(video.id)}>
                 <i className="fa-solid fa-share" />
                 <span>{video.shares.length}</span>
@@ -200,43 +231,56 @@ const VideoWatch = () => {
     </div>
 
     <div className="comment-body">
-      {commentLoading ? (
-        <Spinner />
-      ) : (
-        comments[video.id]?.map((comment) => (
-          <div key={comment.timestamp} className="comment">
-            <img src={comment.userProfilePicture || defaultProfilePictureURL} alt="User" className="commenter-image"/>
-            
-            <div className="comment-details">
-              <p className="commenters-name">{comment.username || 'me'}</p>
-              <p className="commenters-comment">{comment.text}</p>
-            </div>
-
-            <div className="comment-actions">
-              <i 
-                className="fa-solid fa-heart" 
-                onClick={() => handleCommentLike(video.id, comment.timestamp, currentUser.uid, setComments)}
-                style={{ color: comment.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }}
-              />
-              <span>{comment.likes.length}</span>
-
-              {comment.userId === currentUser.uid && (
-                <>
-                  <i 
-                    className="fa-solid fa-pen-to-square" 
-                    onClick={() => handleEditComment(video.id, comment.timestamp, prompt('Edit your comment:', comment.text), setComments, setCommentLoading)}
-                  ></i>
-                  <i 
-                    className="fa-solid fa-trash" 
-                    onClick={() => handleDeleteComment(video.id, comment.timestamp, setComments, setCommentLoading)}
-                  ></i>
-                </>
-              )}
-            </div>
+  {commentLoading ? (
+    <Spinner />
+  ) : (
+    // Sort comments by timestamp in descending order
+    comments[video.id]
+      ?.slice() // Use slice to avoid mutating the original array
+      .sort((a, b) => b.timestamp - a.timestamp) // Sort by timestamp (newest first)
+      .map((comment) => (
+        <div key={comment.timestamp} className="comment">
+          <img 
+            src={comment.userProfilePicture || defaultProfilePictureURL} 
+            alt="User" 
+            className="commenter-image" 
+          />
+          
+          <div className="comment-details">
+            <p className="commenters-name">{comment.userName || 'me'}</p>
+            <p className="commenters-comment">{comment.text}</p>
           </div>
-        ))
-      )}
-    </div>
+
+          <div className="comment-actions">
+            <i
+              className="fa-solid fa-heart"
+              onClick={() => handleCommentLikeClick(video.id, comment.timestamp, currentUser.uid, setComments)}
+              style={{ color: comment.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }}
+            />
+            <span>{comment.likes.length}</span>
+
+            {/* Optional: Display loading indicator next to the like button */}
+            {loadingCommentLikes && <i className="fa fa-spinner fa-spin" style={{ marginLeft: '5px' }}></i>}
+
+            {comment.userId === currentUser.uid && (
+              <>
+                <i 
+                  className="fa-solid fa-pen-to-square" 
+                  onClick={() => handleEditComment(video.id, comment.timestamp, prompt('Edit your comment:', comment.text), setComments, setCommentLoading)}
+                ></i>
+                <i 
+                  className="fa-solid fa-trash" 
+                  onClick={() => handleDeleteComment(video.id, comment.timestamp, setComments, setCommentLoading)}
+                ></i>
+              </>
+            )}
+          </div>
+        </div>
+      ))
+  )}
+</div>
+
+   
   </div>
 )}
           </div>
