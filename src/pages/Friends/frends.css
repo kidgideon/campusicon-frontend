@@ -9,14 +9,6 @@
     padding-top: 10px;
   }
   
-  .back-icon {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    font-size: 16px;
-    color: #277AA4;
-  }
   
   .friend-card {
     display: flex;

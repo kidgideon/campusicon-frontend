@@ -17,12 +17,6 @@
     margin-bottom: 20px;
 }
 
-.back-icon {
-    font-size: 24px;
-    color: #277AA4;
-    cursor: pointer;
-    margin-right: 15px;
-}
 
 .campus-rank-interface-list {
     display: flex;

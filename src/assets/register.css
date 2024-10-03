@@ -29,13 +29,6 @@
 }
 
 
-.back-icon {
-  cursor: pointer;
-  color: #277AA4;
-  font-size: 24px;
-  margin-right: auto;
-}
-
 .register-page-logo img {
   width: 110px;
   height: 110px;
@@ -152,14 +145,6 @@
   padding-left: 45px; /* Space for the icon */
 }
 
-.back-icon {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  font-size: 24px;
-  cursor: pointer;
-  color: #277AA4;
-}
 
  .second-container {
   height: 100vh;

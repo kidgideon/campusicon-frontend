@@ -26,6 +26,7 @@ const Feeds = () => {
   const commentPanelRef = useRef(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true); // Loading state for feeds
+  const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -109,15 +110,39 @@ const Feeds = () => {
     setCommentLoading(false); // Hide the loading spinner after fetching data
   };
 
-  // Handle send comment for feeds
+    // Middle function to manage the like action
+ const handleCommentLikeClick = async (feedId, commentTimestamp, currentUserId, setComments) => {
+  setLoadingCommentLikes(true); // Start loading
+
+  try {
+    await handleCommentLike(feedId, commentTimestamp, currentUserId, setComments);
+  } catch (error) {
+    console.error('Error liking comment:', error);
+    toast.error('Error liking comment');
+  } finally {
+    setLoadingCommentLikes(false); // Stop loading
+  }
+};
+
+ 
   const handleSendComment = async (feedId) => {
-    if (commentPanelRef.current && newComment.trim()) {
-      await handlePostComment(feedId, currentUser.uid, newComment, setComments, commentPanelRef);
-      setNewComment('');
-    } else {
+    if (!newComment.trim()) {
       toast.error('Comment cannot be empty');
+      return;
+    }
+
+    setCommentLoading(true);  // Set loading to true
+
+    try {
+      await handlePostComment(feedId, currentUser.uid, newComment, setComments, commentPanelRef);
+      setNewComment('');  // Clear the comment input after successful post
+    } catch (error) {
+      console.error('Error posting comment:', error);
+    } finally {
+      setCommentLoading(false);  // Stop loading after the process completes
     }
   };
+
 
   return (
     <div className="dashboard-interface-feeds">
@@ -201,12 +226,15 @@ const Feeds = () => {
                           </div>
 
                           <div className="comment-actions">
-                            <i
-                              className="fa-solid fa-heart"
-                              onClick={() => handleCommentLike(feed.id, comment.timestamp, currentUser.uid, setComments)}
-                              style={{ color: (comment.likes || []).includes(currentUser.uid) ? '#277AA4' : 'inherit' }}
-                            />
-                            <span>{(comment.likes || []).length}</span>
+                          <i
+              className="fa-solid fa-heart"
+              onClick={() => handleCommentLikeClick(feed.id, comment.timestamp, currentUser.uid, setComments)}
+              style={{ color: comment.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }}
+            />
+            <span>{comment.likes.length}</span>
+
+            {/* Optional: Display loading indicator next to the like button */}
+            {loadingCommentLikes && <i className="fa fa-spinner fa-spin" style={{ marginLeft: '5px' }}></i>}
 
                             {comment.userId === currentUser.uid && (
                               <>

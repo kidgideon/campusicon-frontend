@@ -78,18 +78,19 @@ const VideoWatch = () => {
       fetchedComments.map(async (comment) => {
         const userRef = doc(db, 'users', comment.userId);  // Get the user document based on userId
         const userDoc = await getDoc(userRef);
-  
+
+       
         if (userDoc.exists()) {
           const userData = userDoc.data();
           return {
             ...comment,
-            username: userData.username || 'Unknown User',  // Add username from the user document
+            username: userData.username || ' ',  // Add username from the user document
             userProfilePicture: userData.profilePicture || defaultProfilePictureURL,  // Add profile picture
           };
         } else {
           return {
             ...comment,
-            username: 'Unknown User',
+            username: ' ',
             userProfilePicture: defaultProfilePictureURL,
           };
         }
@@ -247,7 +248,7 @@ const VideoWatch = () => {
           />
           
           <div className="comment-details">
-            <p className="commenters-name">{comment.userName || 'me'}</p>
+            <p className="commenters-name">{comment.username || 'me'}</p>
             <p className="commenters-comment">{comment.text}</p>
           </div>
 

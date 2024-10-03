@@ -245,13 +245,6 @@ export const handleVideoVote = async (videoId, currentUserId, setVideos, votedVi
 };
 
 
-/**
- * Function to handle liking or unliking a comment
- * @param {string} videoId - ID of the video containing the comment
- * @param {string} commentTimestamp - Timestamp of the comment to be liked/unliked
- * @param {string} currentUserId - The ID of the current user
- * @param {function} setComments - Function to update the comments state
- */
 export const handleCommentLike = async (videoId, commentTimestamp, currentUserId, setComments) => {
   try {
     const videoRef = doc(db, 'videos', videoId);
