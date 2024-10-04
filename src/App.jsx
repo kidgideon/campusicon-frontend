@@ -23,9 +23,10 @@ import CampusRank from './pages/campusRank/CampusRank';
 import AwardsandRank from './pages/Awards-and-Rank/awards-and-rank';
 import Friends from './pages/Friends/friends';
 import Notifications from './pages/Notification/notification';
+import NotFound from './pages/404/NotFound';
 function App() {
   return (
-    <BrowserRouter basename="/campusicon-frontend">
+    <BrowserRouter>
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/friends" element={<Friends/>} />
@@ -52,6 +53,8 @@ function App() {
         <Route path="/menu" element={<Menu/>} />
         <Route path="/home" element={<Home/>} />
         <Route path="/notifications" element={<Notifications/>} />
+          {/* Catch-all route for 404 Not Found */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster />
     </BrowserRouter>
