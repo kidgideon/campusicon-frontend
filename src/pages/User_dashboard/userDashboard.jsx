@@ -5,7 +5,7 @@ import TopAccounts from './components/topaccount';
 import ActiveCompetitions from './components/activeCompetions';
 import Feeds from './components/feed.jsx';
 import useFetchData from './hooks/userFetch';
-import './UserDashboard.css';
+import './userDashboard.css';
 import LoadingSpinner from '../../assets/loadingSpinner'; // Import the spinner
 
 const UserDashboard = () => {
