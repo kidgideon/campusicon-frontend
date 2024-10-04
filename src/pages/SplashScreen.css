@@ -1,0 +1,25 @@
+.splash-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #205e78; /* Your company color */
+    color: white;
+    text-align: center;
+    font-family: "SUSE", sans-serif;
+  }
+  
+  .splash-screen img {
+    width: 150px;
+    margin-bottom: 20px;
+  }
+  
+  .splash-screen h1 {
+    font-size: 2rem;
+  }
+  
+  .splash-screen p {
+    font-size: 1.2rem;
+  }
+  

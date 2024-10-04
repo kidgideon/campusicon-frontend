@@ -96,7 +96,9 @@ const Competition = () => {
   const { name, imageUrl, description, startDate, endDate } = competition;
 
   return (
-    <div className="competition-interface">
+
+    <div className="full-house">
+  <div className="competition-interface">
       <div className="competion-interface-top">
         <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
       </div>
@@ -157,6 +159,7 @@ const Competition = () => {
           <i className="fa-solid fa-square-poll-vertical interface-icon"></i>
         </div>
       </div>
+    </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 .video-watch-area {
-   width: 100%;
+   width: 97%;
    height: 100%;
    display: flex;
    justify-content: center;
@@ -12,6 +12,13 @@
    gap: 10px;
 }
 
+.full-house {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 
 .video-watch-top {
   width: 100%;
@@ -55,14 +62,21 @@
   text-align: center;
 }
 
+.video-watch-video-data {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
  .video-watch-profile-picture img {
   width: 45px;
   height: 45px;
   border-radius: 100%;
  }
-
+ 
  .video-watch-icon-and-button {
   display: flex;
+  width: 100%;
   justify-content: center;
   align-items: center;
   flex-direction: row;
@@ -70,7 +84,7 @@
  }
 
  .video-watch-icon-and-button i {
-  margin: 10px 30px;
+  margin: 5px 5px;
   font-size: 23px;
   color: gray;
  }

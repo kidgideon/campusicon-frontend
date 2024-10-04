@@ -150,162 +150,163 @@ const VideoWatch = () => {
   }
 
   return (
-    <div className="video-watch-area">
+    <div className="full-house">
+ <div className="video-watch-area">
   
-        {videos.map((video) => (
-          <div key={video.id} className="video-watch-item">
-            <div className="video-watch-top">
-              <div className="video-creator-profile">
-                <div className="video-watch-profile-picture">
-                  <img 
-                    src={creators[video.userId]?.profilePicture || defaultProfilePictureURL} 
-                    alt="Creator Profile" 
-                  />
-                </div>
-                <div className="video-watch-username">
-                  {creators[video.userId]?.username || 'Unknown User'}
-                </div>
-              </div>
-            </div>
-            
-            <div className="video-watch-video-body">
-              <ReactPlayer 
-                url={video.videoURL} 
-                controls 
-                width="100%" 
-                height="auto" 
-              />
-            </div>
-            
-            <div className="video-watch-video-data">
-              <p>{video.description}</p>
-            </div>
-            
-            <div className="video-watch-icon-and-button">
-              <div className="like" onClick={() => handleVideoLike(video.id, video.likes.includes(currentUser.uid), currentUser.uid, setVideos)}>
-                <i 
-                  className="fa-solid fa-heart" 
-                  style={{ color: video.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }} // Apply company color if liked
-                />
-                <span>{video.likes.length}</span>
-              </div>
-              <div className="comment" onClick={() => handleOpenComments(video.id)}>
-                <i className="fa-solid fa-comment" />
-                <span>{video.comments.length}</span>
-              </div>
-              <div className="vote" onClick={() => handleVoteClick(video.id)}>
-    <i 
-      className="fa-solid fa-thumbs-up"
-      style={{ 
-        color: votedVideos[video.id] ? '#277AA4' : 'inherit', 
-        pointerEvents: loadingVotes ? 'none' : 'auto'  // Disable button while loading
-      }} 
-    />
-    <span>{video.votes.length}</span>
-  </div>
-
-              <div className="share" onClick={() => handleVideoShare(video.id)}>
-                <i className="fa-solid fa-share" />
-                <span>{video.shares.length}</span>
-              </div>
-            </div>
-
-          {/* Comment Panel (only show if open) */}
-          {showCommentPanel === video.id && (
-  <div className="comment-panel" id={`comment-panel-${video.id}`} ref={commentPanelRef}>
-    
-    <div className="comment-header">
-      <h3>Comments</h3>
-      <i className="fa-solid fa-x" onClick={closeCommentPanel}></i>
-    </div>
-
-    <div className="comment-input">
-      <input
-        ref={commentPanelRef} 
-        placeholder="Type a comment"
-        value={newComment}
-        onChange={(e) => setNewComment(e.target.value)}
-      />
-      <button className="send-comment-btn" onClick={() => handleSendComment(video.id)}>
-        Send
-      </button>
-    </div>
-
-    <div className="comment-body">
-  {commentLoading ? (
-    <Spinner />
-  ) : (
-    // Sort comments by timestamp in descending order
-    comments[video.id]
-      ?.slice() // Use slice to avoid mutating the original array
-      .sort((a, b) => b.timestamp - a.timestamp) // Sort by timestamp (newest first)
-      .map((comment) => (
-        <div key={comment.timestamp} className="comment">
-          <img 
-            src={comment.userProfilePicture || defaultProfilePictureURL} 
-            alt="User" 
-            className="commenter-image" 
-          />
-          
-          <div className="comment-details">
-            <p className="commenters-name">{comment.username || 'me'}</p>
-            <p className="commenters-comment">{comment.text}</p>
-          </div>
-
-          <div className="comment-actions">
-            <i
-              className="fa-solid fa-heart"
-              onClick={() => handleCommentLikeClick(video.id, comment.timestamp, currentUser.uid, setComments)}
-              style={{ color: comment.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }}
+  {videos.map((video) => (
+    <div key={video.id} className="video-watch-item">
+      <div className="video-watch-top">
+        <div className="video-creator-profile">
+          <div className="video-watch-profile-picture">
+            <img 
+              src={creators[video.userId]?.profilePicture || defaultProfilePictureURL} 
+              alt="Creator Profile" 
             />
-            <span>{comment.likes.length}</span>
-
-            {/* Optional: Display loading indicator next to the like button */}
-            {loadingCommentLikes && <i className="fa fa-spinner fa-spin" style={{ marginLeft: '5px' }}></i>}
-
-            {comment.userId === currentUser.uid && (
-              <>
-                <i 
-                  className="fa-solid fa-pen-to-square" 
-                  onClick={() => handleEditComment(video.id, comment.timestamp, prompt('Edit your comment:', comment.text), setComments, setCommentLoading)}
-                ></i>
-                <i 
-                  className="fa-solid fa-trash" 
-                  onClick={() => handleDeleteComment(video.id, comment.timestamp, setComments, setCommentLoading)}
-                ></i>
-              </>
-            )}
+          </div>
+          <div className="video-watch-username">
+            {creators[video.userId]?.username || 'Unknown User'}
           </div>
         </div>
-      ))
-  )}
+      </div>
+      
+      <div className="video-watch-video-body">
+        <ReactPlayer 
+          url={video.videoURL} 
+          controls 
+          width="100%" 
+          height="auto" 
+        />
+      </div>
+      
+      <div className="video-watch-video-data">
+        <p>{video.description}</p>
+      </div>
+      
+      <div className="video-watch-icon-and-button">
+        <div className="like" onClick={() => handleVideoLike(video.id, video.likes.includes(currentUser.uid), currentUser.uid, setVideos)}>
+          <i 
+            className="fa-solid fa-heart" 
+            style={{ color: video.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }} // Apply company color if liked
+          />
+          <span>{video.likes.length}</span>
+        </div>
+        <div className="comment" onClick={() => handleOpenComments(video.id)}>
+          <i className="fa-solid fa-comment" />
+          <span>{video.comments.length}</span>
+        </div>
+        <div className="vote" onClick={() => handleVoteClick(video.id)}>
+<i 
+className="fa-solid fa-thumbs-up"
+style={{ 
+  color: votedVideos[video.id] ? '#277AA4' : 'inherit', 
+  pointerEvents: loadingVotes ? 'none' : 'auto'  // Disable button while loading
+}} 
+/>
+<span>{video.votes.length}</span>
 </div>
 
-   
-  </div>
-)}
-          </div>
-        ))}
-     
-     <div className="competion-interface-footer">
-        <div onClick={() => navigate(`/competition/${competitionId}`)}>
-          <i className="fa-solid fa-trophy interface-icon"></i>
+        <div className="share" onClick={() => handleVideoShare(video.id)}>
+          <i className="fa-solid fa-share" />
         </div>
-        <div onClick={() => navigate(`/watch-video/${competitionId}`)}>
-        <i className="fa-solid fa-play interface-icon"></i>
-        </div>
-        <div className="top-users-icon" onClick={() => navigate(`/ranks/${competitionId}`)}>
-          <i className="fa-solid fa-sort interface-icon"></i>
-        </div>
-        <div className="add-icon" onClick={() => navigate(`/upload/${competitionId}`)}>
-          <i className="fa-solid fa-plus interface-icon"></i>
-        </div>
-        <div className="to-see-video-performance interface-icon" onClick={() => navigate(`/video-performance/${competitionId}`)}>
-          <i className="fa-solid fa-square-poll-vertical interface-icon"></i>
-        </div>
-      </div>
       </div>
 
+    {/* Comment Panel (only show if open) */}
+    {showCommentPanel === video.id && (
+<div className="comment-panel" id={`comment-panel-${video.id}`} ref={commentPanelRef}>
+
+<div className="comment-header">
+<h3>Comments</h3>
+<i className="fa-solid fa-x" onClick={closeCommentPanel}></i>
+</div>
+
+<div className="comment-input">
+<input
+  ref={commentPanelRef} 
+  placeholder="Type a comment"
+  value={newComment}
+  onChange={(e) => setNewComment(e.target.value)}
+/>
+<button className="send-comment-btn" onClick={() => handleSendComment(video.id)}>
+  Send
+</button>
+</div>
+
+<div className="comment-body">
+{commentLoading ? (
+<Spinner />
+) : (
+// Sort comments by timestamp in descending order
+comments[video.id]
+?.slice() // Use slice to avoid mutating the original array
+.sort((a, b) => b.timestamp - a.timestamp) // Sort by timestamp (newest first)
+.map((comment) => (
+  <div key={comment.timestamp} className="comment">
+    <img 
+      src={comment.userProfilePicture || defaultProfilePictureURL} 
+      alt="User" 
+      className="commenter-image" 
+    />
+    
+    <div className="comment-details">
+      <p className="commenters-name">{comment.username || 'me'}</p>
+      <p className="commenters-comment">{comment.text}</p>
+    </div>
+
+    <div className="comment-actions">
+
+      <i
+        className="fa-solid fa-heart"
+        onClick={() => handleCommentLikeClick(video.id, comment.timestamp, currentUser.uid, setComments)}
+        style={{ color: comment.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }}
+      />
+      <span>{comment.likes.length}</span>
+
+      {/* Optional: Display loading indicator next to the like button */}
+      {loadingCommentLikes && <i className="fa fa-spinner fa-spin" style={{ marginLeft: '5px' }}></i>}
+
+      {comment.userId === currentUser.uid && (
+        <>
+          <i 
+            className="fa-solid fa-pen-to-square" 
+            onClick={() => handleEditComment(video.id, comment.timestamp, prompt('Edit your comment:', comment.text), setComments, setCommentLoading)}
+          ></i>
+          <i 
+            className="fa-solid fa-trash" 
+            onClick={() => handleDeleteComment(video.id, comment.timestamp, setComments, setCommentLoading)}
+          ></i>
+        </>
+      )}
+    </div>
+  </div>
+))
+)}
+</div>
+
+
+</div>
+)}
+    </div>
+  ))}
+
+<div className="competion-interface-footer">
+  <div onClick={() => navigate(`/competition/${competitionId}`)}>
+    <i className="fa-solid fa-trophy interface-icon"></i>
+  </div>
+  <div onClick={() => navigate(`/watch-video/${competitionId}`)}>
+  <i className="fa-solid fa-play interface-icon"></i>
+  </div>
+  <div className="top-users-icon" onClick={() => navigate(`/ranks/${competitionId}`)}>
+    <i className="fa-solid fa-sort interface-icon"></i>
+  </div>
+  <div className="add-icon" onClick={() => navigate(`/upload/${competitionId}`)}>
+    <i className="fa-solid fa-plus interface-icon"></i>
+  </div>
+  <div className="to-see-video-performance interface-icon" onClick={() => navigate(`/video-performance/${competitionId}`)}>
+    <i className="fa-solid fa-square-poll-vertical interface-icon"></i>
+  </div>
+</div>
+</div>
+    </div>
   );
 };
 
