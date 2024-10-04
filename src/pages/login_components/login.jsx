@@ -3,7 +3,7 @@ import { auth } from '../../../config/firebase_config';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, query, where, getDocs, collection, updateDoc, doc } from 'firebase/firestore';
 import axios from 'axios';
-import LoginForm from './LoginForm';
+import LoginForm from './loginForm.jsx';
 import ForgotPasswordForm from '../login_components/forgotPassword';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
