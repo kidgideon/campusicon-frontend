@@ -3,15 +3,15 @@ import { getAuth } from "firebase/auth";
 import { getFirestore, initializeFirestore } from "firebase/firestore";
 import { getStorage } from 'firebase/storage';
 
-// Your web app's Firebase configuration
+// Firebase configuration using environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyAuKW8sLu7yiui2O5aVKCOupNUSSLUnN-Q",
-  authDomain: "campus-icon.firebaseapp.com",
-  projectId: "campus-icon",
-  storageBucket: "campus-icon.appspot.com",
-  messagingSenderId: "874830323638",
-  appId: "1:874830323638:web:fcc0ce1e099e25a7a62b17",
-  measurementId: "G-K67044JQM2"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase app
@@ -23,5 +23,5 @@ export const storage = getStorage(app);
 
 // Initialize Firestore (this enables logging)
 export const db = initializeFirestore(app, {
-  ignoreUndefinedProperties: true // Avoids issues with undefined properties
+  ignoreUndefinedProperties: true
 });

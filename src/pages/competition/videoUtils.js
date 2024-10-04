@@ -300,12 +300,6 @@ export const handleCommentLike = async (videoId, commentTimestamp, currentUserId
   }
 };
 
-/**
- * Function to delete a comment
- * @param {string} videoId - ID of the video containing the comment
- * @param {number} commentTimestamp - Timestamp of the comment to be deleted
- * @param {function} setComments - Function to update the comments state
- */
  export const handleDeleteComment = async (videoId, commentTimestamp, setComments, setCommentLoading) => {
   setCommentLoading(true);
   try {
@@ -332,14 +326,6 @@ export const handleCommentLike = async (videoId, commentTimestamp, currentUserId
   }
 };
 
-
-/**
- * Function to handle editing a comment
- * @param {string} videoId - ID of the video containing the comment
- * @param {number} commentTimestamp - Timestamp of the comment to be edited
- * @param {string} newText - The new text for the comment
- * @param {function} setComments - Function to update the comments state
- */
 export const handleEditComment = async (videoId, commentTimestamp, newText, setComments) => {
   if (!newText.trim()) {
     toast.error('Comment cannot be empty');
