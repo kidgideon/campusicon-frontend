@@ -11,7 +11,7 @@ const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
-  const [profilePicture, setProfilePicture] = useState('https://example.com/default-profile-pic.png'); // Default profile pic
+  const [profilePicture, setProfilePicture] = useState('https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media'); // Default profile pic
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -140,7 +140,7 @@ const Notifications = () => {
           <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
         </span>
         <span className="notifications-tab">
-          <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
+          <Link to="/notifications"><i className="fa-solid fa-bell" style={{color : '#205e78'}}></i></Link>
         </span>
         <span className="ad-tab">
           <Link to="/ads"><i className="fa-solid fa-bullhorn"></i></Link>

@@ -26,6 +26,8 @@ import Friends from './pages/Friends/friends';
 import Notifications from './pages/Notification/notification';
 import NotFound from './pages/404/NotFound';
 import SplashScreen from './pages/SplashScreen';
+import AdsPage from './pages/AdSPage/ads';
+
 
 function App() {
   const [showSplash, setShowSplash] = useState(true); // State to track splash screen visibility
@@ -71,6 +73,7 @@ function App() {
             <Route path="/menu" element={<Menu />} />
             <Route path="/home" element={<Home />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/ads" element={<AdsPage/>} />
             {/* Catch-all route for 404 Not Found */}
             <Route path="*" element={<NotFound />} />
           </Routes>

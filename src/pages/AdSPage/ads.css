@@ -1,0 +1,9 @@
+.ads-page-interface{
+   width: 97%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   flex-direction: column; 
+    padding-top: 70px;
+    font-family: "SUSE", sans-serif;
+}

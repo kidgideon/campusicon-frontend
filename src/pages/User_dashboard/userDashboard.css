@@ -3,6 +3,7 @@
     body{
       margin: 0px;
       padding: 0px;
+      background-color: black;
     }
 
  .layout-dashboard {
@@ -16,6 +17,7 @@
      font-weight: 200;
      font-size: 80%;
      padding-top: 85px;
+     background-color: black;
  }
  
 .top-section{
@@ -30,7 +32,7 @@
     left: 0;
     right: 0;
     z-index: 10;
-   background-color: white;
+   background-color: black;
 }
 
  .user-dp {
@@ -70,7 +72,7 @@
 
 .nav-bar i {
    font-size: 20px;
-   color: rgb(184, 184, 184);
+  color: rgb(88, 88, 88);
 }
 
 img {
@@ -91,16 +93,35 @@ img {
         align-items: center;
         flex-direction: row;
         z-index: 10;
-        background-color: white;
+        background-color: black;
         padding: 5px 0px;
         border-bottom: 1px solid rgb(184, 184, 184);
     }
 
+
     .top-tab i {
         font-size: 21px;
-        color: rgb(184, 184, 184);
-    }
+        color: rgb(88, 88, 88);
 
+    }
+    .notifications-tab {
+      position: relative;
+    }
+    .unread-notification-count {
+   position: absolute;
+   top: -10px;
+   right: -15px;
+   background-color: red;
+   color: white;
+   font-weight: bold;
+   width: 20px;
+   height: 20px;
+   border-radius: 100%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+  text-align: center;
+    }
  /* top users */
 
  .h2-text {
@@ -132,9 +153,21 @@ img {
   margin: 0 auto; /* Center the list */
   list-style-type: none; /* Remove default list item markers */
   padding-left: 0; /* Remove default padding */
-  background-color: white;
+  background-color: black;
   border-bottom: 1px solid rgb(231, 225, 225);
+  position: relative;
 }
+
+.clickable-div {
+   position: absolute;
+   right: 5px;
+   z-index: 10px;
+}
+
+.fa-angles-down {
+   color: #205e78;
+   font-size: 15px;
+  }
  
 .top-accounts {
     width: 100%;
@@ -204,6 +237,7 @@ img {
     list-style-type: none; /* Remove default list item markers */
     border-bottom: 1px solid rgb(231, 225, 225);
     border-top: 1px solid rgb(231, 225, 225);
+    position: relative;
  }
 
  .competion-list::-webkit-scrollbar{
@@ -221,7 +255,7 @@ img {
     position: relative;
     border-radius: 10px;
     gap: 5px;
-    background-color: white;
+    background-color: black;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), /* subtle shadow */
     0 6px 20px rgba(0, 0, 0, 0.1); /* deeper shadow */
  }
@@ -321,6 +355,7 @@ img {
 
   .dashboard-interface-text-content p {
    margin: 4px 20px;
+   color: white;
   }
 
   .dashboard-interface-media-content {
@@ -358,6 +393,7 @@ img {
   .dashboard-interface-interactions div i {
    font-size: 20px;
    margin: 5px;
+   color: white;
   }
 
 

@@ -15,10 +15,11 @@ const UserDashboard = () => {
   if (error) return <p>Error: {error}</p>;
   if (!userData) return <p>No user data available</p>;
 
+
   return (
     <div className="full-house">
  <div className="layout-dashboard">
-      <TopSection userData={userData} />
+      <TopSection userData={userData}/>
       <TopTab />
       <TopAccounts topUsers={topUsers} />
       <ActiveCompetitions activeCompetitions={activeCompetitions} />

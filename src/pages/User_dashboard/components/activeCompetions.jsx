@@ -1,8 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate, Link } from 'react-router-dom'; // Import useNavigate
 import superStarImage from '../../../assets/superCup.png';
 import normalStarImage from '../../../assets/starCup.png';
 import iconCupImage from '../../../assets/iconCup.png';
+
 
 const ActiveCompetitions = ({ activeCompetitions }) => {
   const navigate = useNavigate(); // Get the navigate function
@@ -48,6 +49,12 @@ const ActiveCompetitions = ({ activeCompetitions }) => {
             </div>
           </div>
         ))}
+
+<Link className='clickable-div' to="/competitions"> {/* Replace with your actual route */}
+              
+              <i className="fa-solid fa-angles-down"></i>
+           
+          </Link>
       </ul>
     </div>
   );

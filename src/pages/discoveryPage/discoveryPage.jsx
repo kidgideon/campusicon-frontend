@@ -39,64 +39,68 @@ const DiscoveryPage = () => {
     });
   };
 
-  const handleSearch = async () => {
-    setHasSearched(true);
 
-    if (searchTerm.trim().length >= 3) { // Enforce minimum of three characters
-      setLoading(true); // Start loading spinner
-      const competitionQuery = query(collection(db, 'competitions'), where('name', '>=', searchTerm));
-      const userQuery = query(collection(db, 'users'), where('username', '>=', searchTerm));
-      const videoQuery = query(collection(db, 'videos'), where('title', '>=', searchTerm));
+  
 
-      const competitionSnapshot = await getDocs(competitionQuery);
-      const userSnapshot = await getDocs(userQuery);
-      const videoSnapshot = await getDocs(videoQuery);
+const handleSearch = async () => {
+  setHasSearched(true);
 
-      const results = [];
+  if (searchTerm.trim().length >= 3) { // Enforce minimum of three characters
+    setLoading(true); // Start loading spinner
+    const competitionQuery = query(collection(db, 'competitions'), where('name', '>=', searchTerm));
+    const userQuery = query(collection(db, 'users'), where('username', '>=', searchTerm));
+    const videoQuery = query(collection(db, 'videos'), where('title', '>=', searchTerm));
 
-      // Fetch competition results
-      competitionSnapshot.forEach((doc) => {
-        const competitionData = doc.data();
-        results.push({
-          type: 'competition',
-          data: competitionData
-        });
+    const competitionSnapshot = await getDocs(competitionQuery);
+    const userSnapshot = await getDocs(userQuery);
+    const videoSnapshot = await getDocs(videoQuery);
+
+    const results = [];
+
+    // Fetch competition results
+    competitionSnapshot.forEach((doc) => {
+      const competitionData = doc.data();
+      results.push({
+        type: 'competition',
+        data: competitionData
+      });
+    });
+
+    // Fetch user results
+    userSnapshot.forEach((doc) => {
+      const userData = doc.data();
+      results.push({
+        type: 'user',
+        data: userData
+      });
+    });
+
+    // Fetch video results and creator info
+    for (const doc of videoSnapshot.docs) {
+      const videoData = doc.data();
+      const creatorSnapshot = await getDocs(query(collection(db, 'users'), where('uid', '==', videoData.userId)));
+      creatorSnapshot.forEach((creatorDoc) => {
+        const creatorData = creatorDoc.data();
+        setCreators((prev) => ({
+          ...prev,
+          [videoData.userId]: creatorData,
+        }));
       });
 
-      // Fetch user results
-      userSnapshot.forEach((doc) => {
-        const userData = doc.data();
-        results.push({
-          type: 'user',
-          data: userData
-        });
+      results.push({
+        type: 'video',
+        data: videoData
       });
-
-      // Fetch video results and creator info
-      for (const doc of videoSnapshot.docs) {
-        const videoData = doc.data();
-        const creatorSnapshot = await getDocs(query(collection(db, 'users'), where('uid', '==', videoData.userId)));
-        creatorSnapshot.forEach((creatorDoc) => {
-          const creatorData = creatorDoc.data();
-          setCreators((prev) => ({
-            ...prev,
-            [videoData.userId]: creatorData,
-          }));
-        });
-
-        results.push({
-          type: 'video',
-          data: videoData
-        });
-      }
-
-      setSearchResults(results);
-      setLoading(false); // Stop loading spinner
-    } else {
-      setSearchResults([]);
-      setHasSearched(false);
     }
-  };
+
+    setSearchResults(results);
+    setLoading(false); // Stop loading spinner
+  } else {
+    setSearchResults([]);
+    setHasSearched(false);
+  }
+};
+
 
   return (
     <div className="discovery-page-interface">
@@ -121,7 +125,7 @@ const DiscoveryPage = () => {
           <Link to="/"><i className="fa-solid fa-house"></i></Link>
         </span>
         <span className="discovery-tab">
-          <Link to="/discovery"><i className="fa-solid fa-compass"></i></Link>
+          <Link to="/discovery"><i className="fa-solid fa-compass" style={{ color: '#205e78' }}></i></Link>
         </span>
         <span className="competition-tab">
           <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
@@ -217,3 +221,4 @@ const DiscoveryPage = () => {
 };
 
 export default DiscoveryPage;
+

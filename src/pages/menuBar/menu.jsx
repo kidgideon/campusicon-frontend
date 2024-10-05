@@ -70,7 +70,7 @@ const Menu = () => {
     </div>
 </div>
 <div className="menu-page-option-list">
-    <div className="menu-page-option" onClick={() => navigate("/create-ad")}>
+    <div className="menu-page-option" onClick={() => navigate("/ads")}>
         <div className="menu-page-option-icon">
             <i className="fa-solid fa-bullhorn"></i>
         </div>

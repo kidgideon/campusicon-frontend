@@ -17,6 +17,13 @@ const TopAccounts = ({ topUsers }) => {
               </div>
               <div className="name-div">{user.username}</div>
             </Link>
+
+            {/* Corrected link component */}
+            <Link className='clickable-div' to="/campus-rank"> {/* Replace with your actual route */}
+              
+                <i className="fa-solid fa-angles-down"></i>
+             
+            </Link>
           </li>
         ))}
       </ul>

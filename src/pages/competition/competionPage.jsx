@@ -138,7 +138,7 @@ const CompetitionsPage = () => {
           <Link to="/discovery-page"><i className="fa-solid fa-compass"></i></Link>
         </span>
         <span className="competition-tab">
-          <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
+          <Link to="/competitions"><i className="fa-solid fa-trophy"  style={{color : '#205e78'}}></i></Link>
         </span>
         <span className="notifications-tab">
           {/* Add the path to your notifications page if needed */}
