@@ -27,7 +27,6 @@ const UploadVideoForm = () => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUser(user);
-        // Fetch the username from Firestore based on the user's email
         const userQuery = query(collection(db, 'users'), where('email', '==', user.email));
         const userSnapshot = await getDocs(userQuery);
         if (!userSnapshot.empty) {
@@ -52,7 +51,6 @@ const UploadVideoForm = () => {
           setCompetitionVideos(competitionData.videos || []);
           setCompetitionName(competitionData.name); // Store competition name
 
-          // Check if the current user has already uploaded a video for this competition
           if (currentUser) {
             const userVideoExists = competitionData.videos.some(video => video.userId === currentUser.uid);
             if (userVideoExists) {
@@ -74,7 +72,6 @@ const UploadVideoForm = () => {
 
     return () => {
       unsubscribeAuth(); // Cleanup subscription on unmount
-      // Revoke the object URL when the component unmounts
       if (videoPreviewURL) {
         URL.revokeObjectURL(videoPreviewURL);
       }
@@ -84,21 +81,37 @@ const UploadVideoForm = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Revoke the previous object URL if it exists
-      if (videoPreviewURL) {
-        URL.revokeObjectURL(videoPreviewURL);
+      if (file.type.startsWith('video/')) {
+        const videoElement = document.createElement('video');
+        videoElement.src = URL.createObjectURL(file);
+
+        videoElement.onloadedmetadata = () => {
+          if (videoElement.duration > 180) { // Limit to 3 minutes (180 seconds)
+            toast.error('Video is longer than 3 minutes. Please upload a shorter video.');
+            setVideoFile(null);
+            setVideoPreviewURL(null);
+            setShowTrashIcon(false);
+            return;
+          } else {
+            setVideoFile(file);
+            const newVideoPreviewURL = URL.createObjectURL(file);
+            setVideoPreviewURL(newVideoPreviewURL);
+            setShowTrashIcon(true);
+          }
+        };
+      } else {
+        toast.error('Please upload a valid video file.');
+        setVideoFile(null);
+        setVideoPreviewURL(null);
+        setShowTrashIcon(false);
       }
-      setVideoFile(file);
-      const newVideoPreviewURL = URL.createObjectURL(file);
-      setVideoPreviewURL(newVideoPreviewURL);
-      setShowTrashIcon(true); // Show trash icon when a video is selected
     }
   };
 
   const handleTrashIconClick = () => {
     setVideoFile(null);
     setVideoPreviewURL(null);
-    setShowTrashIcon(false); // Hide trash icon when the video is removed
+    setShowTrashIcon(false);
   };
 
   const handleUpload = async (e) => {
@@ -124,16 +137,14 @@ const UploadVideoForm = () => {
         setUploading(false);
       },
       async () => {
-        // On success
         const videoURL = await getDownloadURL(uploadTask.snapshot.ref);
         try {
-          // Add the video metadata to the 'videos' collection
           const videoDocRef = await addDoc(collection(db, 'videos'), {
             title,
             description,
             videoURL,
             userId: currentUser.uid,
-            username, // Use the fetched username
+            username,
             competitionId,
             timestamp: new Date(),
             votes: [],
@@ -142,15 +153,13 @@ const UploadVideoForm = () => {
             likes: [],
           });
 
-          const videoId = videoDocRef.id; // Get the video ID
+          const videoId = videoDocRef.id;
 
-          // Update competition videos: only save userId and videoId
           const competitionRef = doc(db, 'competitions', competitionId);
           await updateDoc(competitionRef, {
             videos: [...competitionVideos, { videoId, userId: currentUser.uid }]
           });
 
-          // Update user's posts field: only save videoId
           const userRef = doc(db, 'users', currentUser.uid);
           const userDoc = await getDoc(userRef);
 
@@ -158,22 +167,21 @@ const UploadVideoForm = () => {
             const userData = userDoc.data();
             const userPosts = userData.posts || [];
             await updateDoc(userRef, {
-              posts: [...userPosts, videoId] // Add video ID to posts field
+              posts: [...userPosts, videoId]
             });
           } else {
-            // If user document does not exist, create one with posts field
             await setDoc(userRef, {
               posts: [videoId]
             });
           }
 
           toast.success('Video uploaded successfully!');
-          setTitle(''); // Reset form fields
+          setTitle('');
           setDescription('');
           setVideoFile(null);
-          setVideoPreviewURL(null); // Reset the video preview
-          setShowTrashIcon(false); // Hide trash icon
-          navigate(`/video-performance/${competitionId}`); // Redirect to video performance page
+          setVideoPreviewURL(null);
+          setShowTrashIcon(false);
+          navigate(`/video-performance/${competitionId}`);
         } catch (err) {
           toast.error('Error saving video metadata: ' + err.message);
         }
@@ -187,10 +195,11 @@ const UploadVideoForm = () => {
   };
 
   return (
-    <div className="upload-competition-interface">
-      <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
-      <div className="post-top">
-        <p>Post your video in {competitionName}, it will also appear on your profile but you can change that later.</p>
+    <div className="full-house">
+ <div className="upload-competition-interface">
+      <div className="top-top-sideliners">
+        <i className="fas fa-arrow-left" onClick={goBack}></i>
+        <h2>Upload a video </h2>
       </div>
 
       <form className="upload-video-form" onSubmit={handleUpload}>
@@ -235,10 +244,30 @@ const UploadVideoForm = () => {
         </div>
 
         <button type="submit" className="submit-button" disabled={uploading}>
-          {uploading ? <Spinner /> : 'Upload Video'}
+       Post 
         </button>
         {uploading && <p>Uploading... {Math.round(progress)}%</p>}
       </form>
+
+    
+<div className="competion-interface-footer">
+  <div onClick={() => navigate(`/competition/${competitionId}`)}>
+    <i className="fa-solid fa-trophy interface-icon"></i>
+  </div>
+  <div onClick={() => navigate(`/watch-video/${competitionId}`)}>
+  <i className="fa-solid fa-play interface-icon" style={{color : '#205e78'}}></i>
+  </div>
+  <div className="top-users-icon" onClick={() => navigate(`/ranks/${competitionId}`)}>
+    <i className="fa-solid fa-sort interface-icon"></i>
+  </div>
+  <div className="add-icon" onClick={() => navigate(`/upload/${competitionId}`)}>
+    <i className="fa-solid fa-plus interface-icon" style={{color : '#205e78'}}></i>
+  </div>
+  <div className="to-see-video-performance interface-icon" onClick={() => navigate(`/video-performance/${competitionId}`)}>
+    <i className="fa-solid fa-square-poll-vertical interface-icon"></i>
+  </div>
+</div>
+    </div>
     </div>
   );
 };

@@ -62,9 +62,20 @@ const Performance = () => {
     return <Spinner />;
   }
 
+  
+  const goBack = () => {
+    navigate(-1);
+  };
+
+
   return (
-    <div className="performance-interface">
+    <div className="full-house">
+         <div className="performance-interface">
       <div className="video-performance-preview-area">
+      <div className="top-top-sideliners">
+        <i className="fas fa-arrow-left" onClick={goBack}></i>
+        <h2> Performace </h2>
+      </div>
         {/* Display the video preview */}
         <video className="performance-video" controls>
           <source src={videoData.videoURL} type="video/mp4" />
@@ -110,10 +121,12 @@ const Performance = () => {
           <i className="fa-solid fa-plus"></i>
         </div>
         <div className="to-see-video-performance" onClick={() => navigate(`/video-performance/${competitionId}`)}>
-          <i className="fa-solid fa-square-poll-vertical"></i>
+          <i className="fa-solid fa-square-poll-vertical"  style={{color : '#205e78'}}></i>
         </div>
       </div>
     </div>
+    </div>
+ 
   );
 };
 

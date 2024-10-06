@@ -1,12 +1,14 @@
 /* Hide the default file input */
 .upload-competition-interface {
-  width: 100%;
+  width: 97%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin-top: 35px;
+  padding-top: 60px;
+  color: white;
+  font-family: "SUSE", sans-serif;
 }
 
 .upload-video-form {
