@@ -4,6 +4,9 @@ import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firesto
 import { db } from '../../../config/firebase_config';
 import './competition.css';
 import Spinner from '../../assets/loadingSpinner'; // Import the spinner component
+import normalAward from '../../assets/starCup.png';
+import superCup from '../../assets/superCup.png';
+import iconAwards from '../../assets/iconCup.png';
 
 
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
@@ -78,7 +81,7 @@ const Competition = () => {
   }, [competitionId]);
 
   const goBack = () => {
-    navigate('/competitions');
+    navigate(-1);
   };
 
   if (loading) {
@@ -93,17 +96,18 @@ const Competition = () => {
     return <div>{error}</div>;
   }
 
-  const { name, imageUrl, description, startDate, endDate } = competition;
+  const { name, imageUrl, description, startDate, endDate , type } = competition;
 
   return (
 
     <div className="full-house">
   <div className="competition-interface">
-      <div className="competion-interface-top">
-        <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
+      <div className="top-top-sideliners">
+        <i className="fas fa-arrow-left " onClick={goBack}></i>
+        <h2>{name}</h2>
       </div>
 
-      <h1>{name}</h1>
+     
 
       <div className="competion-interface-competion-image">
         <img src={imageUrl} alt="Competition" />
@@ -136,15 +140,39 @@ const Competition = () => {
         <div className="end-date">End: {new Date(endDate.toDate()).toLocaleDateString()}</div>
       </div>
 
-      <div className="watch-button" onClick={() => navigate(`/watch-video/${competitionId}`)}>
-        <i className="fa-solid fa-play"></i>
-        <p>Watch videos and vote now!</p>
-      </div>
+      <div className="competion-award-details-render">
+  <div>
+    <img
+      src={
+        type === 'Icon Award'
+          ? iconAwards
+          : type === 'Normal Star Award'
+          ? normalAward
+          : type === 'Super Star Award'
+          ? superCup
+          : normalAward
+      }
+      alt={type}
+    />
+    
+    <div className="win-worth">
+      <p>
+        {type === 'Icon Award'
+          ? 'This is an Icon Award worth 100 Campus Streaks.'
+          : type === 'Normal Star Award'
+          ? 'This is a Normal Star Award worth 20 Campus Streaks.'
+          : type === 'Super Star Award'
+          ? 'This is a Super Cup Award worth 50 Campus Streaks.'
+          : 'This is a Normal Star Award worth 20 Campus Streaks.'} {/* Default message */}
+      </p>
+    </div>
+  </div>
+</div>
 
     
 <div className="competion-interface-footer">
         <div onClick={() => navigate(`/competition/${competitionId}`)}>
-          <i className="fa-solid fa-trophy interface-icon"></i>
+          <i className="fa-solid fa-trophy interface-icon" style={{color : '#205e78'}}></i>
         </div>
         <div onClick={() => navigate(`/watch-video/${competitionId}`)}>
         <i className="fa-solid fa-play interface-icon"></i>

@@ -10,6 +10,32 @@
     margin-bottom: 40px;
     font-size: 100%;
     font-size: 85%;
+    padding-top: 80px;
+    color: white
+}
+
+ 
+.top-top-sideliners {
+    position:  fixed;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-direction: row;
+    top: 0px;
+    right: 0px;
+    left: 0px;
+    background-color: black;
+    color: #205e78;
+    gap: 20px;
+    z-index: 20px;
+}
+
+
+.fa-arrow-left {
+   color:  #205e78;
+   font-size: 30px;
+   font-weight: bold;
+   margin: 10px;
 }
 
 h1 {
@@ -38,6 +64,21 @@ h1 {
     margin: 5px 3px;
 }
 
+.competion-award-details-render {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.competion-award-details-render div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
 
 .date {
     width: 100%;
@@ -121,13 +162,13 @@ h1 {
     bottom: 0px;
     left: 0px;
     right: 0px;
-    background-color: white;
+    background-color: black;
     z-index: 10px;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
   }
   
   .competion-interface-footer i {
-    color: #205e78;
+    color: rgb(88, 88, 88);
     font-size: 20px;
   }
   

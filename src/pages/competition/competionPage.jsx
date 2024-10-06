@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, updateDoc, query } from 'firebase/firestore';
 import { db } from '../../../config/firebase_config';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import Spinner from '../../assets/loadingSpinner';
@@ -24,6 +24,7 @@ const CompetitionsPage = () => {
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState('');
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   
   const navigate = useNavigate(); // Initialize useNavigate
 
@@ -97,9 +98,66 @@ const CompetitionsPage = () => {
       await fetchCompetitions();
     });
 
+    const fetchUnreadNotifications = async () => {
+      const userRef = collection(db, 'users');
+      const q = query(userRef); // Get all user documents
+
+      try {
+        const querySnapshot = await getDocs(q);
+        let unreadCount = 0;
+
+        querySnapshot.forEach(async (doc) => {
+          const user = doc.data();
+          const notifications = user.notifications || []; // Get notifications array
+
+          for (const notification of notifications) {
+            if (!notification.read) {
+              unreadCount++;
+            }
+          }
+        });
+
+        setUnreadNotificationCount(unreadCount);
+      } catch (error) {
+        console.error('Error fetching unread notifications:', error);
+      }
+    };
+
+    fetchUnreadNotifications();
+
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
+
+  const markAllAsRead = async () => {
+    const userRef = collection(db, 'users');
+    const q = query(userRef); // Get all user documents
+
+    try {
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach(async (doc) => {
+        const userDoc = doc.data();
+        const notifications = userDoc.notifications || [];
+
+        for (let i = 0; i < notifications.length; i++) {
+          // Update the notification directly within the user document
+          await updateDoc(doc.ref, {
+            notifications: notifications.map((notification) => {
+              if (notification.id === notifications[i].id) {
+                return { ...notification, read: true };
+              }
+              return notification;
+            }),
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error marking notifications as read:', error);
+    }
+
+    setUnreadNotificationCount(0); // Reset unread count after marking all as read
+  };
 
   if (loading) {
     return <Spinner />; // Use your spinner here
@@ -114,7 +172,8 @@ const CompetitionsPage = () => {
   }
 
   return (
-    <div className="competitions-page">
+    <div className="full-house">
+   <div className="competitions-page">
       <div className="top-section">
         <span className="user-dp">
           {/* Wrap the profile picture with a Link to the user's profile */}
@@ -140,10 +199,12 @@ const CompetitionsPage = () => {
         <span className="competition-tab">
           <Link to="/competitions"><i className="fa-solid fa-trophy"  style={{color : '#205e78'}}></i></Link>
         </span>
-        <span className="notifications-tab">
-          {/* Add the path to your notifications page if needed */}
-          <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
+        <span className="notifications-tab" onClick={markAllAsRead}> {/* Mark all as read on click */}
+      <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
+        <span className='unread-notification-count' style={{ display: unreadNotificationCount > 0 ? 'block' : 'none' }}>
+          {unreadNotificationCount > 15 ? '15+' : unreadNotificationCount}
         </span>
+      </span>
         <span className="ad-tab">
           {/* Add the path to your advertisements or marketing page if needed */}
           <Link to="/ads"><i className="fa-solid fa-bullhorn"></i></Link>
@@ -181,6 +242,7 @@ const CompetitionsPage = () => {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 };

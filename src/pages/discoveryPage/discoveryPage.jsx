@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
+import {auth, db} from '../../../config/firebase_config'
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import ReactPlayer from 'react-player';
 import logo from '../../assets/logo.png';
@@ -16,8 +17,8 @@ const DiscoveryPage = () => {
   const [creators, setCreators] = useState({});
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false); // State for spinner
-  const db = getFirestore();
-  const auth = getAuth();
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -26,6 +27,32 @@ const DiscoveryPage = () => {
       }
     });
 
+    const fetchUnreadNotifications = async () => {
+      const userRef = collection(db, 'users');
+      const q = query(userRef); // Get all user documents
+
+      try {
+        const querySnapshot = await getDocs(q);
+        let unreadCount = 0;
+
+        querySnapshot.forEach(async (doc) => {
+          const user = doc.data();
+          const notifications = user.notifications || []; // Get notifications array
+
+          for (const notification of notifications) {
+            if (!notification.read) {
+              unreadCount++;
+            }
+          }
+        });
+
+        setUnreadNotificationCount(unreadCount);
+      } catch (error) {
+        console.error('Error fetching unread notifications:', error);
+      }
+    };
+
+    fetchUnreadNotifications();
     return () => unsubscribe();
   }, [auth, db]);
 
@@ -37,6 +64,36 @@ const DiscoveryPage = () => {
       const userData = doc.data();
       setProfilePicture(userData.profilePicture || defaultProfilePictureURL);
     });
+  };
+
+  const markAllAsRead = async () => {
+    const userRef = collection(db, 'users');
+    const q = query(userRef); // Get all user documents
+
+    try {
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach(async (doc) => {
+        const userDoc = doc.data();
+        const notifications = userDoc.notifications || [];
+
+        for (let i = 0; i < notifications.length; i++) {
+          // Update the notification directly within the user document
+          await updateDoc(doc.ref, {
+            notifications: notifications.map((notification) => {
+              if (notification.id === notifications[i].id) {
+                return { ...notification, read: true };
+              }
+              return notification;
+            }),
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error marking notifications as read:', error);
+    }
+
+    setUnreadNotificationCount(0); // Reset unread count after marking all as read
   };
 
 
@@ -103,7 +160,8 @@ const handleSearch = async () => {
 
 
   return (
-    <div className="discovery-page-interface">
+    <div className="full-house">
+ <div className="discovery-page-interface">
       {/* Top section */}
       <div className="top-section">
         <span className="user-dp">
@@ -130,9 +188,12 @@ const handleSearch = async () => {
         <span className="competition-tab">
           <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
         </span>
-        <span className="notifications-tab">
-          <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
+        <span className="notifications-tab" onClick={markAllAsRead}> {/* Mark all as read on click */}
+      <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
+        <span className='unread-notification-count' style={{ display: unreadNotificationCount > 0 ? 'block' : 'none' }}>
+          {unreadNotificationCount > 15 ? '15+' : unreadNotificationCount}
         </span>
+      </span>
         <span className="ad-tab">
           <Link to="/ads"><i className="fa-solid fa-bullhorn"></i></Link>
         </span>
@@ -216,6 +277,7 @@ const handleSearch = async () => {
           <p>No results found</p>
         ) : null}
       </div>
+    </div>
     </div>
   );
 };

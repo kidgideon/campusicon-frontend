@@ -144,6 +144,11 @@ const VideoWatch = () => {
     }
   };
 
+  
+  const goBack = () => {
+    navigate(-1);
+  };
+
 
   if (loading) {
     return <Spinner />;  // Show spinner while loading videos
@@ -152,6 +157,11 @@ const VideoWatch = () => {
   return (
     <div className="full-house">
  <div className="video-watch-area">
+ <div className="top-top-sideliners">
+        <i className="fas fa-arrow-left " onClick={goBack}></i>
+        <h2>Watch Videos</h2>
+      </div>
+
   
   {videos.map((video) => (
     <div key={video.id} className="video-watch-item">
@@ -198,7 +208,7 @@ const VideoWatch = () => {
 <i 
 className="fa-solid fa-thumbs-up"
 style={{ 
-  color: votedVideos[video.id] ? '#277AA4' : 'inherit', 
+  color: votedVideos[video.id] ? '#277AA4' : 'rgb(88, 88, 88)', 
   pointerEvents: loadingVotes ? 'none' : 'auto'  // Disable button while loading
 }} 
 />
@@ -293,7 +303,7 @@ comments[video.id]
     <i className="fa-solid fa-trophy interface-icon"></i>
   </div>
   <div onClick={() => navigate(`/watch-video/${competitionId}`)}>
-  <i className="fa-solid fa-play interface-icon"></i>
+  <i className="fa-solid fa-play interface-icon" style={{color : '#205e78'}}></i>
   </div>
   <div className="top-users-icon" onClick={() => navigate(`/ranks/${competitionId}`)}>
     <i className="fa-solid fa-sort interface-icon"></i>
