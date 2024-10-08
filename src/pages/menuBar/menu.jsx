@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate , Link} from "react-router-dom";
 import { useEffect, useState } from "react";
 import { auth, db } from '../../../config/firebase_config'; // Firebase setup
 import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
@@ -42,7 +42,12 @@ const Menu = () => {
 
     return (
         <div className="menu-page-interface">
-            <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
+             <div className="top-top-sideliners">
+        <i className="fas fa-arrow-left " onClick={goBack}></i>
+        <h2>Menu</h2>
+      </div>
+
+            <Link to="/profile" style={{width : '100%'}}>
             <div className="menu-page-top-section">
                 <div className="menu-page-user-profile">
                     <div className="menu-page-user-profile-picture">
@@ -53,6 +58,7 @@ const Menu = () => {
                     </div>
                 </div>
             </div>
+            </Link>
           
 <div className="menu-page-menu-options">
 <div className="menu-page-option-list">
@@ -76,11 +82,11 @@ const Menu = () => {
         </div>
         <div className="menu-page-option-text">Create Ad</div>
     </div>
-    <div className="menu-page-option" onClick={() => navigate("/match-of-day")}>
+    <div className="menu-page-option" onClick={() => navigate("/notifications")}>
         <div className="menu-page-option-icon">
-            <i className="fa-solid fa-star"></i>
+        <i class="fa-solid fa-bell"></i>
         </div>
-        <div className="menu-page-option-text">Match of Day</div>
+        <div className="menu-page-option-text">Notifications</div>
     </div>
 </div>
 <div className="menu-page-option-list">
@@ -126,7 +132,7 @@ const Menu = () => {
     </div>
     <div className="settings-block-text">About</div>
 </div>
-<div className="settings-block-menu-page" onClick={handleLogout}>
+<div className="settings-block-menu-page" onClick={handleLogout} style={{color: "red"}}>
     <div className="settings-block-icon">
         <i className="fa-solid fa-right-from-bracket"></i>
     </div>

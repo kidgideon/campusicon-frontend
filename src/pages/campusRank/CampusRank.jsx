@@ -59,10 +59,10 @@ const CampusRank = () => {
 
     return (
         <div className="campus-rank-interface-page">
-            <div className="campus-rank-interface-header">
-                <i className="fas fa-arrow-left back-icon" onClick={goBack}></i> {/* Back button */}
-                <h1 className='campus-rank-h1'>Campus Rank</h1>
-            </div>
+          <div className="top-top-sideliners">
+        <i className="fas fa-arrow-left " onClick={goBack}></i>
+        <h2>Campus Ranks</h2>
+      </div>
             <div className="campus-rank-interface-list">
                 {users.map((user, index) => {
                     const isCurrentUser = currentUser?.uid === user.id;

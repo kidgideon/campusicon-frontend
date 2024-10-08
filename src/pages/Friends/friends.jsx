@@ -99,9 +99,11 @@ const Friends = () => {
 
   return (
     <div className="friends-container">
-      <i className="fas fa-arrow-left back-icon" onClick={handleBackClick}></i> 
+      <div className="top-top-sideliners">
+        <i className="fas fa-arrow-left " onClick={handleBackClick}></i>
+        <h2>Friends</h2>
+      </div>
 
-      <h1>Friends</h1>
       
       {friendsData.length > 0 ? (
         friendsData.map((friend, index) => (

@@ -175,7 +175,7 @@ const Feeds = () => {
 
               <div className="dashboard-interface-interactions">
                 <div className="like" onClick={() => handleFeedLike(feed.id, feed.likes.includes(currentUser.uid), currentUser.uid, setFeeds)}>
-                  <i className="fa-solid fa-heart" style={{ color: feed.likes.includes(currentUser.uid) ? '#277AA4' : 'white' }} />
+                  <i className="fa-solid fa-heart" style={{ color: feed.likes.includes(currentUser.uid) ? '#277AA4' : 'rgb(88, 88, 88)' }} />
                   <span>{feed.likes.length}</span>
                 </div>
 

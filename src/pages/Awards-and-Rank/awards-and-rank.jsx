@@ -43,9 +43,10 @@ const AwardsandRank = () => {
 
   return (
     <div className="awards-rank-interface">
-      <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
-      <h1 className="awards-rank-interface-header fade-in">Awards and Ranks in Campus Icon</h1>
-      
+      <div className="top-top-sideliners">
+        <i className="fas fa-arrow-left " onClick={goBack}></i>
+        <h2> Awards and ranks </h2>
+      </div>
       <section className="awards-rank-interface-section fade-in">
         <h2>How to Earn Campus Streaks</h2>
         <p>
@@ -69,17 +70,17 @@ const AwardsandRank = () => {
           <div className="awards-rank-cup-item">
             <img src={normalStarAwards} alt="Normal Cup" />
             <h3>Normal Cup</h3>
-            <p>Points: 100</p>
+            <p>Points: 20</p>
           </div>
           <div className="awards-rank-cup-item">
             <img src={superCup} alt="Super Cup" />
             <h3>Super Cup</h3>
-            <p>Points: 250</p>
+            <p>Points: 50</p>
           </div>
           <div className="awards-rank-cup-item">
             <img src={iconCup} alt="Icon Cup" />
             <h3>Icon Cup</h3>
-            <p>Points: 500</p>
+            <p>Points: 100</p>
           </div>
         </div>
         <p>

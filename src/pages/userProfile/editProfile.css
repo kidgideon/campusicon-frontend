@@ -1,10 +1,11 @@
 .edit-layout {
-   width: 100%;
+   width: 97%;
    height: 100%;
    display: flex;
    justify-content: center;
    align-items: center;
    flex-direction: column;
+   font-family: "SUSE", sans-serif;
 }
 
 .top-area {
@@ -25,8 +26,8 @@
 }
 
 .profilepicture {
-   width: 155px;
-   height: 155px;
+   width: 105px;
+   height: 105x;
    border-radius: 100%;
    border-color: #277aa4;
    border: 5px solid  #277aa4;
@@ -43,8 +44,8 @@
 }
 
 .profilepicture img {
-   width: 150px;
-   height: 150px;
+   width: 100px;
+   height: 100px;
    border-radius: 100%;
 }
 
@@ -52,6 +53,8 @@
 .orther-informations {
    display: flex;
    flex-direction: column;
+   justify-content: center;
+   align-items: center;
    gap: 15px;
    width: 100%;
    max-width: 500px;
@@ -63,6 +66,8 @@
    border: 1px solid #ccc;
    font-size: 1rem;
    transition: border-color 0.3s ease;
+   width: 100%;
+   max-width: 300px;
  }
  
  .orther-informations input:focus {

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { doc, addDoc, collection, getDocs, query, orderBy, deleteDoc, updateDoc, limit } from 'firebase/firestore';
+import { doc, addDoc, collection, getDocs, query, orderBy, deleteDoc, updateDoc, limit, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../../../config/firebase_config'; // Ensure these paths are correct
-import '../../assets/adminCompCreation.css'; // Import your CSS file
+import { db, storage } from '../../../config/firebase_config';
+import '../../assets/adminCompCreation.css';
 
 const AdminCompetitionInterface = () => {
   const [competitions, setCompetitions] = useState([]);
@@ -11,8 +11,9 @@ const AdminCompetitionInterface = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [rules, setRules] = useState('');
-  const [description, setDescription] = useState(''); // New state for description
+  const [description, setDescription] = useState(''); 
   const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false); // Add loading state
 
   // Fetch competitions function
   const fetchCompetitions = async () => {
@@ -28,10 +29,11 @@ const AdminCompetitionInterface = () => {
   };
 
   useEffect(() => {
-    fetchCompetitions(); // Fetch competitions when the component mounts
+    fetchCompetitions();
   }, []);
 
   const handleCreateCompetition = async () => {
+    setLoading(true); // Set loading to true
     try {
       let imageUrl = '';
       if (image) {
@@ -46,70 +48,93 @@ const AdminCompetitionInterface = () => {
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         rules: rules,
-        description: description, // Add description to Firestore
+        description: description,
         imageUrl: imageUrl,
         status: 'Not Started',
         createdAt: new Date(),
-        videos: [
-         {
-          username: "Percy85",
-          votes: 20,
-         },
-
-         {
-          username: "Logan86",
-          votes: 30,
-         },
-
-         {
-           username: "Tony_Stehr80",
-           votes: 30,
-         }
-        ] // Default to an empty array
+        videos: []
       });
 
+      fetchCompetitions(); // Refresh competitions
       setCompetitionName('');
       setCompetitionType('Normal Star Award');
       setStartDate('');
       setEndDate('');
       setRules('');
-      setDescription(''); // Reset description input
+      setDescription('');
       setImage(null);
-      fetchCompetitions(); // Refresh the list
     } catch (error) {
       console.error('Error creating competition:', error);
+    } finally {
+      setLoading(false); // Set loading to false
+    }
+  };
+
+  const handleStartCompetition = async (id) => {
+    setLoading(true); // Set loading to true
+    try {
+      const competitionRef = doc(db, 'competitions', id);
+      await updateDoc(competitionRef, { status: 'Ongoing' });
+      fetchCompetitions();
+    } catch (error) {
+      console.error('Error starting competition:', error);
+    } finally {
+      setLoading(false); // Set loading to false
+    }
+  };
+
+  
+  const handleEndCompetition = async (competitionId) => {
+    setLoading(true); // Set loading to true
+    try {
+      const competitionRef = doc(db, 'competitions', competitionId);
+      const competitionSnapshot = await getDoc(competitionRef);
+      
+      if (!competitionSnapshot.exists()) {
+        throw new Error('Competition not found');
+      }
+  
+      const competitionData = competitionSnapshot.data();
+      const videos = competitionData.videos;
+      const competitionType = competitionData.type; 
+
+      if (!videos || videos.length === 0) {
+        throw new Error('No videos in this competition');
+      }
+
+      let winningVideo = videos[0];
+      for (let video of videos) {
+        if (video.votes > winningVideo.votes) {
+          winningVideo = video;
+        }
+      }
+
+      const winnerUserId = winningVideo.userId;
+
+      await updateDoc(competitionRef, {
+        status: 'Ended',
+        winner: winnerUserId
+      });
+
+      await updateUserCampusStreaks(winnerUserId, competitionType);
+
+      fetchCompetitions();
+    } catch (error) {
+      console.error('Error ending competition:', error);
+    } finally {
+      setLoading(false); // Set loading to false
     }
   };
 
   const handleDeleteCompetition = async (id) => {
     try {
       await deleteDoc(doc(db, 'competitions', id));
-      fetchCompetitions(); // Refresh the list
+      fetchCompetitions(); // Refresh the list after deletion
     } catch (error) {
       console.error('Error deleting competition:', error);
     }
   };
-
-  const handleStartCompetition = async (id) => {
-    try {
-      const competitionRef = doc(db, 'competitions', id);
-      await updateDoc(competitionRef, { status: 'Ongoing' });
-      fetchCompetitions(); // Refresh the list
-    } catch (error) {
-      console.error('Error starting competition:', error);
-    }
-  };
-
-  const handleEndCompetition = async (id) => {
-    try {
-      const competitionRef = doc(db, 'competitions', id);
-      await updateDoc(competitionRef, { status: 'Ended' });
-      fetchCompetitions(); // Refresh the list
-    } catch (error) {
-      console.error('Error ending competition:', error);
-    }
-  };
-
+  
   return (
     <div className="admin-competition-interface">
       <h1>Create Competition</h1>
@@ -139,15 +164,18 @@ const AdminCompetitionInterface = () => {
           <textarea value={rules} onChange={e => setRules(e.target.value)} required />
         </label>
         <label>
-          Description: {/* New input for description */}
+          Description:
           <textarea value={description} onChange={e => setDescription(e.target.value)} required />
         </label>
         <label>
           Competition Image:
           <input type="file" onChange={e => setImage(e.target.files[0])} />
         </label>
-        <button type="button" onClick={handleCreateCompetition}>Create Competition</button>
+        <button type="button" onClick={handleCreateCompetition} disabled={loading}>
+          {loading ? 'Creating...' : 'Create Competition'}
+        </button>
       </form>
+
       <div className="competitions-list">
         <h2>Recent Competitions</h2>
         {competitions.map(comp => (
@@ -158,15 +186,17 @@ const AdminCompetitionInterface = () => {
             <p>Start Date: {new Date(comp.startDate.toDate()).toLocaleString()}</p>
             <p>End Date: {new Date(comp.endDate.toDate()).toLocaleString()}</p>
             <p>Rules: {comp.rules}</p>
-            <p>Description: {comp.description}</p> {/* Display description */}
+            <p>Description: {comp.description}</p>
             {comp.imageUrl && <img src={comp.imageUrl} alt="Competition" className="competition-image" />}
-            <button onClick={() => handleStartCompetition(comp.id)} disabled={comp.status !== 'Not Started'}>
-              Start
+            <button onClick={() => handleStartCompetition(comp.id)} disabled={comp.status !== 'Not Started' || loading}>
+              {loading ? 'Starting...' : 'Start'}
             </button>
-            <button onClick={() => handleEndCompetition(comp.id)} disabled={comp.status !== 'Ongoing'}>
-              End
+            <button onClick={() => handleEndCompetition(comp.id)} disabled={comp.status !== 'Ongoing' || loading}>
+              {loading ? 'Ending...' : 'End'}
             </button>
-            <button onClick={() => handleDeleteCompetition(comp.id)}>Delete</button>
+            <button onClick={() => handleDeleteCompetition(comp.id)} disabled={loading}>
+              {loading ? 'Deleting...' : 'Delete'}
+            </button>
           </div>
         ))}
       </div>

@@ -29,6 +29,7 @@ import SplashScreen from './pages/SplashScreen';
 import AdsPage from './pages/AdSPage/ads';
 
 
+
 function App() {
   const [showSplash, setShowSplash] = useState(true); // State to track splash screen visibility
 

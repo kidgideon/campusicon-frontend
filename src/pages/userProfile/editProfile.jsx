@@ -153,9 +153,11 @@ const EditProfile = () => {
   }
 
   return (
-    <div className='edit-layout'>
-      <div className="top-area">
-        <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
+    <div className="full-house">
+   <div className='edit-layout'>
+     <div className="top-top-sideliners">
+        <i className="fas fa-arrow-left " onClick={goBack}></i>
+        <h2>Profile edit</h2>
       </div>
       <div className="profile-picture">
         <div className="profilepicture">
@@ -228,6 +230,8 @@ const EditProfile = () => {
         <button onClick={handleSubmit}>Save</button>
       </div>
     </div>
+    </div>
+ 
   );
 };
 

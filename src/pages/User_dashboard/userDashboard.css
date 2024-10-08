@@ -333,6 +333,9 @@ img {
    align-items: center;
    flex-direction: row;
    margin: 0px;
+   color: white;
+   font-weight: bold;
+   font-size: 17px;
   }
 
 
@@ -394,7 +397,7 @@ img {
   .dashboard-interface-interactions div i {
    font-size: 20px;
    margin: 5px;
-   color: white;
+   color: rgb(88, 88, 88);
   }
 
 

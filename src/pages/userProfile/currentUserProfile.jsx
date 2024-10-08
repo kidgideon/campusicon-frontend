@@ -232,7 +232,11 @@ const CurrentUserProfile = () => {
 
   return (
     <div className='profile-structure'>
-      <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
+       <div className="top-top-sideliners">
+        <i className="fas fa-arrow-left " onClick={goBack}></i>
+        <h2>Profile</h2>
+      </div>
+
       <div className="profile-top">
         <div className="profile-pic-name">
           <div className="profile-pic">

@@ -1,25 +1,67 @@
 .splash-screen {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #205e78; /* Your company color */
-    color: white;
-    text-align: center;
-    font-family: "SUSE", sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: black; /* Your company color */
+  color:  #205e78;
+  text-align: center;
+  font-family: "SUSE", sans-serif;
+  overflow: hidden;
+}
+
+.splash-screen img {
+  width: 150px;
+  margin-bottom: 5px;
+  animation: logo-animation 6s ease forwards;
+}
+
+.splash-screen h1 {
+  font-size: 2rem;
+  animation: text-animation 6s ease forwards;
+}
+
+/* Animation for the logo (icon) */
+@keyframes logo-animation {
+  0% {
+    transform: translateX(-100vw); /* Start off-screen to the left */
   }
-  
-  .splash-screen img {
-    width: 150px;
-    margin-bottom: 20px;
+  40% {
+    transform: translateX(0); /* Slide to the center */
   }
-  
-  .splash-screen h1 {
-    font-size: 2rem;
+  50% {
+    transform: translateY(-20px); /* Bounce up */
   }
-  
-  .splash-screen p {
-    font-size: 1.2rem;
+  60% {
+    transform: translateY(0); /* Bounce down */
   }
-  
+  80% {
+    transform: translateX(50vw) rotate(360deg); /* Rotate and move to the right */
+  }
+  100% {
+    transform: translateX(100vw); /* Completely exit to the right */
+  }
+}
+
+/* Animation for the text */
+@keyframes text-animation {
+  0% {
+    transform: translateY(100vh); /* Start off-screen below */
+  }
+  40% {
+    transform: translateY(0); /* Move to the center */
+  }
+  50% {
+    transform: translateY(-20px); /* Bounce slightly */
+  }
+  60% {
+    transform: translateY(0); /* Settle */
+  }
+  80% {
+    transform: translateX(-50vw); /* Move to the left */
+  }
+  100% {
+    transform: translateX(-100vw); /* Exit completely to the left */
+  }
+}
