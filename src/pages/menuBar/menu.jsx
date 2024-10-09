@@ -5,6 +5,7 @@ import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
 import Logo from '../../assets/logo.png';
 import "./menu.css";
 
+
 const Menu = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);

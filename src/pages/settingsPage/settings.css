@@ -1,0 +1,94 @@
+.settings-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    padding-top: 70px;
+    background-color: black;
+    border-radius: 10px;
+    color: white;
+    font-family: "SUSE", sans-serif;
+    font-size: 85%;
+  }
+  
+  .settings-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  .settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .settings-item {
+    display: flex;
+    align-items: center;
+    background-color:  #333;;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    justify-content: start;
+    color: white;
+  }
+  
+  .settings-item i {
+    margin-right: 1rem;
+    color: #277AA4;
+  }
+  
+  .settings-info label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: #555;
+  }
+  
+  .settings-info input {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 70%;
+    font-size: 1rem;
+  }
+  
+  .save-button,
+  .password-reset-btn,
+  .logout-btn,
+  .deactivate-btn,
+  .otp-button,
+  .verify-button {
+    background-color: #277AA4;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .save-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .save-button:hover:not(:disabled),
+  .password-reset-btn:hover,
+  .logout-btn:hover,
+  .deactivate-btn:hover,
+  .otp-button:hover,
+  .verify-button:hover {
+    background-color: #205e78;
+  }
+  
+  .otp-verification {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .otp-verification input {
+    width: 50%;
+  }
+  

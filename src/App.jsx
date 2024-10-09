@@ -27,8 +27,7 @@ import Notifications from './pages/Notification/notification';
 import NotFound from './pages/404/NotFound';
 import SplashScreen from './pages/SplashScreen';
 import AdsPage from './pages/AdSPage/ads';
-
-
+import Settings from './pages/settingsPage/settings';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true); // State to track splash screen visibility
@@ -75,10 +74,40 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/ads" element={<AdsPage/>} />
+            <Route path="/settings" element={<Settings/>} />
             {/* Catch-all route for 404 Not Found */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <Toaster />
+
+          {/* Toaster with Dark Theme */}
+          <Toaster
+            toastOptions={{
+              success: {
+                style: {
+                  background: '#333', // Dark background
+                  color: '#4caf50',    // Success green color
+                },
+                iconTheme: {
+                  primary: '#4caf50',
+                  secondary: '#fff',
+                },
+              },
+              error: {
+                style: {
+                  background: '#333', // Dark background
+                  color: '#ff5252',   // Error red color
+                },
+                iconTheme: {
+                  primary: '#ff5252',
+                  secondary: '#fff',
+                },
+              },
+              style: {
+                background: '#333',  // Default dark background for all toasts
+                color: '#fff',        // Default text color
+              },
+            }}
+          />
         </BrowserRouter>
       )}
     </>

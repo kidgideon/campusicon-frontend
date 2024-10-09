@@ -27,6 +27,9 @@ const Feeds = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true); // Loading state for feeds
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -144,6 +147,7 @@ const Feeds = () => {
   };
 
 
+
   return (
     <div className="dashboard-interface-feeds">
       {loading ? ( // Show a loading spinner or message if feeds are still loading
@@ -169,8 +173,8 @@ const Feeds = () => {
 
               <div className="dashboard-interface-media-content">
                 {feed.mediaUrl && (
-                  <img src={feed.mediaUrl} alt="Feed Media" className="admin-feed-interface-feed-image" />
-                )}
+                  <img src={feed.mediaUrl} alt="Feed Media" className="admin-feed-interface-feed-image feed-image"  />
+         )}
               </div>
 
               <div className="dashboard-interface-interactions">
@@ -184,9 +188,7 @@ const Feeds = () => {
                   <span>{feed.comments.length || 0}</span>
                 </div>
 
-                <div onClick={() => handleShareFeed(feed, currentUser, toast)}>
-                  <i className="fa-solid fa-share"></i>
-                </div>
+            
               </div>
 
               {showCommentPanel === feed.id && (
@@ -259,6 +261,9 @@ const Feeds = () => {
           ))
         )
       )}
+
+        {/* Modal for full screen image */}
+    
     </div>
   );
 };

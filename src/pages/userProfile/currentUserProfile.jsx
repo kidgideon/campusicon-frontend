@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, updateDoc , getDoc} from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc , getDoc,  deleteDoc} from 'firebase/firestore';
 import { auth, db } from '../../../config/firebase_config';
 import ReactPlayer from 'react-player';
 import '../userProfile/profile.css';
@@ -230,6 +230,24 @@ const CurrentUserProfile = () => {
     navigate('/edit-profile');
   };
 
+  const handleDeletePost = async (videoId) => {
+    // Ask for confirmation before deleting
+    const confirmDelete = window.confirm('Are you sure you want to delete this post?, this post will still be visible in the competion interface');
+    
+    if (confirmDelete) {
+      try {
+        // Delete the video document from Firestore
+        await deleteDoc(doc(db, 'videos', videoId));
+        // Remove the video from the state to no longer display it in the UI
+        setVideos((prevVideos) => prevVideos.filter((video) => video.id !== videoId));
+        alert('Post deleted successfully');
+      } catch (error) {
+        console.error('Error deleting video:', error);
+        alert('Failed to delete the post. Please try again.');
+      }
+    }
+  };
+
   return (
     <div className='profile-structure'>
        <div className="top-top-sideliners">
@@ -334,10 +352,9 @@ const CurrentUserProfile = () => {
         </div>
         
 
-        <div className="share" onClick={() => handleVideoShare(video.id)}>
-          <i className="fa-solid fa-share" />
-          <span>{video.shares.length}</span>
-        </div>
+        <div className="video-delete-button">
+    <i className="fa-solid fa-trash" onClick={() => handleDeletePost(video.id)}></i>
+  </div>
       </div>
 
     {/* Comment Panel (only show if open) */}
