@@ -28,6 +28,7 @@ import NotFound from './pages/404/NotFound';
 import SplashScreen from './pages/SplashScreen';
 import AdsPage from './pages/AdSPage/ads';
 import Settings from './pages/settingsPage/settings';
+import CampusIconMainPage from './pages/campusIcon';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true); // State to track splash screen visibility
@@ -75,6 +76,7 @@ function App() {
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/ads" element={<AdsPage/>} />
             <Route path="/settings" element={<Settings/>} />
+            <Route path="/icons page" element={<CampusIconMainPage/>} />
             {/* Catch-all route for 404 Not Found */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import logo from '../../../assets/logo.png';
 import { auth } from '../../../../config/firebase_config';
 import { db } from '../../../../config/firebase_config'; // Ensure you're importing your Firebase config
@@ -160,10 +161,10 @@ const Feeds = () => {
             <div key={feed.id} className="dashboard-interface-feed">
               <div className="dashboard-interface-feed-top">
                 <div className="dashboard-interface-feed-profile-pic">
-                  <img src={logo} alt="Profile" />
+                 <Link to="icons page" style={{width: "100%"}}><img src={logo} alt="Profile" /></Link >
                 </div>
                 <div className="dashboard-interface-right-section-top">
-                  <span>{feed.userName || 'campusicon'}</span>
+                <Link to="icons page" style={{width: "100%"}}> <span>{feed.userName || 'campusicon'}</span></Link >
                 </div>
               </div>
 
@@ -188,7 +189,6 @@ const Feeds = () => {
                   <span>{feed.comments.length || 0}</span>
                 </div>
 
-            
               </div>
 
               {showCommentPanel === feed.id && (
