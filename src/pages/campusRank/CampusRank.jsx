@@ -89,7 +89,7 @@ const CampusRank = () => {
                 })}
             </div>
             <button className="campus-rank-interface-back-to-top" >
-            <i class="fa-solid fa-caret-down" onClick={scrollToTop} ></i>
+            <i className="fa-solid fa-caret-down" onClick={scrollToTop} ></i>
             </button>
         </div>
     );

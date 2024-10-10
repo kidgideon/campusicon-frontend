@@ -215,9 +215,7 @@ style={{
 <span>{video.votes.length}</span>
 </div>
 
-        <div className="share" onClick={() => handleVideoShare(video.id)}>
-          <i className="fa-solid fa-share" />
-        </div>
+
       </div>
 
     {/* Comment Panel (only show if open) */}

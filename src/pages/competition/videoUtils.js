@@ -190,7 +190,7 @@ export const handleVideoVote = async (videoId, currentUserId, setVideos, votedVi
       const previousCreatorId = previousVideoData.userId;
       const unvoteNotification = {
         read: false,
-        type: 'unvote',
+        type: 'vote',
         timestamp: Date.now(),
         competitionId,
         text: `${userData.username} removed their vote from your video`,
@@ -286,7 +286,7 @@ export const handleCommentLike = async (videoId, commentTimestamp, currentUserId
     const creatorId = commentToLike.userId; // Assuming commentToLike has a userId field
     const notification = {
       read: false,
-      type: 'comment_like',
+      type: 'comment',
       timestamp: Date.now(),
       competitionId: videoData.competitionId,
       text: `${userData.username} liked your comment`, // Assuming videoData has a username field

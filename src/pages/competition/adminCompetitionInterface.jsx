@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { doc, addDoc, collection, getDocs, query, orderBy, deleteDoc, updateDoc, limit, getDoc } from 'firebase/firestore';
+import { doc, addDoc, collection, getDocs, query, orderBy, deleteDoc, updateDoc, limit, getDoc, writeBatch } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../../config/firebase_config';
 import '../../assets/adminCompCreation.css';
@@ -41,8 +41,9 @@ const AdminCompetitionInterface = () => {
         await uploadBytes(imageRef, image);
         imageUrl = await getDownloadURL(imageRef);
       }
-
-      await addDoc(collection(db, 'competitions'), {
+  
+      // Create the competition in Firestore
+      const competitionRef = await addDoc(collection(db, 'competitions'), {
         name: competitionName,
         type: competitionType,
         startDate: new Date(startDate),
@@ -54,7 +55,36 @@ const AdminCompetitionInterface = () => {
         createdAt: new Date(),
         videos: []
       });
-
+  
+      // After the competition is created, fetch all users
+      const usersSnapshot = await getDocs(collection(db, 'users'));
+  
+      // Create a notification object
+      const notification = {
+        read: false,
+        type: 'competition',
+        competitionId: competitionRef.id, // Reference the newly created competition
+        text: `${competitionName} has been created! Get ready to participate.`,
+        timestamp: Date.now()
+      };
+  
+      // Create a Firestore batch
+      const batch = writeBatch(db);
+  
+      // Loop through all users and update their notifications array
+      usersSnapshot.docs.forEach((userDoc) => {
+        const userNotifications = userDoc.data().notifications || []; // Get the current notifications array
+        const updatedNotifications = [...userNotifications, notification]; // Append the new notification
+        
+        // Add the notification update to the batch
+        const userRef = doc(db, 'users', userDoc.id);
+        batch.update(userRef, { notifications: updatedNotifications });
+      });
+  
+      // Commit the batch write
+      await batch.commit();
+  
+      // Reset form fields after competition creation
       fetchCompetitions(); // Refresh competitions
       setCompetitionName('');
       setCompetitionType('Normal Star Award');
@@ -63,68 +93,179 @@ const AdminCompetitionInterface = () => {
       setRules('');
       setDescription('');
       setImage(null);
+  
     } catch (error) {
       console.error('Error creating competition:', error);
     } finally {
       setLoading(false); // Set loading to false
     }
   };
-
-  const handleStartCompetition = async (id) => {
+ 
+  const handleStartCompetition = async (competitionId) => {
     setLoading(true); // Set loading to true
     try {
-      const competitionRef = doc(db, 'competitions', id);
-      await updateDoc(competitionRef, { status: 'Ongoing' });
-      fetchCompetitions();
+      const competitionRef = doc(db, 'competitions', competitionId);
+      const competitionSnapshot = await getDoc(competitionRef);
+  
+      if (!competitionSnapshot.exists()) {
+        throw new Error('Competition not found');
+      }
+  
+      const competitionData = competitionSnapshot.data();
+      const { name: competitionName } = competitionData;
+  
+      // Fetch all users for batch notifications
+      const usersSnapshot = await getDocs(collection(db, 'users'));
+  
+      // Create a batch
+      const batch = writeBatch(db);
+  
+      // Notification for all users that the competition has started
+      const competitionStartedNotification = {
+        read: false,
+        type: 'competition',
+        competitionId: competitionId,
+        text: `The competition ${competitionName} has started! Participate now and show your skills.`,
+        timestamp: Date.now()
+      };
+  
+      // Loop through all users and send notifications
+      usersSnapshot.docs.forEach((userDoc) => {
+        const userNotifications = userDoc.data().notifications || [];
+        const updatedNotifications = [...userNotifications, competitionStartedNotification];
+  
+        const userRef = doc(db, 'users', userDoc.id);
+        batch.update(userRef, { notifications: updatedNotifications });
+      });
+  
+      // Update the competition status to 'Started'
+      batch.update(competitionRef, {
+        status: 'Ongoing'
+      });
+  
+      // Commit the batch
+      await batch.commit();
+  
+      fetchCompetitions(); // Refresh competitions
     } catch (error) {
       console.error('Error starting competition:', error);
     } finally {
       setLoading(false); // Set loading to false
     }
   };
-
   
   const handleEndCompetition = async (competitionId) => {
     setLoading(true); // Set loading to true
     try {
       const competitionRef = doc(db, 'competitions', competitionId);
       const competitionSnapshot = await getDoc(competitionRef);
-      
+  
       if (!competitionSnapshot.exists()) {
         throw new Error('Competition not found');
       }
   
       const competitionData = competitionSnapshot.data();
-      const videos = competitionData.videos;
-      const competitionType = competitionData.type; 
-
+      const { videos, type: competitionType, name: competitionName } = competitionData;
+  
       if (!videos || videos.length === 0) {
         throw new Error('No videos in this competition');
       }
-
+  
+      // Determine the winning video (video with the most votes)
       let winningVideo = videos[0];
       for (let video of videos) {
         if (video.votes > winningVideo.votes) {
           winningVideo = video;
         }
       }
-
+  
       const winnerUserId = winningVideo.userId;
-
-      await updateDoc(competitionRef, {
+  
+      // Calculate Campus Streak points based on competition type
+      let pointsToAdd = 0;
+      switch (competitionType) {
+        case 'Normal Star Award':
+          pointsToAdd = 20;
+          break;
+        case 'Super Star Award':
+          pointsToAdd = 50;
+          break;
+        case 'Icon Award':
+          pointsToAdd = 100;
+          break;
+        default:
+          pointsToAdd = 0;
+      }
+  
+      // Fetch all users for batch notifications
+      const usersSnapshot = await getDocs(collection(db, 'users'));
+  
+      // Create a batch
+      const batch = writeBatch(db);
+  
+      // Notification for all users that the competition has ended
+      const competitionEndedNotification = {
+        read: false,
+        type: 'competition',
+        competitionId: competitionId,
+        text: `The competition ${competitionName} has ended! Check out the results.`,
+        timestamp: Date.now()
+      };
+  
+      // Specific notification for the winner
+      const winnerNotification = {
+        read: false,
+        type: 'competition',
+        competitionId: competitionId,
+        text: `Congratulations! You have won the competition ${competitionName}.`,
+        timestamp: Date.now()
+      };
+  
+      // Loop through all users and send notifications
+      usersSnapshot.docs.forEach((userDoc) => {
+        const userNotifications = userDoc.data().notifications || [];
+        const updatedNotifications = [...userNotifications, competitionEndedNotification];
+  
+        const userRef = doc(db, 'users', userDoc.id);
+        batch.update(userRef, { notifications: updatedNotifications });
+      });
+  
+      // Send winner notification and update their Campus Streaks
+      const winnerRef = doc(db, 'users', winnerUserId);
+      const winnerDoc = await getDoc(winnerRef);
+  
+      if (!winnerDoc.exists()) {
+        throw new Error('Winner user not found');
+      }
+  
+      const winnerData = winnerDoc.data();
+      const updatedCampusStreaks = (winnerData.points || 0) + pointsToAdd;
+  
+      // Update the winner's notifications and points
+      const winnerNotifications = winnerData.notifications || [];
+      const updatedWinnerNotifications = [...winnerNotifications, winnerNotification];
+      batch.update(winnerRef, {
+        notifications: updatedWinnerNotifications,
+        points: updatedCampusStreaks
+      });
+  
+      // Update the competition status and winner in the competition document
+      batch.update(competitionRef, {
         status: 'Ended',
         winner: winnerUserId
       });
-
-      await updateUserCampusStreaks(winnerUserId, competitionType);
-
-      fetchCompetitions();
+  
+      // Commit the batch
+      await batch.commit();
+  
+      fetchCompetitions(); // Refresh competitions
     } catch (error) {
       console.error('Error ending competition:', error);
     } finally {
       setLoading(false); // Set loading to false
     }
   };
+  
 
   const handleDeleteCompetition = async (id) => {
     try {

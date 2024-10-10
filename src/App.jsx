@@ -94,7 +94,7 @@ function App() {
               },
               error: {
                 style: {
-                  background: '#333', // Dark background
+                  background: 'black', // Dark background
                   color: '#ff5252',   // Error red color
                 },
                 iconTheme: {
@@ -103,7 +103,7 @@ function App() {
                 },
               },
               style: {
-                background: '#333',  // Default dark background for all toasts
+                background: 'black',  // Default dark background for all toasts
                 color: '#fff',        // Default text color
               },
             }}

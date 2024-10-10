@@ -22,6 +22,7 @@ const UploadVideoForm = () => {
   const [competitionName, setCompetitionName] = useState(''); // Store competition name
   const [showTrashIcon, setShowTrashIcon] = useState(false); // State to manage trash icon visibility
   const [username, setUsername] = useState(''); // Store username from Firestore
+  const [competitionStatus, setCompetitionStatus] = useState('');
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
@@ -50,6 +51,7 @@ const UploadVideoForm = () => {
           const competitionData = docSnap.data();
           setCompetitionVideos(competitionData.videos || []);
           setCompetitionName(competitionData.name); // Store competition name
+          setCompetitionStatus(competitionData.status);
 
           if (currentUser) {
             const userVideoExists = competitionData.videos.some(video => video.userId === currentUser.uid);
@@ -116,6 +118,19 @@ const UploadVideoForm = () => {
 
   const handleUpload = async (e) => {
     e.preventDefault();
+
+      // Check if competition has ended
+    if (competitionStatus === 'Ended') {
+      toast.error('This competition has ended. You cannot upload a video.');
+      return; // Stop further execution
+    }
+
+    if (competitionStatus === 'Not Started') {
+      toast.error('This competition has not started. You cannot upload a video yet. Check the start date to participate.');
+      return; // Stop further execution
+    }
+
+    
     if (!title || !description || !videoFile || !currentUser || !username) {
       toast.error('Please fill in all fields, choose a video, and ensure you are logged in.');
       return;

@@ -1,22 +1,57 @@
 .discovery-page-interface {
-     margin-top: 130px;
+     padding-top: 80px;
      display: flex;
      justify-content: center;
      align-items: center;
      flex-direction: column;
      width: 97%;
      height: 100%;
+     color: white;
 }
 
+.Discovery-page-search-interface {
+     width: 100%;
+     height: 100%;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+}
 
-.video-watch-profile-picture {
-    margin: 10px;
-    border: 2px solid #205e78;
-    width: 50px;
-    height: 50px;
-    border-radius: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
+.search-item {
+     width: 100%;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     flex-direction: column;
+}
+
+.search-result-item {
+     background-color: rgb(39, 39, 39);
+     width: 100%;
+     min-width: 200px;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     flex-direction: column;
+     border-radius: 10px;
+     padding: 10px;
+     
+}
+
+.search-result-item p {
+     text-align: center;
+     font-weight: bold;
+}
+
+.search-result-item div {
+     width: 100%;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+}
+
+.search-result-item img {
+   width:  100px;
+   height: 100px;
+   border-radius: 100%;
+}

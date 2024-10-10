@@ -98,65 +98,61 @@ const DiscoveryPage = () => {
 
 
   
-
-const handleSearch = async () => {
-  setHasSearched(true);
-
-  if (searchTerm.trim().length >= 3) { // Enforce minimum of three characters
-    setLoading(true); // Start loading spinner
-    const competitionQuery = query(collection(db, 'competitions'), where('name', '>=', searchTerm));
-    const userQuery = query(collection(db, 'users'), where('username', '>=', searchTerm));
-    const videoQuery = query(collection(db, 'videos'), where('title', '>=', searchTerm));
-
-    const competitionSnapshot = await getDocs(competitionQuery);
-    const userSnapshot = await getDocs(userQuery);
-    const videoSnapshot = await getDocs(videoQuery);
-
-    const results = [];
-
-    // Fetch competition results
-    competitionSnapshot.forEach((doc) => {
-      const competitionData = doc.data();
-      results.push({
-        type: 'competition',
-        data: competitionData
+  const handleSearch = async () => {
+    setHasSearched(true);
+  
+    if (searchTerm.trim().length >= 3) { // Enforce minimum of three characters
+      setLoading(true); // Start loading spinner
+  
+      // Convert search term to lowercase for case-insensitive search
+      const lowercasedSearchTerm = searchTerm.toLowerCase();
+  
+      // Use the '==' operator for stricter matching or range matching for exact starts
+      const competitionQuery = query(
+        collection(db, 'competitions'), 
+        where('name', '>=', lowercasedSearchTerm),
+        where('name', '<=', lowercasedSearchTerm + '\uf8ff') // strict match range
+      );
+  
+      const userQuery = query(
+        collection(db, 'users'), 
+        where('username', '>=', lowercasedSearchTerm),
+        where('username', '<=', lowercasedSearchTerm + '\uf8ff')
+      );
+  
+      // Fetch competition results
+      const competitionSnapshot = await getDocs(competitionQuery);
+      const userSnapshot = await getDocs(userQuery);
+  
+      const results = [];
+  
+      // Fetch competition results
+      competitionSnapshot.forEach((doc) => {
+        const competitionData = doc.data();
+        results.push({
+          type: 'competition',
+          data: competitionData
+        });
       });
-    });
-
-    // Fetch user results
-    userSnapshot.forEach((doc) => {
-      const userData = doc.data();
-      results.push({
-        type: 'user',
-        data: userData
+  
+      // Fetch user results
+      userSnapshot.forEach((doc) => {
+        const userData = doc.data();
+        results.push({
+          type: 'user',
+          data: userData
+        });
       });
-    });
-
-    // Fetch video results and creator info
-    for (const doc of videoSnapshot.docs) {
-      const videoData = doc.data();
-      const creatorSnapshot = await getDocs(query(collection(db, 'users'), where('uid', '==', videoData.userId)));
-      creatorSnapshot.forEach((creatorDoc) => {
-        const creatorData = creatorDoc.data();
-        setCreators((prev) => ({
-          ...prev,
-          [videoData.userId]: creatorData,
-        }));
-      });
-
-      results.push({
-        type: 'video',
-        data: videoData
-      });
+  
+      setSearchResults(results);
+      setLoading(false); // Stop loading spinner
+    } else {
+      setSearchResults([]);
+      setHasSearched(false);
     }
-
-    setSearchResults(results);
-    setLoading(false); // Stop loading spinner
-  } else {
-    setSearchResults([]);
-    setHasSearched(false);
-  }
-};
+  };
+  
+  
 
 
   return (
@@ -220,58 +216,29 @@ const handleSearch = async () => {
           </div>
         ) : searchResults.length > 0 ? (
           searchResults.map((result, index) => (
-            <div key={index} className="search-result-item">
+           
+ <div key={index} className="search-result-item">
               {result.type === 'competition' && (
-                <Link to={`/competition/${result.data.competitionId}`}>
+                <Link to={`/competition/${result.data.competitionId}`} >
+                  <div>
                   <img src={result.data.imageUrl} alt="Competition" />
+                  </div>
                   <p>{result.data.name}</p>
+                  <p>{result.data.type}</p>
+                  <p>{result.data.videos.length} participants</p>
                 </Link>
               )}
               {result.type === 'user' && (
-                <Link to={`/profile/${result.data.username}`}>
+                <Link to={`/profile/${result.data.username}`} >
+                  <div>
                   <img src={result.data.profilePicture || defaultProfilePictureURL} alt="User" />
+                  </div>
                   <p>{result.data.username}</p>
+                  <p>{result.data.points} campus streaks</p>
                 </Link>
               )}
-              {result.type === 'video' && (
-                <div className="video-watch-item">
-                  <div className="video-watch-top">
-                    <div className="video-creator-profile">
-                      <div className="video-watch-profile-picture">
-                        <Link to={`/profile/${creators[result.data.userId]?.username}`}>
-                          <img 
-                            src={creators[result.data.userId]?.profilePicture || defaultProfilePictureURL} 
-                            alt="Creator Profile" 
-                          />
-                        </Link>
-                      </div>
-                      <div className="video-watch-username">
-                        <Link to={`/profile/${creators[result.data.userId]?.username}`}>
-                          {creators[result.data.userId]?.username || 'Unknown User'}
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="video-watch-video-body">
-                    <ReactPlayer 
-                      url={result.data.videoURL} 
-                      controls 
-                      width="100%" 
-                      height="auto" 
-                    />
-                  </div>
-
-                  <div className="video-watch-video-data">
-                    <p>{result.data.description}</p>
-                  </div>
-
-                  <div className="video-watch-icon-and-button">
-                    {/* Add functionality for like, comment, vote, and share */}
-                  </div>
-                </div>
-              )}
             </div>
+           
           ))
         ) : hasSearched && searchTerm.length >= 3 ? (
           <p>No results found</p>

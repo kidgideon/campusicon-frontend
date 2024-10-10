@@ -85,7 +85,7 @@ const Menu = () => {
     </div>
     <div className="menu-page-option" onClick={() => navigate("/notifications")}>
         <div className="menu-page-option-icon">
-        <i class="fa-solid fa-bell"></i>
+        <i className="fa-solid fa-bell"></i>
         </div>
         <div className="menu-page-option-text">Notifications</div>
     </div>

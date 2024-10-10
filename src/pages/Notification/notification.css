@@ -5,7 +5,7 @@
   align-items: center;
   font-family: 'Arial', sans-serif;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: black;
 }
 
 /* Notification title */
@@ -17,13 +17,12 @@
 
 /* Notification card container */
 .notification-card {
-  width: 100%;
+  width: 97%;
   max-width: 600px;
-  background-color: white;
+  background-color: #252525;
   margin-bottom: 15px;
   padding: 15px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -37,7 +36,7 @@
 
 /* Unread notifications have a different style */
 .notification-card.unread {
-  background-color: #e7f3ff;
+  background-color: #252525;
 }
 
 /* Notification content layout */
@@ -61,7 +60,7 @@
 /* Notification text and links */
 .notification-text {
   font-size: 16px;
-  color: #333;
+  color: white;
 }
 
 .notification-link {
