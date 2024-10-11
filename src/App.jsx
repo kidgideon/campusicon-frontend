@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useState, useEffect } from 'react'; // Import necessary hooks
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import React Query
 import Register from './pages/register_components/register';
 import Login from './pages/login_components/login';
 import UserDashboard from './pages/User_dashboard/userDashboard';
@@ -30,11 +31,14 @@ import AdsPage from './pages/AdSPage/ads';
 import Settings from './pages/settingsPage/settings';
 import CampusIconMainPage from './pages/campusIcon';
 
+// Create a QueryClient instance
+const queryClient = new QueryClient();
+
 function App() {
   const [showSplash, setShowSplash] = useState(true); // State to track splash screen visibility
 
   useEffect(() => {
-    // Hide the splash screen after 3 seconds
+    // Hide the splash screen after 6 seconds
     const timer = setTimeout(() => {
       setShowSplash(false);
     }, 6000); // Adjust the duration as needed
@@ -44,75 +48,77 @@ function App() {
   }, []);
 
   return (
-    <>
-      {showSplash ? (
-        // Show the splash screen while `showSplash` is true
-        <SplashScreen />
-      ) : (
-        // Render the app once the splash screen is hidden
-        <BrowserRouter>
-          <Routes>
-            <Route path="/register" element={<Register />} />
-            <Route path="/friends" element={<Friends />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/admin" element={<CreateComp />} />
-            <Route path="/admin/post" element={<AdminFeedPostInterface />} />
-            <Route path="/awards-ranks" element={<AwardsandRank />} />
-            <Route path="" element={<ProtectedRoute element={<UserDashboard />} />} />
-            <Route path="/campus-rank" element={<CampusRank />} />
-            <Route path='/fake-users' element={<AddFakeUsers />} />
-            <Route path="/profile/:username" element={<UserProfile />} />
-            <Route path='/profile' element={<CurrentUserProfile />} />
-            <Route path='/edit-profile' element={<EditProfile />} />
-            <Route path='competitions' element={<CompetitionsPage />} />
-            <Route path="/competition/:competitionId" element={<Competition />} />
-            <Route path="/upload/:competitionId" element={<UploadVideoForm />} />
-            <Route path="/video-performance/:competitionId" element={<Performance />} />
-            <Route path="/ranks/:competitionId" element={<CompetionRank />} />
-            <Route path="/watch-video/:competitionId" element={<VideoWatch />} />
-            <Route path="/discovery-page" element={<DiscoveryPage />} />
-            <Route path="/menu" element={<Menu />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/ads" element={<AdsPage/>} />
-            <Route path="/settings" element={<Settings/>} />
-            <Route path="/icons page" element={<CampusIconMainPage/>} />
-            {/* Catch-all route for 404 Not Found */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+    <QueryClientProvider client={queryClient}> {/* Provide React Query to your app */}
+      <>
+        {showSplash ? (
+          // Show the splash screen while `showSplash` is true
+          <SplashScreen />
+        ) : (
+          // Render the app once the splash screen is hidden
+          <BrowserRouter>
+            <Routes>
+              <Route path="/register" element={<Register />} />
+              <Route path="/friends" element={<Friends />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/admin" element={<CreateComp />} />
+              <Route path="/admin/post" element={<AdminFeedPostInterface />} />
+              <Route path="/awards-ranks" element={<AwardsandRank />} />
+              <Route path="" element={<ProtectedRoute element={<UserDashboard />} />} />
+              <Route path="/campus-rank" element={<CampusRank />} />
+              <Route path='/fake-users' element={<AddFakeUsers />} />
+              <Route path="/profile/:username" element={<UserProfile />} />
+              <Route path='/profile' element={<CurrentUserProfile />} />
+              <Route path='/edit-profile' element={<EditProfile />} />
+              <Route path='competitions' element={<CompetitionsPage />} />
+              <Route path="/competition/:competitionId" element={<Competition />} />
+              <Route path="/upload/:competitionId" element={<UploadVideoForm />} />
+              <Route path="/video-performance/:competitionId" element={<Performance />} />
+              <Route path="/ranks/:competitionId" element={<CompetionRank />} />
+              <Route path="/watch-video/:competitionId" element={<VideoWatch />} />
+              <Route path="/discovery-page" element={<DiscoveryPage />} />
+              <Route path="/menu" element={<Menu />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/ads" element={<AdsPage/>} />
+              <Route path="/settings" element={<Settings/>} />
+              <Route path="/icons page" element={<CampusIconMainPage/>} />
+              {/* Catch-all route for 404 Not Found */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
 
-          {/* Toaster with Dark Theme */}
-          <Toaster
-            toastOptions={{
-              success: {
+            {/* Toaster with Dark Theme */}
+            <Toaster
+              toastOptions={{
+                success: {
+                  style: {
+                    background: '#333', // Dark background
+                    color: '#4caf50',    // Success green color
+                  },
+                  iconTheme: {
+                    primary: '#4caf50',
+                    secondary: '#fff',
+                  },
+                },
+                error: {
+                  style: {
+                    background: 'black', // Dark background
+                    color: '#ff5252',   // Error red color
+                  },
+                  iconTheme: {
+                    primary: '#ff5252',
+                    secondary: '#fff',
+                  },
+                },
                 style: {
-                  background: '#333', // Dark background
-                  color: '#4caf50',    // Success green color
+                  background: 'black',  // Default dark background for all toasts
+                  color: '#fff',        // Default text color
                 },
-                iconTheme: {
-                  primary: '#4caf50',
-                  secondary: '#fff',
-                },
-              },
-              error: {
-                style: {
-                  background: 'black', // Dark background
-                  color: '#ff5252',   // Error red color
-                },
-                iconTheme: {
-                  primary: '#ff5252',
-                  secondary: '#fff',
-                },
-              },
-              style: {
-                background: 'black',  // Default dark background for all toasts
-                color: '#fff',        // Default text color
-              },
-            }}
-          />
-        </BrowserRouter>
-      )}
-    </>
+              }}
+            />
+          </BrowserRouter>
+        )}
+      </>
+    </QueryClientProvider>
   );
 }
 

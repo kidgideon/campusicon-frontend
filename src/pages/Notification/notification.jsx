@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Spinner from "../../assets/loadingSpinner";
 import './notification.css';
 import icon from '../../assets/logo.png'; // Assuming the company logo path
+import { useQuery } from '@tanstack/react-query';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -14,12 +15,28 @@ const Notifications = () => {
   const [profilePicture, setProfilePicture] = useState('https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media'); // Default profile pic
   const navigate = useNavigate();
 
+  // Fetch user profile picture
+  const { data: userProfile, isLoading: isUserProfileLoading } = useQuery({
+    queryKey: ['userProfile', currentUser?.uid],
+    queryFn: () => fetchUserProfile(currentUser.uid),
+    enabled: !!currentUser, // Only fetch if currentUser is available
+    staleTime: 1200 * 1000, // Set stale time to 20 minutes (1200 seconds)
+    cacheTime: 60 * 60 * 1000, // 1 hour
+  });
+
+  // Fetch notifications
+  const { data: userNotifications, isLoading: isNotificationsLoading } = useQuery({
+    queryKey: ['notifications', currentUser?.uid],
+    queryFn: () => fetchNotifications(currentUser.uid),
+    enabled: !!currentUser, // Only fetch if currentUser is available
+    staleTime: 1200 * 1000, // Set stale time to 20 minutes (1200 seconds)
+    cacheTime: 60 * 60 * 1000, // 1 hour
+  });
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUser(user);
-        await fetchNotifications(user.uid);
-        fetchUserProfile(user.uid); // Fetch user's profile picture
       } else {
         navigate('/login');
       }
@@ -28,35 +45,38 @@ const Notifications = () => {
     return () => unsubscribe();
   }, [navigate]);
 
-  const fetchNotifications = async (userId) => {
-    try {
-      const userDocRef = doc(db, 'users', userId);
-      const userDoc = await getDoc(userDocRef);
+  useEffect(() => {
+    if (userProfile) {
+      setProfilePicture(userProfile.profilePicture || 'https://example.com/default-profile-pic.png');
+    }
+  }, [userProfile]);
 
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        // Sort notifications by timestamp (newest first)
-        const sortedNotifications = (userData.notifications || []).sort((a, b) => b.timestamp - a.timestamp);
-        setNotifications(sortedNotifications);
-      }
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-    } finally {
+  useEffect(() => {
+    if (userNotifications) {
+      // Sort notifications by timestamp (newest first)
+      const sortedNotifications = (userNotifications || []).sort((a, b) => b.timestamp - a.timestamp);
+      setNotifications(sortedNotifications);
       setLoading(false);
     }
+  }, [userNotifications]);
+
+  const fetchNotifications = async (userId) => {
+    const userDocRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      return userData.notifications || [];
+    }
+    return [];
   };
 
   const fetchUserProfile = async (userId) => {
-    try {
-      const userDocRef = doc(db, 'users', userId);
-      const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        setProfilePicture(userData.profilePicture || 'https://example.com/default-profile-pic.png');
-      }
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
+    const userDocRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+      return userDoc.data();
     }
+    return null;
   };
 
   const handleNotificationClick = async (notification, index) => {
@@ -107,7 +127,7 @@ const Notifications = () => {
     }
   };
 
-  if (loading) {
+  if (isUserProfileLoading || isNotificationsLoading || loading) {
     return <Spinner />;
   }
 

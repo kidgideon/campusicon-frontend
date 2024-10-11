@@ -1,110 +1,116 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { query, collection, where, onSnapshot, doc, getDoc, updateDoc, arrayUnion, disableNetwork } from 'firebase/firestore';
+import { query, collection, where, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../../../config/firebase_config';
 import ReactPlayer from 'react-player';
-import { handleVideoLike, handleVideoVote, handlePostComment, handleCommentLike, handleDeleteComment, handleEditComment, handleVideoShare } from '../competition/videoUtils';  // Import like, vote, and comment functions
+import { handleVideoLike, handleVideoVote, handlePostComment, handleCommentLike, handleDeleteComment, handleEditComment, handleVideoShare } from '../competition/videoUtils'; // Import like, vote, and comment functions
 import './scrollable.css';
 import { toast } from 'react-hot-toast';
-import Spinner from '../../assets/loadingSpinner';  // Loading spinner component
-
+import Spinner from '../../assets/loadingSpinner'; // Loading spinner component
+import { useQuery, useMutation } from '@tanstack/react-query'; // Import React Query
 
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 
 const VideoWatch = () => {
   const { competitionId } = useParams();
+  const [creators, setCreators] = useState({}); // Define creators as a state variable
   const currentUser = auth.currentUser;
   const [videos, setVideos] = useState([]);
-  const [showCommentPanel, setShowCommentPanel] = useState(null);  // Track the open comment panel
+  const [showCommentPanel, setShowCommentPanel] = useState(null); // Track the open comment panel
   const [comments, setComments] = useState({});
   const [newComment, setNewComment] = useState('');
-  const [creators, setCreators] = useState({});
   const [likedComments, setLikedComments] = useState({});
   const [votedVideos, setVotedVideos] = useState({});
-  const [loading, setLoading] = useState(true);  // Add loading state for videos
-  const [commentLoading, setCommentLoading] = useState(false);  // Loading state for comments
+  const [loading, setLoading] = useState(true); // Add loading state for videos
+  const [commentLoading, setCommentLoading] = useState(false); // Loading state for comments
   const commentPanelRef = useRef(null);
   const navigate = useNavigate();
   const [loadingVotes, setLoadingVotes] = useState(false);
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
 
-  // Fetch videos
-  useEffect(() => {
+  // Fetch videos using useQuery
+  const fetchVideos = async () => {
     const videosQuery = query(collection(db, 'videos'), where('competitionId', '==', competitionId));
-    const unsubscribe = onSnapshot(videosQuery, (snapshot) => {
-      const videoData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setVideos(videoData.sort((a, b) => b.timestamp - a.timestamp));
-
-      // Fetch creator details
-      videoData.forEach(async (video) => {
-        const creatorRef = doc(db, 'users', video.userId);
-        const creatorDoc = await getDoc(creatorRef);
-        setCreators((prevCreators) => ({
-          ...prevCreators,
-          [video.userId]: creatorDoc.data(),
-        }));
+    return new Promise((resolve, reject) => {
+      const unsubscribe = onSnapshot(videosQuery, (snapshot) => {
+        const videoData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setVideos(videoData.sort((a, b) => b.timestamp - a.timestamp));
+        setLoading(false);
+        resolve(videoData);
+      }, (error) => {
+        console.error('Error fetching videos:', error);
+        setLoading(false);
+        reject(error);
       });
-      setLoading(false);  // Set loading to false when data is fetched
-    }, (error) => {
-      console.error('Error fetching videos:', error);
-      setLoading(false);
+      return unsubscribe;
     });
+  };
 
-    return () => unsubscribe && unsubscribe();
-  }, [competitionId]);
+  const { data: videoData, isLoading: videosLoading } = useQuery({
+    queryKey: ['videos', competitionId],
+    queryFn: fetchVideos,
+  });
+
+  // Fetch creators
+  useEffect(() => {
+    const fetchCreators = async () => {
+      if (!videoData) return;
+
+      const creatorsData = {};
+      await Promise.all(
+        videoData.map(async (video) => {
+          const creatorRef = doc(db, 'users', video.userId);
+          const creatorDoc = await getDoc(creatorRef);
+          creatorsData[video.userId] = creatorDoc.data();
+        })
+      );
+      setCreators(creatorsData);
+    };
+
+    fetchCreators();
+  }, [videoData]);
 
   const handleVoteClick = (videoId) => {
-  if (loadingVotes) return;  // Prevent multiple clicks while loading
-  setLoadingVotes(true);  // Start loading
-  handleVideoVote(videoId, currentUser.uid, setVideos, votedVideos)
-    .finally(() => setLoadingVotes(false));  // End loading after the process is done
-};
-  
+    if (loadingVotes) return; // Prevent multiple clicks while loading
+    setLoadingVotes(true); // Start loading
+    handleVideoVote(videoId, currentUser.uid, setVideos, votedVideos)
+      .finally(() => setLoadingVotes(false)); // End loading after the process is done
+  };
+
   // Open comment panel
   const handleOpenComments = async (videoId) => {
     setShowCommentPanel(videoId);
     setNewComment('');
     setLikedComments((prev) => ({ ...prev, [videoId]: {} })); // Reset liked comments state for the current video
-  
+
     // Fetch comments and show loading spinner
     setCommentLoading(true);
     const videoRef = doc(db, 'videos', videoId);
     const videoDoc = await getDoc(videoRef);
     const videoData = videoDoc.data();
     const fetchedComments = videoData.comments || [];
-  
+
     // Retrieve the details of each comment's creator
     const commentsWithUserDetails = await Promise.all(
       fetchedComments.map(async (comment) => {
-        const userRef = doc(db, 'users', comment.userId);  // Get the user document based on userId
+        const userRef = doc(db, 'users', comment.userId); // Get the user document based on userId
         const userDoc = await getDoc(userRef);
 
-       
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          return {
-            ...comment,
-            username: userData.username || ' ',  // Add username from the user document
-            userProfilePicture: userData.profilePicture || defaultProfilePictureURL,  // Add profile picture
-          };
-        } else {
-          return {
-            ...comment,
-            username: ' ',
-            userProfilePicture: defaultProfilePictureURL,
-          };
-        }
+        return {
+          ...comment,
+          username: userDoc.exists() ? userDoc.data().username || ' ' : ' ',
+          userProfilePicture: userDoc.exists() ? userDoc.data().profilePicture || defaultProfilePictureURL : defaultProfilePictureURL,
+        };
       })
     );
-  
+
     setComments((prevComments) => ({
       ...prevComments,
-      [videoId]: commentsWithUserDetails,  // Save the comments with user details
+      [videoId]: commentsWithUserDetails, // Save the comments with user details
     }));
-  
-    setCommentLoading(false);  // Hide the loading spinner after fetching data
+
+    setCommentLoading(false); // Hide the loading spinner after fetching data
   };
-  
 
   // Close comment panel
   const closeCommentPanel = () => {
@@ -112,19 +118,18 @@ const VideoWatch = () => {
   };
 
   // Middle function to manage the like action
- const handleCommentLikeClick = async (videoId, commentTimestamp, currentUserId, setComments) => {
-  setLoadingCommentLikes(true); // Start loading
+  const handleCommentLikeClick = async (videoId, commentTimestamp, currentUserId, setComments) => {
+    setLoadingCommentLikes(true); // Start loading
 
-  try {
-    await handleCommentLike(videoId, commentTimestamp, currentUserId, setComments);
-  } catch (error) {
-    console.error('Error liking comment:', error);
-    toast.error('Error liking comment');
-  } finally {
-    setLoadingCommentLikes(false); // Stop loading
-  }
-};
-
+    try {
+      await handleCommentLike(videoId, commentTimestamp, currentUserId, setComments);
+    } catch (error) {
+      console.error('Error liking comment:', error);
+      toast.error('Error liking comment');
+    } finally {
+      setLoadingCommentLikes(false); // Stop loading
+    }
+  };
 
   const handleSendComment = async (videoId) => {
     if (!newComment.trim()) {
@@ -132,27 +137,26 @@ const VideoWatch = () => {
       return;
     }
 
-    setCommentLoading(true);  // Set loading to true
+    setCommentLoading(true); // Set loading to true
 
     try {
       await handlePostComment(videoId, currentUser.uid, newComment, setComments, commentPanelRef);
-      setNewComment('');  // Clear the comment input after successful post
+      setNewComment(''); // Clear the comment input after successful post
     } catch (error) {
       console.error('Error posting comment:', error);
     } finally {
-      setCommentLoading(false);  // Stop loading after the process completes
+      setCommentLoading(false); // Stop loading after the process completes
     }
   };
 
-  
   const goBack = () => {
     navigate(-1);
   };
 
-
-  if (loading) {
-    return <Spinner />;  // Show spinner while loading videos
+  if (loading || videosLoading) {
+    return <Spinner />; // Show spinner while loading videos
   }
+
 
   return (
     <div className="full-house">

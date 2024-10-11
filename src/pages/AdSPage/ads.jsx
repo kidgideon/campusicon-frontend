@@ -2,97 +2,95 @@ import React, { useEffect, useState } from 'react';
 import './ads.css';
 import { Link } from 'react-router-dom';
 import icon from '../../assets/logo.png';
-import { collection, getDocs, where, query , updateDoc} from 'firebase/firestore';
-import {auth, db, } from '../../../config/firebase_config'
+import { collection, getDocs, where, query, updateDoc } from 'firebase/firestore';
+import { auth, db } from '../../../config/firebase_config';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+// Function to fetch user data
+const fetchUserData = async (uid) => {
+  const userRef = collection(db, 'users');
+  const q = query(userRef, where('uid', '==', uid)); // Use user.uid for comparison
+  const querySnapshot = await getDocs(q);
+  let userData;
+
+  querySnapshot.forEach((doc) => {
+    userData = doc.data();
+  });
+
+  return userData;
+};
+
+// Function to fetch unread notifications count
+const fetchUnreadNotificationsCount = async () => {
+  const userRef = collection(db, 'users');
+  const q = query(userRef);
+  const querySnapshot = await getDocs(q);
+  let unreadCount = 0;
+
+  querySnapshot.forEach((doc) => {
+    const user = doc.data();
+    const notifications = user.notifications || [];
+    unreadCount += notifications.filter(notification => !notification.read).length;
+  });
+
+  return unreadCount;
+};
+
+// Function to mark notifications as read
+const markNotificationsAsRead = async () => {
+  const userRef = collection(db, 'users');
+  const q = query(userRef);
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach(async (doc) => {
+    const userDoc = doc.data();
+    const notifications = userDoc.notifications || [];
+
+    await updateDoc(doc.ref, {
+      notifications: notifications.map(notification => ({ ...notification, read: true })),
+    });
+  });
+};
 
 const AdsPage = () => {
   const [profilePicture, setProfilePicture] = useState('');
-  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+  const queryClient = useQueryClient();
 
+  // Fetch user data using React Query
+  const { data: userData } = useQuery({
+    queryKey: ['userData'],
+    queryFn: async () => {
+      const user = auth.currentUser;
+      if (user) {
+        return await fetchUserData(user.uid);
+      }
+      return null;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 30 * 60 * 1000 // 30 minutes
+  });
+
+  // Fetch unread notifications count using React Query
+  const { data: unreadNotificationCount = 0 } = useQuery({
+    queryKey: ['unreadNotifications'],
+    queryFn: fetchUnreadNotificationsCount,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 30 * 60 * 1000 // 30 minutes
+  });
+
+  // Mutation for marking notifications as read
+  const mutation = useMutation({
+    mutationFn: markNotificationsAsRead,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['unreadNotifications']);
+    }
+  });
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const userRef = collection(db, 'users');
-        const q = query(userRef, where('uid', '==', user.uid)); // Use user.uid for comparison
-
-        try {
-          const querySnapshot = await getDocs(q);
-          let userData;
-
-          querySnapshot.forEach((doc) => {
-            userData = doc.data();
-          });
-
-          if (userData) {
-            setProfilePicture(userData.profilePicture || defaultProfilePictureURL); // Set default if profilePicture is not present
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-        }
-      }
-    });
-
-    const fetchUnreadNotifications = async () => {
-      const userRef = collection(db, 'users');
-      const q = query(userRef); // Get all user documents
-
-      try {
-        const querySnapshot = await getDocs(q);
-        let unreadCount = 0;
-
-        querySnapshot.forEach(async (doc) => {
-          const user = doc.data();
-          const notifications = user.notifications || []; // Get notifications array
-
-          for (const notification of notifications) {
-            if (!notification.read) {
-              unreadCount++;
-            }
-          }
-        });
-
-        setUnreadNotificationCount(unreadCount);
-      } catch (error) {
-        console.error('Error fetching unread notifications:', error);
-      }
-    };
-
-    fetchUnreadNotifications();
-
-    return unsubscribe;
-  }, []);
-
-   
-  const markAllAsRead = async () => {
-    const userRef = collection(db, 'users');
-    const q = query(userRef); // Get all user documents
-
-    try {
-      const querySnapshot = await getDocs(q);
-
-      querySnapshot.forEach(async (doc) => {
-        const userDoc = doc.data();
-        const notifications = userDoc.notifications || [];
-
-        for (let i = 0; i < notifications.length; i++) {
-          // Update the notification directly within the user document
-          await updateDoc(doc.ref, {
-            notifications: notifications.map((notification) => {
-              if (notification.id === notifications[i].id) {
-                return { ...notification, read: true };
-              }
-              return notification;
-            }),
-          });
-        }
-      });
-    } catch (error) {
-      console.error('Error marking notifications as read:', error);
+    if (userData) {
+      setProfilePicture(userData.profilePicture || defaultProfilePictureURL);
     }
-
-    setUnreadNotificationCount(0); // Reset unread count after marking all as read
-  };
+  }, [userData]);
 
   return (
     <div className="full-house">
@@ -122,12 +120,12 @@ const AdsPage = () => {
           <span className="competition-tab">
             <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
           </span>
-          <span className="notifications-tab" onClick={markAllAsRead}> {/* Mark all as read on click */}
-      <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
-        <span className='unread-notification-count' style={{ display: unreadNotificationCount > 0 ? 'block' : 'none' }}>
-          {unreadNotificationCount > 15 ? '15+' : unreadNotificationCount}
-        </span>
-      </span>
+          <span className="notifications-tab" onClick={() => mutation.mutate()}> {/* Mark all as read on click */}
+            <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
+            <span className='unread-notification-count' style={{ display: unreadNotificationCount > 0 ? 'block' : 'none' }}>
+              {unreadNotificationCount > 15 ? '15+' : unreadNotificationCount}
+            </span>
+          </span>
           <span className="ad-tab">
             <Link to="/ads"><i className="fa-solid fa-bullhorn" style={{ color: '#205e78' }}></i></Link>
           </span>
@@ -136,11 +134,11 @@ const AdsPage = () => {
         <h1>Advertise on Campus Icon</h1>
         <p style={{ color: 'white' }}>Contact the Campus Icon team to create your ad:</p>
      
-        <a href="https://wa.me/2349013585057" target="_blank">
+        <a href="https://wa.me/2349013585057" target="_blank" rel="noopener noreferrer">
             <button>
             Send us a message
           </button>
-            </a> 
+        </a> 
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query'; // Import useQuery
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../config/firebase_config';
 import './competition.css';
@@ -10,89 +10,80 @@ import iconAwards from '../../assets/iconCup.png';
 
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 
+const fetchCompetitionData = async (competitionId) => {
+  // Fetch competition details
+  const competitionRef = doc(db, 'competitions', competitionId);
+  const competitionSnap = await getDoc(competitionRef);
+  
+  if (!competitionSnap.exists()) {
+    throw new Error('Competition not found.');
+  }
+
+  const competitionData = competitionSnap.data();
+
+  // Fetch winner or top competitors based on the competition status
+  if (competitionData.status === 'Ended') {
+    // Competition ended, fetch winner's details
+    if (competitionData.winner) {
+      const winnerRef = doc(db, 'users', competitionData.winner);
+      const winnerSnap = await getDoc(winnerRef);
+      if (winnerSnap.exists()) {
+        competitionData.winnerDetails = winnerSnap.data();
+      }
+    }
+  } else {
+    // Competition ongoing, fetch top competitors
+    const videosQuery = query(
+      collection(db, 'videos'),
+      where('competitionId', '==', competitionId)
+    );
+    const videoSnapshot = await getDocs(videosQuery);
+    const allVideos = videoSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    const topThreeVideos = allVideos
+      .sort((a, b) => b.votes.length - a.votes.length) // Sorting by the number of votes
+      .slice(0, 3); // Take the top 3
+
+    // Fetch the user information for each top competitor
+    const competitors = await Promise.all(
+      topThreeVideos.map(async (video) => {
+        const userDoc = await getDoc(doc(db, 'users', video.userId));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          return {
+            name: userData.username,
+            profilePicture: userData.profilePicture || defaultProfilePictureURL,
+            votes: video.votes.length,
+          };
+        }
+        return null;
+      })
+    );
+
+    competitionData.topCompetitors = competitors.filter(Boolean); // Filter out null values
+  }
+
+  return competitionData;
+};
+
 const Competition = () => {
   const { competitionId } = useParams();
   const navigate = useNavigate();
-  const [competition, setCompetition] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [topCompetitors, setTopCompetitors] = useState([]);
-  const [winner, setWinner] = useState(null); // To store winner's profile
 
-  useEffect(() => {
-    const fetchCompetitionData = async () => {
-      try {
-        // Fetch competition details
-        const competitionRef = doc(db, 'competitions', competitionId);
-        const competitionSnap = await getDoc(competitionRef);
-
-        if (competitionSnap.exists()) {
-          const competitionData = competitionSnap.data();
-          setCompetition(competitionData);
-
-          if (competitionData.status === 'Ended') {
-            // Competition ended, fetch winner's details
-            if (competitionData.winner) {
-              const winnerRef = doc(db, 'users', competitionData.winner);
-              const winnerSnap = await getDoc(winnerRef);
-              if (winnerSnap.exists()) {
-                setWinner(winnerSnap.data());
-              }
-            }
-          } else {
-            // Competition ongoing, fetch top competitors
-            const videosQuery = query(
-              collection(db, 'videos'),
-              where('competitionId', '==', competitionId)
-            );
-            const videoSnapshot = await getDocs(videosQuery);
-            const allVideos = videoSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-            if (allVideos.length > 0) {
-              // Sort by votes array length
-              const topThreeVideos = allVideos
-                .sort((a, b) => b.votes.length - a.votes.length) // Sorting by the number of votes
-                .slice(0, 3); // Take the top 3
-
-              // Fetch the user information for each top competitor
-              const competitors = await Promise.all(
-                topThreeVideos.map(async (video) => {
-                  const userDoc = await getDoc(doc(db, 'users', video.userId));
-                  if (userDoc.exists()) {
-                    const userData = userDoc.data();
-
-                    return {
-                      name: userData.username,
-                      profilePicture: userData.profilePicture || defaultProfilePictureURL,
-                      votes: video.votes.length,
-                    };
-                  }
-                  return null;
-                })
-              );
-
-              setTopCompetitors(competitors.filter(Boolean)); // Filter out null values
-            }
-          }
-        } else {
-          setError('Competition not found.');
-        }
-      } catch (err) {
-        setError('Error fetching competition data.');
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCompetitionData();
-  }, [competitionId]);
+  // Use React Query to fetch data
+   // Use React Query to fetch data
+   const { data: competition, error, isLoading } = useQuery({
+    queryKey: ['competition', competitionId], // This identifies the query
+    queryFn: () => fetchCompetitionData(competitionId), // Function to fetch data
+    staleTime:  1200 * 1000, // Data remains fresh for 1 minute
+    cacheTime:  60 * 60 * 1000, // Cache data for 5 minutes
+  });
 
   const goBack = () => {
     navigate('/competitions');
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="spinner-container">
         <Spinner /> {/* Render the spinner component here */}
@@ -101,10 +92,10 @@ const Competition = () => {
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return <div>{error.message}</div>;
   }
 
-  const { name, imageUrl, description, startDate, endDate, type, status } = competition;
+  const { name, imageUrl, description, startDate, endDate, type, status, winnerDetails, topCompetitors } = competition;
 
   return (
     <div className="full-house">
@@ -127,12 +118,12 @@ const Competition = () => {
             // Competition ended, display winner
             <div>
               <h4 className="tc">Winner</h4>
-              {winner ? (
-                <div className="competitor-in-competion" onClick={() => navigate(`/profile/${winner.username}`)}>
+              {winnerDetails ? (
+                <div className="competitor-in-competion" onClick={() => navigate(`/profile/${winnerDetails.username}`)}>
                   <div className="competitors-profile-picture-in-comp">
-                    <img src={winner.profilePicture || defaultProfilePictureURL} alt="Winner" />
+                    <img src={winnerDetails.profilePicture || defaultProfilePictureURL} alt="Winner" />
                   </div>
-                  <div className="competitors-name">{winner.username}</div>
+                  <div className="competitors-name">{winnerDetails.username}</div>
                 </div>
               ) : (
                 <p>No winner information available.</p>

@@ -1,93 +1,100 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { getAuth } from 'firebase/auth';
 import { doc, getDoc, collection, query, getDocs, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../../../config/firebase_config';
 
-const useFetchData = () => {
-  const [userData, setUserData] = useState(null);
-  const [topUsers, setTopUsers] = useState([]);
-  const [activeCompetitions, setActiveCompetitions] = useState([]);
-  const [feeds, setFeeds] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+// Fetch user data function
+const fetchUserData = async () => {
+  const auth = getAuth();
+  const user = auth.currentUser;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const auth = getAuth();
-        const user = auth.currentUser;
+  if (!user) {
+    throw new Error('No user is signed in!');
+  }
 
-        if (user) {
-          // Fetch user data
-          const userDocRef = doc(db, 'users', user.uid);
-          const userDoc = await getDoc(userDocRef);
-          if (userDoc.exists()) {
-            setUserData(userDoc.data());
-          } else {
-            setError('No such user!');
-            return;
-          }
+  const userDocRef = doc(db, 'users', user.uid);
+  const userDoc = await getDoc(userDocRef);
 
-          // Fetch top users
-          const topUsersQuery = query(collection(db, 'users'), orderBy('points', 'desc'), limit(10));
-          const topUsersSnapshot = await getDocs(topUsersQuery);
-          const topUsersList = topUsersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setTopUsers(topUsersList);
+  if (!userDoc.exists()) {
+    throw new Error('No such user!');
+  }
 
-          // Fetch active competitions
-          const activeCompetitionsQuery = query(collection(db, 'competitions'), orderBy('startDate', 'desc'));
-          const activeCompetitionsSnapshot = await getDocs(activeCompetitionsQuery);
-          const activeCompetitionsList = activeCompetitionsSnapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-              id: doc.id,
-              ...data,
-              startDate: data.startDate ? data.startDate.toDate() : null,
-              endDate: data.endDate ? data.endDate.toDate() : null,
-            };
-          });
+  return userDoc.data();
+};
 
-          // Filter and sort competitions
-          const now = new Date();
-          const filteredCompetitions = activeCompetitionsList.filter(comp => {
-            if (comp.status === 'Ongoing') return true;
-            if (comp.status === 'Not Started' && comp.startDate > now) return true;
-            return false;
-          }).sort((a, b) => {
-            if (a.status === 'Ongoing' && b.status !== 'Ongoing') return -1;
-            if (a.status !== 'Ongoing' && b.status === 'Ongoing') return 1;
-            return a.startDate - b.startDate; // Sort by startDate within each status group
-          });
+// Fetch top users function
+const fetchTopUsers = async () => {
+  const topUsersQuery = query(collection(db, 'users'), orderBy('points', 'desc'), limit(10));
+  const topUsersSnapshot = await getDocs(topUsersQuery);
+  return topUsersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
 
-          setActiveCompetitions(filteredCompetitions);
-
-          // // Fetch user feeds
-          // const fetchFeeds = async () => {
-          //   try {
-          //     const feedsRef = collection(db, 'feeds');
-          //     const q = query(feedsRef, orderBy('createdAt', 'desc'), limit(10));
-          //     const querySnapshot = await getDocs(q);
-          //     const feedsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          //     console.log('Fetched Feeds:'); // Log the feedsList to check its contents
-          //     setFeeds(feedsList);
-          //   } catch (error) {
-          //     console.error('Error fetching feeds:', error);
-          //   }
-          // };
-          
-          // fetchFeeds();
-        } else {
-          setError('No user is signed in!');
-        }
-      } catch (error) {
-        setError('Error fetching data: ' + error.message);
-      } finally {
-        setLoading(false);
-      }
+// Fetch active competitions function
+const fetchActiveCompetitions = async () => {
+  const activeCompetitionsQuery = query(collection(db, 'competitions'), orderBy('startDate', 'desc'));
+  const activeCompetitionsSnapshot = await getDocs(activeCompetitionsQuery);
+  const activeCompetitionsList = activeCompetitionsSnapshot.docs.map(doc => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      startDate: data.startDate ? data.startDate.toDate() : null,
+      endDate: data.endDate ? data.endDate.toDate() : null,
     };
+  });
 
-    fetchData();
-  }, []);
+  const now = new Date();
+  return activeCompetitionsList.filter(comp => {
+    if (comp.status === 'Ongoing') return true;
+    if (comp.status === 'Not Started' && comp.startDate > now) return true;
+    return false;
+  }).sort((a, b) => {
+    if (a.status === 'Ongoing' && b.status !== 'Ongoing') return -1;
+    if (a.status !== 'Ongoing' && b.status === 'Ongoing') return 1;
+    return a.startDate - b.startDate; // Sort by startDate within each status group
+  });
+};
+
+// Fetch feeds function
+const fetchFeeds = async () => {
+  const feedsQuery = query(collection(db, 'feeds'), orderBy('createdAt', 'desc'));
+  const feedsSnapshot = await getDocs(feedsQuery);
+  return feedsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+// Custom hook for fetching data
+const useFetchData = () => {
+  const { data: userData, error: userError, isLoading: userLoading } = useQuery({
+    queryKey: ['userData'],
+    queryFn: fetchUserData,
+    staleTime: 20 * 60 * 1000, // 20 minutes
+    cacheTime: 60 * 60 * 1000, // 1 hour
+  });
+
+  const { data: topUsers, error: topUsersError, isLoading: topUsersLoading } = useQuery({
+    queryKey: ['topUsers'],
+    queryFn: fetchTopUsers,
+    staleTime: 20 * 60 * 1000, // 20 minutes
+    cacheTime: 60 * 60 * 1000, // 1 hour
+  });
+
+  const { data: activeCompetitions, error: activeCompetitionsError, isLoading: activeCompetitionsLoading } = useQuery({
+    queryKey: ['activeCompetitions'],
+    queryFn: fetchActiveCompetitions,
+    staleTime: 20 * 60 * 1000, // 20 minutes
+    cacheTime: 60 * 60 * 1000, // 1 hour
+  });
+
+  const { data: feeds, error: feedsError, isLoading: feedsLoading } = useQuery({
+    queryKey: ['feeds'],
+    queryFn: fetchFeeds,
+    staleTime: 20 * 60 * 1000, // 20 minutes
+    cacheTime: 60 * 60 * 1000, // 1 hour
+  });
+
+  // Combine loading states and errors
+  const loading = userLoading || topUsersLoading || activeCompetitionsLoading || feedsLoading;
+  const error = userError || topUsersError || activeCompetitionsError || feedsError;
 
   return { userData, topUsers, activeCompetitions, feeds, loading, error };
 };

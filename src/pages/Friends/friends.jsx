@@ -1,69 +1,57 @@
 import React, { useEffect, useState } from 'react';
-import { collection, doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom'; // To use navigate
 import { db, auth } from '../../../config/firebase_config';
 import { onAuthStateChanged } from 'firebase/auth'; // Import onAuthStateChanged
+import { useQuery } from '@tanstack/react-query'; // Import React Query
 import Spinner from "../../assets/loadingSpinner";
 import "./frends.css";
 
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 
+const fetchFriends = async (currentUser) => {
+  const userDocRef = doc(db, 'users', currentUser.uid);
+  const userDoc = await getDoc(userDocRef);
+  
+  if (!userDoc.exists()) throw new Error('User does not exist');
+
+  const userData = userDoc.data();
+  const friendsDetailsPromises = userData.friends.map(async (friend) => {
+    const friendId = friend.userId;
+    const friendDocRef = doc(db, 'users', friendId);
+    const friendDoc = await getDoc(friendDocRef);
+
+    if (friendDoc.exists()) {
+      const friendData = friendDoc.data();
+      return {
+        username: friendData.username,
+        profilePicture: friendData.profilePicture || defaultProfilePictureURL,
+        points: friendData.points || 0,
+      };
+    }
+    return null;
+  });
+
+  const friendsDetails = await Promise.all(friendsDetailsPromises);
+  return friendsDetails.filter(friend => friend !== null); // Filter out null values
+};
+
 const Friends = () => {
-  const [friendsData, setFriendsData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchFriends = async (currentUser) => {
-      try {
-        if (currentUser) {
-          const userDocRef = doc(db, 'users', currentUser.uid);
-          const userDoc = await getDoc(userDocRef);
-
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-
-            if (userData.friends && userData.friends.length > 0) {
-              const friendsDetailsPromises = userData.friends.map(async (friend) => {
-                const friendId = friend.userId;
-                const friendDocRef = doc(db, 'users', friendId);
-                const friendDoc = await getDoc(friendDocRef);
-
-                if (friendDoc.exists()) {
-                  const friendData = friendDoc.data();
-                  return {
-                    username: friendData.username,
-                    profilePicture: friendData.profilePicture || defaultProfilePictureURL,
-                    points: friendData.points || 0
-                  };
-                }
-                return null;
-              });
-
-              const friendsDetails = await Promise.all(friendsDetailsPromises);
-              setFriendsData(friendsDetails.filter(friend => friend !== null));
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching friends data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Listen for auth state changes
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        fetchFriends(user); // Fetch friends when user is authenticated
-      } else {
-        setLoading(false); // No user, stop loading
-      }
-    });
-
-    return () => unsubscribe(); // Cleanup subscription on unmount
-  }, []);
+  // Use React Query to fetch friends
+  const { data: friendsData = [], error, isLoading } = useQuery({
+    queryKey: ['friends'],
+    queryFn: async () => {
+      const currentUser = auth.currentUser;
+      if (!currentUser) throw new Error('No user is logged in');
+      return fetchFriends(currentUser);
+    },
+    enabled: !!auth.currentUser, // Only run if there's a logged-in user
+    staleTime: 1200 * 1000, // Set stale time to 20 minutes (1200 seconds)
+    cacheTime: 60 * 60 * 1000, // 1 hour
+  });
 
   // Handle scroll events to show/hide the scroll-to-top button
   useEffect(() => {
@@ -93,18 +81,21 @@ const Friends = () => {
     navigate(`/profile/${username}`);
   };
 
-  if (loading) {
+  if (isLoading) {
     return <Spinner />; // Display the spinner during loading
+  }
+
+  if (error) {
+    return <p>Error fetching friends: {error.message}</p>; // Display error message
   }
 
   return (
     <div className="friends-container">
       <div className="top-top-sideliners">
-        <i className="fas fa-arrow-left " onClick={handleBackClick}></i>
+        <i className="fas fa-arrow-left" onClick={handleBackClick}></i>
         <h2>Friends</h2>
       </div>
 
-      
       {friendsData.length > 0 ? (
         friendsData.map((friend, index) => (
           <div
@@ -129,7 +120,7 @@ const Friends = () => {
 
       {/* Floating scroll-to-top button */}
       {showScrollButton && (
-       <i className="fa-solid fa-caret-down scroll-to-top" onClick={scrollToTop} ></i>
+        <i className="fa-solid fa-caret-down scroll-to-top" onClick={scrollToTop}></i>
       )}
     </div>
   );
