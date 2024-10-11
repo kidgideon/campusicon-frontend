@@ -75,8 +75,8 @@ const Competition = () => {
    const { data: competition, error, isLoading } = useQuery({
     queryKey: ['competition', competitionId], // This identifies the query
     queryFn: () => fetchCompetitionData(competitionId), // Function to fetch data
-    staleTime:  1200 * 1000, // Data remains fresh for 1 minute
-    cacheTime:  60 * 60 * 1000, // Cache data for 5 minutes
+    staleTime: 1200 * 1000, // Set stale time to 20 minutes (1200 seconds)
+    cacheTime: 60 * 60 * 1000, // 1 hour
   });
 
   const goBack = () => {

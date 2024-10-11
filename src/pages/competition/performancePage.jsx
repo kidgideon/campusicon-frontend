@@ -38,8 +38,8 @@ const Performance = () => {
   const { data: videoData, isLoading, error } = useQuery({
     queryKey: ['performance', competitionId], // Ensure unique query key
     queryFn: () => fetchPerformanceData(competitionId),
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    cacheTime: 1000 * 60 * 10, // 10 minutes
+    staleTime: 1200 * 1000, // Set stale time to 20 minutes (1200 seconds)
+    cacheTime: 60 * 60 * 1000, // 1 hour
   });
 
   if (isLoading) {
