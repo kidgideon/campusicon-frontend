@@ -61,7 +61,7 @@ function App() {
               <Route path="/friends" element={<Friends />} />
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<CreateComp />} />
-              <Route path="/admin/post" element={<AdminFeedPostInterface />} />
+              <Route path="/post" element={<AdminFeedPostInterface />} />
               <Route path="/awards-ranks" element={<AwardsandRank />} />
               <Route path="" element={<ProtectedRoute element={<UserDashboard />} />} />
               <Route path="/campus-rank" element={<CampusRank />} />

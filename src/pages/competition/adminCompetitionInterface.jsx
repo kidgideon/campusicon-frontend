@@ -183,18 +183,23 @@ const AdminCompetitionInterface = () => {
   
       // Calculate Campus Streak points based on competition type
       let pointsToAdd = 0;
+      let awardType = '';
       switch (competitionType) {
         case 'Normal Star Award':
           pointsToAdd = 20;
+          awardType = 'Normal Star Award';
           break;
         case 'Super Star Award':
           pointsToAdd = 50;
+          awardType = 'Super Star Award';
           break;
         case 'Icon Award':
           pointsToAdd = 100;
+          awardType = 'Icon Award';
           break;
         default:
           pointsToAdd = 0;
+          awardType = 'Unknown Award'; // Fallback if the type is not recognized
       }
   
       // Fetch all users for batch notifications
@@ -244,9 +249,19 @@ const AdminCompetitionInterface = () => {
       // Update the winner's notifications and points
       const winnerNotifications = winnerData.notifications || [];
       const updatedWinnerNotifications = [...winnerNotifications, winnerNotification];
+  
+      // Check if the winner has a 'wins' field, create it if not, and add the new win object
+      const winnerWins = winnerData.win || [];
+      const newWin = {
+        competitionId: competitionId,
+        awardType: awardType,
+      };
+      const updatedWinnerWins = [...winnerWins, newWin];
+  
       batch.update(winnerRef, {
         notifications: updatedWinnerNotifications,
-        points: updatedCampusStreaks
+        points: updatedCampusStreaks,
+        win: updatedWinnerWins // Update or create the 'wins' field
       });
   
       // Update the competition status and winner in the competition document
@@ -265,6 +280,7 @@ const AdminCompetitionInterface = () => {
       setLoading(false); // Set loading to false
     }
   };
+  
   
 
   const handleDeleteCompetition = async (id) => {

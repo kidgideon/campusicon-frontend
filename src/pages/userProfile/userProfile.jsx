@@ -1,14 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react';
-import {useParams,  useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, updateDoc , getDoc} from 'firebase/firestore';
+import React, { useEffect, useState , useRef} from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { collection, query, where, getDocs , getDoc} from 'firebase/firestore';
 import { auth, db } from '../../../config/firebase_config';
-import ReactPlayer from 'react-player';
 import '../userProfile/profile.css';
+import ReactPlayer from 'react-player';
 import normalStarAwards from '../../assets/starCup.png';
 import superCupAwards from '../../assets/superCup.png';
 import iconAwards from '../../assets/iconCup.png';
-import Spinner from '../../assets/loadingSpinner'
-import LoadingScreen from '../../assets/loadingSpinner'; // Custom spinner component
 import {handleVideoLike, handlePostComment, handleCommentLike, handleDeleteComment, handleEditComment } from "../competition/videoUtils"
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 
@@ -22,7 +20,6 @@ const UserProfile = () => {
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState({});
   const [showCommentPanel, setShowCommentPanel] = useState(null);
-  const [votedVideos, setVotedVideos] = useState({});
   const navigate = useNavigate();
   const commentPanelRef = useRef(null);
   const [currentUser, setCurrentUser] = useState(null); // Define currentUser state
@@ -30,98 +27,94 @@ const UserProfile = () => {
   const [loadingVotes, setLoadingVotes] = useState(false);
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
 
-  const { username } = useParams();
-  useEffect(() => {
-    // Fetch current logged-in user
-    const fetchCurrentUser = async () => {
-      auth.onAuthStateChanged(async (loggedInUser) => {
-        if (loggedInUser) {
-          setCurrentUser(loggedInUser); // Set the current logged-in user
-        }
-      });
-    };
 
-    // Fetch the profile user based on the username from the URL
-    const fetchProfileUser = async () => {
-      setLoading(true);
+  const { username } = useParams();
+
+  useEffect(() => {
+    // Fetch user data from Firestore based on the username
+    const fetchUser = async () => {
       try {
-        // Fetch the profile user by username
         const q = query(collection(db, 'users'), where('username', '==', username));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          const userDoc = querySnapshot.docs[0];
-          const userData = userDoc.data();
-          const userDocId = userDoc.id;
+          const userData = querySnapshot.docs[0].data();
+          const userEmail = userData.email; // Get the email of the user being viewed
 
-          // Check if the logged-in user is viewing their own profile
-          if (currentUser && currentUser.email === userData.email) {
+          // Get the current user from Firebase authentication
+          const currentUser = auth.currentUser;
+      
+
+          if (currentUser && currentUser.email === userEmail) {
+            // If the current logged-in user is viewing their own profile, redirect to '/profile'
             navigate('/profile', { replace: true });
             return;
           }
 
-          // Handle missing fields in the profile user's data
-          const updates = {};
-          if (!userData.win) updates.win = [];
-          if (!userData.hobbies) updates.hobbies = [];
-          if (!userData.campus) updates.campus = 'No campus added yet.';
+          const userDocId = querySnapshot.docs[0].id;
 
-          if (Object.keys(updates).length > 0) {
-            await updateDoc(doc(db, 'users', userDocId), updates);
-            Object.assign(userData, updates);
+          // Check if the 'win' field exists
+          if (!userData.win) {
+            userData.win = []; // Initialize the win field locally as well
           }
 
-          // Calculate award counts for the profile user
+          // Calculate the count of each award type
           const counts = { normal: 0, super: 0, icon: 0 };
           userData.win.forEach((win) => {
-            if (win.awardType === 'Normal Star Award') counts.normal += 1;
-            else if (win.awardType === 'Super Star Award') counts.super += 1;
-            else if (win.awardType === 'Icon Award') counts.icon += 1;
+            if (win.awardType === 'Normal Star Award') {
+              counts.normal += 1;
+            } else if (win.awardType === 'Super Star Award') {
+              counts.super += 1;
+            } else if (win.awardType === 'Icon Award') {
+              counts.icon += 1;
+            }
           });
 
           setAwardCounts(counts);
-          setUser(userData); // Set the profile user
+          setUser(userData);
 
-          // Fetch profile user's videos
-          await fetchUserVideos(userData.uid); // Fetch videos for the profile user
+          // Fetch the user's videos
+          await fetchUserVideos(userDocId);
+
         } else {
-          console.log('No user found with this username');
+          console.log('No user found');
         }
       } catch (error) {
-        console.error('Error fetching profile user:', error);
+        console.error('Error fetching user:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    // Fetch videos of the profile user
     const fetchUserVideos = async (userId) => {
-      const videosQuery = query(collection(db, 'videos'), where('userId', '==', userId));
-      const videoSnapshot = await getDocs(videosQuery);
-      const fetchedVideos = [];
+      try {
+        const videosQuery = query(collection(db, 'videos'), where('userId', '==', userId));
+        const videoSnapshot = await getDocs(videosQuery);
+        const fetchedVideos = [];
 
-      const fetchedCreators = {};
-      for (const doc of videoSnapshot.docs) {
-        const videoData = doc.data();
-        videoData.id = doc.id;
-        fetchedVideos.push(videoData);
+        const fetchedCreators = {};
+        for (const doc of videoSnapshot.docs) {
+          const videoData = doc.data();
+          videoData.id = doc.id;
+          fetchedVideos.push(videoData);
 
-        if (!fetchedCreators[videoData.userId]) {
-          const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', videoData.userId)));
-          if (!userDoc.empty) {
-            fetchedCreators[videoData.userId] = userDoc.docs[0].data();
+          // Optionally, fetch the creator's information if not already available
+          if (!fetchedCreators[videoData.userId]) {
+            const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', videoData.userId)));
+            if (!userDoc.empty) {
+              fetchedCreators[videoData.userId] = userDoc.docs[0].data();
+            }
           }
         }
+        setVideos(fetchedVideos);
+        setCreators(fetchedCreators);
+      } catch (error) {
+        console.error('Error fetching videos:', error);
       }
-      setVideos(fetchedVideos);
-      setCreators(fetchedCreators);
     };
 
-    // Fetch both the current logged-in user and the profile user
-    fetchCurrentUser();
-    fetchProfileUser();
-
-  }, [username, navigate, currentUser]);
+    fetchUser();
+  }, [username, navigate]);
 
   if (loading) {
     return <div>Loading...</div>; // Replace with your custom spinner
@@ -132,9 +125,7 @@ const UserProfile = () => {
 
   }
 
-
-
-  // Open comment panel
+  
   const handleOpenComments = async (videoId) => {
     setShowCommentPanel(videoId);
     setNewComment('');
@@ -191,7 +182,7 @@ const UserProfile = () => {
     }
   };
   
-
+  
   const handleSendComment = async (videoId) => {
     if (!newComment.trim()) {
       toast.error('Comment cannot be empty');
@@ -210,7 +201,7 @@ const UserProfile = () => {
     }
   };
 
- 
+
 
   const closeCommentPanel = () => {
     setShowCommentPanel(null);
@@ -252,15 +243,32 @@ const UserProfile = () => {
 
   const campusStatus = calculateCampusStatus(user.points);
 
-  const handleEditProfile = () => {
-    navigate('/edit-profile');
+
+  const handleDeletePost = async (videoId) => {
+    // Ask for confirmation before deleting
+    const confirmDelete = window.confirm('Are you sure you want to delete this post?, this post will still be visible in the competion interface');
+    
+    if (confirmDelete) {
+      try {
+        // Delete the video document from Firestore
+        await deleteDoc(doc(db, 'videos', videoId));
+        // Remove the video from the state to no longer display it in the UI
+        setVideos((prevVideos) => prevVideos.filter((video) => video.id !== videoId));
+        alert('Post deleted successfully');
+      } catch (error) {
+        console.error('Error deleting video:', error);
+        alert('Failed to delete the post. Please try again.');
+      }
+    }
   };
+
   return (
     <div className='profile-structure'>
-   <div className="top-top-sideliners">
+     <div className="top-top-sideliners">
         <i className="fas fa-arrow-left " onClick={goBack}></i>
         <h2>Profile</h2>
       </div>
+
     <div className="profile-top">
       <div className="profile-pic-name">
         <div className="profile-pic">
@@ -312,38 +320,38 @@ const UserProfile = () => {
 
      <h3>posts</h3>
 
-     <div className="video-watch-area">
-  
-  {videos.map((video) => (
-    <div key={video.id} className="video-watch-item">
-      <div className="video-watch-top">
-        <div className="video-creator-profile">
-          <div className="video-watch-profile-picture">
-            <img 
-              src={creators[video.userId]?.profilePicture || defaultProfilePictureURL} 
-              alt="Creator Profile" 
-            />
-          </div>
-          <div className="video-watch-username">
-            {creators[video.userId]?.username || 'Unknown User'}
-          </div>
+    <div className="video-watch-area">
+{videos.map((video) => (
+  <div key={video.id} className="video-watch-item">
+    <div className="video-watch-top">
+      <div className="video-creator-profile">
+        <div className="video-watch-profile-picture">
+          <img 
+            src={creators[video.userId]?.profilePicture || defaultProfilePictureURL} 
+            alt="Creator Profile" 
+          />
+        </div>
+        <div className="video-watch-username">
+          {creators[video.userId]?.username || 'Unknown User'}
         </div>
       </div>
-      
-      <div className="video-watch-video-body">
-        <ReactPlayer 
-          url={video.videoURL} 
-          controls 
-          width="100%" 
-          height="auto" 
-        />
-      </div>
-      
-      <div className="video-watch-video-data">
-        <p>{video.description}</p>
-      </div>
-      
-      <div className="video-watch-icon-and-button">
+    </div>
+    
+    <div className="video-watch-video-body">
+      <ReactPlayer 
+        url={video.videoURL} 
+        controls 
+        width="100%" 
+        height="auto" 
+      />
+    </div>
+    
+    <div className="video-watch-video-data">
+      <p>{video.description}</p>
+    </div>
+    
+    
+    <div className="video-watch-icon-and-button">
         <div className="like" onClick={() => handleVideoLike(video.id, video.likes.includes(currentUser.uid), currentUser.uid, setVideos)}>
           <i 
             className="fa-solid fa-heart" 
@@ -356,15 +364,9 @@ const UserProfile = () => {
           <span>{video.comments.length}</span>
         </div>
         
-
-        <div className="share" onClick={() => handleVideoShare(video.id)}>
-          <i className="fa-solid fa-share" />
-          <span>{video.shares.length}</span>
-        </div>
       </div>
-
-    {/* Comment Panel (only show if open) */}
-    {showCommentPanel === video.id && (
+  {/* Comment Panel (only show if open) */}
+  {showCommentPanel === video.id && (
 <div className="comment-panel" id={`comment-panel-${video.id}`} ref={commentPanelRef}>
 
 <div className="comment-header">
@@ -374,13 +376,13 @@ const UserProfile = () => {
 
 <div className="comment-input">
 <input
-  ref={commentPanelRef} 
-  placeholder="Type a comment"
-  value={newComment}
-  onChange={(e) => setNewComment(e.target.value)}
+ref={commentPanelRef} 
+placeholder="Type a comment"
+value={newComment}
+onChange={(e) => setNewComment(e.target.value)}
 />
 <button className="send-comment-btn" onClick={() => handleSendComment(video.id)}>
-  Send
+Send
 </button>
 </div>
 
@@ -388,17 +390,9 @@ const UserProfile = () => {
 {commentLoading ? (
 <Spinner />
 ) : (
-// Sort comments by timestamp in descending order
-comments[video.id]
-?.slice() // Use slice to avoid mutating the original array
-.sort((a, b) => b.timestamp - a.timestamp) // Sort by timestamp (newest first)
-.map((comment) => (
+comments[video.id]?.map((comment) => (
   <div key={comment.timestamp} className="comment">
-    <img 
-      src={comment.userProfilePicture || defaultProfilePictureURL} 
-      alt="User" 
-      className="commenter-image" 
-    />
+    <img src={comment.userProfilePicture || defaultProfilePictureURL} alt="User" className="commenter-image"/>
     
     <div className="comment-details">
       <p className="commenters-name">{comment.username || 'me'}</p>
@@ -433,12 +427,10 @@ comments[video.id]
 ))
 )}
 </div>
-
-
 </div>
 )}
-    </div>
-  ))}
+  </div>
+))}
 </div>
 
   </div>

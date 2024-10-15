@@ -114,7 +114,7 @@ const UserDashboard = () => {
         <TopTab />
         <TopAccounts topUsers={topUsers} />
         <ActiveCompetitions activeCompetitions={activeCompetitions} />
-        <Feeds feeds={feeds} /> {/* Pass feeds as a prop */}
+        <Feeds feeds={feeds} /> 
       </div>
     </div>
   );

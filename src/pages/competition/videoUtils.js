@@ -175,10 +175,8 @@ export const handleVideoVote = async (videoId, currentUserId, setVideos, votedVi
     const userDoc = await getDoc(userRef);
     const userData = userDoc.data();
 
-    // Check if the user has already voted in this competition
     const previousVoteVideoId = userData.votedCompetitions?.[competitionId];
 
-    // Handle unvoting from the previous video if the user voted for a different video
     if (previousVoteVideoId && previousVoteVideoId !== videoId) {
       const previousVideoRef = doc(db, 'videos', previousVoteVideoId);
       const previousVideoDoc = await getDoc(previousVideoRef);
@@ -186,7 +184,6 @@ export const handleVideoVote = async (videoId, currentUserId, setVideos, votedVi
       const updatedPreviousVotes = previousVideoData.votes.filter(userId => userId !== currentUserId);
       await updateDoc(previousVideoRef, { votes: updatedPreviousVotes });
 
-      // Send notification for the unvote
       const previousCreatorId = previousVideoData.userId;
       const unvoteNotification = {
         read: false,
@@ -197,23 +194,25 @@ export const handleVideoVote = async (videoId, currentUserId, setVideos, votedVi
       };
       await sendNotification(previousCreatorId, unvoteNotification);
 
-      // Update the state for the previously voted video
-      setVideos(prevVideos => prevVideos.map(video => 
-        video.id === previousVoteVideoId
-          ? { ...video, votes: updatedPreviousVotes }
-          : video
-      ));
+      setVideos(prevVideos => {
+        if (!Array.isArray(prevVideos)) {
+          console.error('prevVideos is not an array:', prevVideos);
+          return prevVideos;
+        }
+        return prevVideos.map(video =>
+          video.id === previousVoteVideoId
+            ? { ...video, votes: updatedPreviousVotes }
+            : video
+        );
+      });
     }
 
-    // Determine the updated votes for the current video
     const updatedVotes = votes.includes(currentUserId)
-      ? votes.filter(userId => userId !== currentUserId) // Unvote
-      : [...votes, currentUserId]; // Vote
+      ? votes.filter(userId => userId !== currentUserId)
+      : [...votes, currentUserId];
 
-    // Update the votes for the current video in Firestore
     await updateDoc(videoRef, { votes: updatedVotes });
 
-    // Send a new vote notification if the user voted
     if (!votes.includes(currentUserId)) {
       const creatorId = videoData.userId;
       const voteNotification = {
@@ -226,16 +225,20 @@ export const handleVideoVote = async (videoId, currentUserId, setVideos, votedVi
       await sendNotification(creatorId, voteNotification);
     }
 
-    // Update the user's votedCompetitions field in Firestore
     const updatedVotedCompetitions = { ...userData.votedCompetitions, [competitionId]: videoId };
     await updateDoc(userRef, { votedCompetitions: updatedVotedCompetitions });
 
-    // Update the state for the current video
-    setVideos(prevVideos => prevVideos.map(video => 
-      video.id === videoId
-        ? { ...video, votes: updatedVotes }
-        : video
-    ));
+    setVideos(prevVideos => {
+      if (!Array.isArray(prevVideos)) {
+        console.error('prevVideos is not an array:', prevVideos);
+        return prevVideos;
+      }
+      return prevVideos.map(video =>
+        video.id === videoId
+          ? { ...video, votes: updatedVotes }
+          : video
+      );
+    });
 
     toast.success(votes.includes(currentUserId) ? 'Vote removed' : 'Voted successfully!');
   } catch (error) {
@@ -243,7 +246,6 @@ export const handleVideoVote = async (videoId, currentUserId, setVideos, votedVi
     toast.error('Error handling vote');
   }
 };
-
 
 export const handleCommentLike = async (videoId, commentTimestamp, currentUserId, setComments) => {
   try {

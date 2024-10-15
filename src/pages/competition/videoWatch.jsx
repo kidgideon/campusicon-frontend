@@ -25,37 +25,70 @@ const VideoWatch = () => {
   const navigate = useNavigate();
   const [loadingVotes, setLoadingVotes] = useState(false);
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
+  const [videos, setVideos] = useState([]);
 
-  // Fetch videos using useQuery
+ 
   const fetchVideos = async () => {
-    const videosQuery = query(collection(db, 'videos'), where('competitionId', '==', competitionId));
-    return new Promise((resolve, reject) => {
-      const unsubscribe = onSnapshot(videosQuery, (snapshot) => {
-        const videoData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        resolve(videoData.sort((a, b) => b.timestamp - a.timestamp));
-      }, (error) => {
-        console.error('Error fetching videos:', error);
-        reject(error);
+    try {
+      const videosQuery = query(
+        collection(db, 'videos'),
+        where('competitionId', '==', competitionId)
+      );
+
+      console.log("Querying videos for competitionId:", competitionId); // Debugging log
+
+      return new Promise((resolve, reject) => {
+        const unsubscribe = onSnapshot(
+          videosQuery,
+          (snapshot) => {
+            if (snapshot.empty) {
+              console.log("No videos found for competitionId:", competitionId); // Debugging log
+              resolve([]); // Resolve with an empty array if no videos are found
+            } else {
+              const videoData = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+              }));
+              console.log("Fetched video data:", videoData); // Debugging log
+              resolve(videoData.sort((a, b) => b.timestamp - a.timestamp));
+            }
+          },
+          (error) => {
+            console.error("Error fetching videos from Firestore:", error);
+            reject(error);
+          }
+        );
+        return unsubscribe; // Return the unsubscribe function
       });
-      return unsubscribe;
-    });
+    } catch (error) {
+      console.error("Error in fetchVideos:", error);
+      throw error; // Rethrow the error
+    }
   };
 
-  const { data: videoData, isLoading: videosLoading, error: videoError } = useQuery({
+  // React Query v5 integration
+  const { data, error, isLoading } = useQuery({
     queryKey: ['videos', competitionId],
     queryFn: fetchVideos,
-    staleTime: 20 * 60 * 1000, 
-    cacheTime: 60 * 60 * 1000, 
+    staleTime: 20 * 60 * 1000,
+    cacheTime: 60 * 60 * 1000,
   });
 
+  // Set videos directly when the data is updated
+  useEffect(() => {
+    if (data) {
+      setVideos(data); // Set videos directly from the fetched data
+    }
+  }, [data]);
   // Fetch creators
   useEffect(() => {
     const fetchCreators = async () => {
-      if (!videoData) return;
+      console.log(videos)
+      if (!videos.length) return;
 
       const creatorsData = {};
       await Promise.all(
-        videoData.map(async (video) => {
+        videos.map(async (video) => {
           const creatorRef = doc(db, 'users', video.userId);
           const creatorDoc = await getDoc(creatorRef);
           creatorsData[video.userId] = creatorDoc.data();
@@ -65,12 +98,12 @@ const VideoWatch = () => {
     };
 
     fetchCreators();
-  }, [videoData]);
+  }, [videos]);
 
   const handleVoteClick = (videoId) => {
     if (loadingVotes) return;
     setLoadingVotes(true); 
-    handleVideoVote(videoId, currentUser.uid, setVotedVideos, votedVideos)
+    handleVideoVote(videoId, currentUser.uid, setVideos, votedVideos)
       .finally(() => setLoadingVotes(false));
   };
 
@@ -146,12 +179,12 @@ const VideoWatch = () => {
     navigate(-1);
   };
 
-  if (videosLoading) {
+  if (isLoading) {
     return <Spinner />;
   }
 
 
-  if (videoError) {
+  if (error) {
     return <p>Error loading videos</p>;
   }
   return (
@@ -163,7 +196,7 @@ const VideoWatch = () => {
       </div>
 
   
-  {videoData.map((video) => (
+  {videos.map((video) => (
     <div key={video.id} className="video-watch-item">
       <div className="video-watch-top">
         <div className="video-creator-profile">
