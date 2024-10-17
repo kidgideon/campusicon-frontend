@@ -16,7 +16,8 @@ import {
 
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 
-const Feeds = ({ feeds }) => {
+const Feeds = ({ feeds: initialFeeds }) => {
+  const [feeds, setFeeds] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [showCommentPanel, setShowCommentPanel] = useState(null);
   const [comments, setComments] = useState({});
@@ -33,7 +34,10 @@ const Feeds = ({ feeds }) => {
         name: user.displayName || 'Anonymous',
       });
     }
-  }, []);
+
+    // Initialize the feeds state with the parameter value
+    setFeeds(initialFeeds);
+  }, [initialFeeds]);
 
   const handleToggleCommentPanel = async (feedId) => {
     setShowCommentPanel(feedId);
@@ -150,7 +154,7 @@ const Feeds = ({ feeds }) => {
 
             <div className="dashboard-interface-interactions">
               {currentUser && (
-                <div className="like" onClick={() => handleFeedLike(feed.id, feed.likes.includes(currentUser.uid), currentUser.uid)}>
+                <div className="like" onClick={() => handleFeedLike(feed.id, feed.likes.includes(currentUser.uid), currentUser.uid, setFeeds)}>
                   <i className="fa-solid fa-heart" style={{ color: feed.likes.includes(currentUser.uid) ? '#277AA4' : 'rgb(88, 88, 88)' }} />
                   <span>{feed.likes.length}</span>
                 </div>
