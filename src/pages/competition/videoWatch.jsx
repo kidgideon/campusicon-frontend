@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { query, collection, where, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../../../config/firebase_config';
 import ReactPlayer from 'react-player';
@@ -198,6 +198,7 @@ const VideoWatch = () => {
   
   {videos.map((video) => (
     <div key={video.id} className="video-watch-item">
+      <Link to={`/profile/${creators[video.userId]?.username }`}>
       <div className="video-watch-top">
         <div className="video-creator-profile">
           <div className="video-watch-profile-picture">
@@ -210,8 +211,9 @@ const VideoWatch = () => {
             {creators[video.userId]?.username || 'Unknown User'}
           </div>
         </div>
-      </div>
-      
+      </div>   
+      </Link>
+   
       <div className="video-watch-video-body">
         <ReactPlayer 
           url={video.videoURL} 

@@ -27,14 +27,17 @@ export const fetchCommentUserDetails = async (comment) => {
  * Function to send a notification to the creator of a video.
  * @param {string} creatorId - ID of the user who created the video.
  * @param {object} notification - Notification object to be added.
- */
-const sendNotification = async (creatorId, notification) => {
+ * 
+ * 
+ */const sendNotification = async (creatorId, notification, currentUserId) => {
+  // Do not send a notification to yourself
+  if (creatorId === currentUserId) return;
+
   const userRef = doc(db, 'users', creatorId);
   await updateDoc(userRef, {
     notifications: arrayUnion(notification)
   });
 };
-
 /**
  * Function to handle posting a comment
  * @param {string} videoId - ID of the video being commented on
@@ -91,7 +94,8 @@ export const handlePostComment = async (videoId, userId, commentText, setComment
       competitionId: videoData.competitionId,
       text: `${userData.username} commented on your video`,
     };
-    await sendNotification(creatorId, notification);
+    
+    await sendNotification(creatorId, notification, userId);
 
     // Update comments state
     setComments(prevComments => ({
@@ -146,7 +150,7 @@ export const handleVideoLike = async (videoId, isLiked, currentUserId, setVideos
         competitionId: videoData.competitionId,
         text: `${userData.username} liked your video`, // Assuming videoData has a username field
       };
-      await sendNotification(creatorId, notification);
+      await sendNotification(creatorId, notification, currentUserId);
     }
 
     // Update the state in the VideoWatch component
@@ -192,7 +196,7 @@ export const handleVideoVote = async (videoId, currentUserId, setVideos, votedVi
         competitionId,
         text: `${userData.username} removed their vote from your video`,
       };
-      await sendNotification(previousCreatorId, unvoteNotification);
+      await sendNotification(previousCreatorId, unvoteNotification, currentUserId);
 
       setVideos(prevVideos => {
         if (!Array.isArray(prevVideos)) {
@@ -222,7 +226,7 @@ export const handleVideoVote = async (videoId, currentUserId, setVideos, votedVi
         competitionId,
         text: `${userData.username} voted for your video!`,
       };
-      await sendNotification(creatorId, voteNotification);
+      await sendNotification(creatorId, voteNotification, currentUserId);
     }
 
     const updatedVotedCompetitions = { ...userData.votedCompetitions, [competitionId]: videoId };
@@ -293,7 +297,7 @@ export const handleCommentLike = async (videoId, commentTimestamp, currentUserId
       competitionId: videoData.competitionId,
       text: `${userData.username} liked your comment`, // Assuming videoData has a username field
     };
-    await sendNotification(creatorId, notification);
+    await sendNotification(creatorId, notification, currentUserId);
 
     toast.success(updatedLikes.includes(currentUserId) ? 'Comment liked!' : 'Comment unliked!');
   } catch (error) {

@@ -48,7 +48,6 @@ export const handleSendVerificationCode = async ({
     setLoading(false);
   }
 };
-
 export const handleVerifyCode = async ({
   verificationCode,
   generatedCode,
@@ -92,7 +91,6 @@ export const handleVerifyCode = async ({
         return "Lad";
       };
 
-   
       const status = getStatusFromPoints(0);
 
       // Add user to Firestore with uid
@@ -117,27 +115,40 @@ export const handleVerifyCode = async ({
         notifications: [],
       });
 
+      // Send welcome notification to the new user
+      const welcomeNotification = {
+        type: "notify",
+        text: `Welcome ${username}, get to know our app better!`,
+        link: "/awards-ranks",
+        read: false,
+        timestamp: new Date(),
+      };
+
+      await updateDoc(userDocRef, {
+        notifications: arrayUnion(welcomeNotification),
+      });
+
       // Handle referral logic
       if (referralCode) {
         const usersRef = collection(db, 'users');
         const querySnapshot = await getDocs(usersRef);
         let referrerUser = null;
-      
+
         querySnapshot.forEach((doc) => {
           const userData = doc.data();
           if (userData.username === referralCode) {
             referrerUser = { ...userData, uid: doc.id }; // Store found referrer data
           }
         });
-      
+
         if (referrerUser) {
           console.log("User found:", referrerUser.username); // Log the found user's username
-      
+
           // Update points by incrementing by 3
           await updateDoc(doc(db, 'users', referrerUser.uid), {
             points: increment(3),
           });
-      
+
           // Create a notification for the referrer
           const notification = {
             type: "friend",
@@ -148,8 +159,8 @@ export const handleVerifyCode = async ({
 
           const friend = {
             userId: user.uid, // ID of the user who just signed in
-          }
-      
+          };
+
           // Update notifications array using arrayUnion
           await updateDoc(doc(db, 'users', referrerUser.uid), {
             notifications: arrayUnion(notification),
@@ -158,12 +169,11 @@ export const handleVerifyCode = async ({
           await updateDoc(doc(db, 'users', referrerUser.uid), {
             friends: arrayUnion(friend),
           });
-         
+
         } else {
           console.log("No user found with the given referral code.");
         }
       }
-
 
       toast.success('Registration successful!');
       navigate('/login'); // Redirect to login page
