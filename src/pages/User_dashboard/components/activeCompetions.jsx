@@ -49,12 +49,6 @@ const ActiveCompetitions = ({ activeCompetitions }) => {
             </div>
           </div>
         ))}
-
-<Link className='clickable-div' to="/competitions"> {/* Replace with your actual route */}
-              
-              <i className="fa-solid fa-angles-down"></i>
-           
-          </Link>
       </ul>
     </div>
   );

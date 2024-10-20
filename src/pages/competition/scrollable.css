@@ -53,6 +53,7 @@
   justify-content: start;
   align-items: center;
   flex-direction: row;
+  color: black;
 }
 
 .video-watch-profile-picture {
@@ -72,7 +73,9 @@
   display: flex;
   justify-content: center;
   text-align: center;
+  color: black;
 }
+
  .video-watch-profile-picture img {
   width: 45px;
   height: 45px;
@@ -100,6 +103,7 @@
    display: flex;
    justify-content: center;
    align-items: center;
+   color: black;
  }
 
 .comment-panel {
@@ -109,7 +113,7 @@
   position: fixed;
   top: 0px;
   left: 0;
-  background-color: black;
+  background-color: white;
   overflow-y: auto;
   overflow-x: hidden; /* Prevent horizontal overflow */
   z-index: 1000;
@@ -117,7 +121,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
- color:  white;
+ color:  black;
 }
 
 .comment-header {

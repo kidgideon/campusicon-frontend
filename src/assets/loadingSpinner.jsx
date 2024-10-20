@@ -10,7 +10,7 @@ const SpinnerWrapper = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: black; /* Semi-transparent background */
+  background-color: white; /* Semi-transparent background */
   z-index: 999; /* Ensure spinner is above all content */
 `;
 

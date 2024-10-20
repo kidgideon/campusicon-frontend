@@ -3,7 +3,8 @@
     body{
       margin: 0px;
       padding: 0px;
-      background-color: black;
+      background-color: white;
+      color: black;
     }
 
  .layout-dashboard {
@@ -17,8 +18,8 @@
      font-weight: 200;
      font-size: 80%;
      padding-top: 85px;
-     background-color: black;
-     
+     background-color: white;
+     color: black;
  }
  
 .top-section{
@@ -32,8 +33,8 @@
     top: 0;
     left: 0;
     right: 0;
-    z-index: 10;
-   background-color: black;
+    z-index: 50;
+   background-color: white;
 }
 
  .user-dp {
@@ -93,8 +94,8 @@ img {
         justify-content: space-between;
         align-items: center;
         flex-direction: row;
-        z-index: 10;
-        background-color: black;
+        z-index: 50;
+        background-color: white;
         padding: 5px 0px;
         border-bottom: 1px solid rgb(184, 184, 184);
     }
@@ -133,82 +134,77 @@ img {
    text-decoration: none; /* Removes underline */
    color: inherit; /* Inherits the color of the parent element */
  }
- 
+
+ .top-accounts {
+  position: relative;
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-accounts::-webkit-scrollbar {
+  display: none;
+}
+
+.top-accounts::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+.user-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-card {
+ display: flex;
+ height: 70px;
+ justify-content: center;
+ align-items: center;
+ flex-direction: column;
+ margin: 5px;
+ padding-top: 5px;
+}
+
+
+.user-card div {
+ width: 100%;
+ text-align: center;
+ height: 50%;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ font-size: 80%;
+}
+
+.user-card img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 5px;
+}
+
+.user-card a {
+  text-decoration: none;
+  color: #205e78; /* User name color */
+  font-weight: bold;
+}
+
+.user-card a:hover {
+  color: #277AA4; /* Hover effect */
+}
+
  /* Optional: Remove any hover, active, or visited styling */
  a:hover,
  a:active,
  a:visited {
    text-decoration: none;
    color: inherit;
- }
-
-.user-list {
-  width: 100%;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-  overflow-x: auto;
-  padding: 10px 0; /* Padding around the list */
-  margin: 0 auto; /* Center the list */
-  list-style-type: none; /* Remove default list item markers */
-  padding-left: 0; /* Remove default padding */
-  background-color: black;
-  border-bottom: 1px solid rgb(231, 225, 225);
-  position: relative;
-}
-
-.clickable-div {
-   position: absolute;
-   right: 5px;
-   z-index: 10px;
-}
-
-.fa-angles-down {
-   color: #205e78;
-   font-size: 15px;
-  }
- 
-.top-accounts {
-    width: 100%;
-}
-
- .user-card {
-    width: 100px;
-    margin: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 5px;
-    font-size: 85%;
- }
-
- .img-div {
-    width: 50px;
-    height: 50px;
-    border:  1px solid #205e78;
-    border-radius: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
- }
-
- .user-card img {
-   width: 45px;
-   height: 45px;
-   border-radius: 100%;
- }
-
- .name-div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
- }
-
- .user-list::-webkit-scrollbar{
-    display: none;
  }
 
    /* //competion  */
@@ -223,6 +219,7 @@ img {
      justify-content: center;
      align-items: center;
      flex-direction: column;
+     position: relative;
  }
 
  .competion-list {
@@ -238,7 +235,7 @@ img {
     list-style-type: none; /* Remove default list item markers */
     border-bottom: 1px solid rgb(231, 225, 225);
     border-top: 1px solid rgb(231, 225, 225);
-    position: relative;
+   
  }
 
  .competion-list::-webkit-scrollbar{
@@ -256,7 +253,7 @@ img {
     position: relative;
     border-radius: 10px;
     gap: 5px;
-    background-color: black;
+    background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), /* subtle shadow */
     0 6px 20px rgba(0, 0, 0, 0.1); /* deeper shadow */
  }
@@ -322,7 +319,7 @@ img {
    justify-content: center;
    align-items: center;
    flex-direction: column;
-   border: 1px solid rgb(75, 75, 75);
+   border: 1px solid rgb(197, 197, 197);
    margin: 10px;
  }
 
@@ -333,7 +330,7 @@ img {
    align-items: center;
    flex-direction: row;
    margin: 0px;
-   color: white;
+   color: black;
    font-weight: bold;
    font-size: 17px;
   }
@@ -359,7 +356,7 @@ img {
 
   .dashboard-interface-text-content p {
    margin: 4px 20px;
-   color: white;
+   color: black;
   }
 
   .dashboard-interface-media-content {

@@ -31,10 +31,10 @@ export const handleFeedLike = async (feedId, isLiked, currentUserId, setFeeds) =
     ));
 
     // Display a success message using toast
-    toast.success(isLiked ? 'Like removed' : 'Liked successfully!');
+    // toast.success(isLiked ? 'Like removed' : 'Liked successfully!');
   } catch (error) {
     console.error('Error handling feed like:', error);
-    toast.error('Error handling like');
+    // toast.error('Error handling like');
   }
 };
 
@@ -168,10 +168,10 @@ export const handleCommentLike = async (feedId, commentTimestamp, currentUserId,
     }));
 
     // Notify the user of success
-    toast.success(updatedLikes.includes(currentUserId) ? 'Comment liked!' : 'Comment unliked!');
+    // toast.success(updatedLikes.includes(currentUserId) ? 'Comment liked!' : 'Comment unliked!');
   } catch (error) {
     console.error('Error liking/unliking comment:', error);
-    toast.error('Error liking/unliking comment');
+    // toast.error('Error liking/unliking comment');
   }
 };
 /**

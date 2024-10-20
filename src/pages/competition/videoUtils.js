@@ -160,10 +160,10 @@ export const handleVideoLike = async (videoId, isLiked, currentUserId, setVideos
         : video
     ));
 
-    toast.success(isLiked ? 'Like removed' : 'Liked successfully!');
+    // toast.success(isLiked ? 'Like removed' : 'Liked successfully!');
   } catch (error) {
     console.error('Error handling like:', error);
-    toast.error('Error handling like');
+    // toast.error('Error handling like');
   }
 };
 

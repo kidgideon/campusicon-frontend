@@ -3,9 +3,9 @@
     margin: 0 auto;
     padding: 2rem;
     padding-top: 70px;
-    background-color: black;
+    background-color: white;
     border-radius: 10px;
-    color: white;
+    color: black;
     font-family: "SUSE", sans-serif;
     font-size: 85%;
   }
@@ -25,12 +25,12 @@
   .settings-item {
     display: flex;
     align-items: center;
-    background-color:  #333;;
+    background-color: white;
     padding: 1rem;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     justify-content: start;
-    color: white;
+    color: black;
   }
   
   .settings-item i {

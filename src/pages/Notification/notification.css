@@ -5,7 +5,7 @@
   align-items: center;
   font-family: 'Arial', sans-serif;
   padding: 20px;
-  background-color: black;
+  background-color: white;
 }
 
 /* Notification title */
@@ -19,7 +19,9 @@
 .notification-card {
   width: 97%;
   max-width: 600px;
-  background-color: #252525;
+  background-color: white;
+  border: 1px solid rgb(221, 221, 221);
+  color: rgb(0, 0, 0);
   margin-bottom: 15px;
   padding: 15px;
   border-radius: 10px;
@@ -60,7 +62,7 @@
 /* Notification text and links */
 .notification-text {
   font-size: 16px;
-  color: white;
+  color: black;
 }
 
 .notification-link {

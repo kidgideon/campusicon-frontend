@@ -13,7 +13,7 @@ a {
 
   .edit-layout {
     padding-top: 80px;
-    color:  white;
+    color:  black;
   }
 
   .profile-structure {
@@ -24,9 +24,9 @@ a {
     align-items: center;
     flex-direction: column;
     font-family: "SUSE", sans-serif;
-    font-size: 70%;
+    font-size: 90%;
     padding-top: 70px;
-    color: white;
+    color: black;
   }
 
 .profile-top {

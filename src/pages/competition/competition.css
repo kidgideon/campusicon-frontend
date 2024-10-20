@@ -9,9 +9,9 @@
     font-weight: 400;
     margin-bottom: 40px;
     font-size: 100%;
-    font-size: 85%;
+    font-size: 95%;
     padding-top: 80px;
-    color: white
+    color: black;
 }
 
  
@@ -24,7 +24,7 @@
     top: 0px;
     right: 0px;
     left: 0px;
-    background-color: black;
+    background-color: white;
     color: #205e78;
     gap: 20px;
     z-index: 500;
@@ -162,7 +162,7 @@ h1 {
     bottom: 0px;
     left: 0px;
     right: 0px;
-    background-color: black;
+    background-color: white;
     z-index: 10px;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
   }

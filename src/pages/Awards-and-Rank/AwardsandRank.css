@@ -4,8 +4,9 @@
     margin: 0 auto;
     font-family: Arial, sans-serif;
     position: relative;
-    color: white;
+    color: black;
     padding-top: 80px;
+    background-color: white;
   }
   
   .awards-rank-interface-header,

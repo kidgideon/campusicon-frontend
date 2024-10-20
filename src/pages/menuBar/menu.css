@@ -9,6 +9,7 @@
     font-family: "SUSE", sans-serif;
     font-size: 85%;
     color:  #277AA4;
+    background-color: white;
 }
 
 .menu-page-top-section {
@@ -26,7 +27,7 @@
     align-items: center;
     flex-direction: row;
     border-radius: 20px;
-     background-color: #333;
+     background-color: rgb(224, 224, 224);
     max-width: 500px;
     gap: 20px;
     color:  #277AA4;
@@ -56,6 +57,7 @@
     align-items: center;
     flex-direction: row;
     color:  #277AA4;
+    
 }
 
 .menu-page-option {
@@ -70,6 +72,7 @@
     padding: 10px;
     margin: 10px;
     max-width: 220px;
+    background-color: rgb(224, 224, 224);
 }
 
 .menu-page-option-icon {
@@ -77,6 +80,7 @@
     display: flex;
     justify-content: start;
     align-items: center;
+
 }
 
 .menu-page-option-icon i {
@@ -104,7 +108,7 @@
 .settings-block-menu-page {
     width: 96%;
     height: 50px;
-    background-color:  #333;
+      background-color: rgb(224, 224, 224);
     display: flex;
     justify-content: center;
     align-items: start;

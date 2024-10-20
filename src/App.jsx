@@ -41,7 +41,7 @@ function App() {
     // Hide the splash screen after 6 seconds
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 6000); // Adjust the duration as needed
+    }, 3000); // Adjust the duration as needed
 
     // Cleanup timer if component unmounts before timeout is completed
     return () => clearTimeout(timer);
@@ -101,7 +101,7 @@ function App() {
                 },
                 error: {
                   style: {
-                    background: 'black', // Dark background
+                    background: 'white', // Dark background
                     color: '#ff5252',   // Error red color
                   },
                   iconTheme: {
@@ -110,8 +110,8 @@ function App() {
                   },
                 },
                 style: {
-                  background: 'black',  // Default dark background for all toasts
-                  color: '#fff',        // Default text color
+                  background: 'white',  // Default dark background for all toasts
+                  color: 'black',        // Default text color
                 },
               }}
             />

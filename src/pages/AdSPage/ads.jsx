@@ -132,7 +132,7 @@ const AdsPage = () => {
         </div>
 
         <h1>Advertise on Campus Icon</h1>
-        <p style={{ color: 'white' }}>Contact the Campus Icon team to create your ad:</p>
+        <p style={{ color: 'black' }}>Contact the Campus Icon team to create your ad:</p>
      
         <a href="https://wa.me/2349013585057" target="_blank" rel="noopener noreferrer">
             <button>

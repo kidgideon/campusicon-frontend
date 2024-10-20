@@ -44,7 +44,7 @@ const UserProfile = () => {
           // Get the current user from Firebase authentication
           const currentUser = auth.currentUser;
       
-
+   setCurrentUser(currentUser)
           if (currentUser && currentUser.email === userEmail) {
             // If the current logged-in user is viewing their own profile, redirect to '/profile'
             navigate('/profile', { replace: true });
