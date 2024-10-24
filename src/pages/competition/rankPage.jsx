@@ -7,13 +7,15 @@ import Spinner from "../../assets/loadingSpinner"; // Import loading spinner
 import toast from 'react-hot-toast';
 import './Rank.css';
 
+
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 
 const fetchCompetitors = async (competitionId) => {
   const currentUserId = auth.currentUser?.uid;
 
   if (!currentUserId) {
-    throw new Error("User not logged in");
+   toast.error("no user logged in")
+   navigate("/login")
   }
 
   const videosQuery = query(
@@ -25,7 +27,7 @@ const fetchCompetitors = async (competitionId) => {
   const allVideos = videoSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
   if (allVideos.length === 0) {
-    throw new Error("No videos found for this competition");
+     toast.error("no competitors yet")
   }
 
   const sortedVideos = allVideos.sort((a, b) => b.votes.length - a.votes.length);
@@ -54,7 +56,7 @@ const CompetitionRank = () => {
   const currentUserRef = useRef(null);
   const scrollRef = useRef(null);
   const navigate = useNavigate();
-
+ 
   const { data: competitors = [], isLoading, error } = useQuery({
     queryKey: ['competitors', competitionId], // Ensure unique query key
     queryFn: () => fetchCompetitors(competitionId),

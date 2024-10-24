@@ -166,7 +166,7 @@ const DiscoveryPage = () => {
             <Link to="/"><i className="fa-solid fa-house"></i></Link>
           </span>
           <span className="discovery-tab">
-            <Link to="/discovery"><i className="fa-solid fa-compass" style={{ color: '#205e78' }}></i></Link>
+            <Link to="/discovery-page"><i className="fa-solid fa-compass" style={{ color: '#205e78' }}></i></Link>
           </span>
           <span className="competition-tab">
             <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>

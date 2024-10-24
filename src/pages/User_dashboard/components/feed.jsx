@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import logo from '../../../assets/logo.png';
 import { auth } from '../../../../config/firebase_config';
 import { db } from '../../../../config/firebase_config'; // Ensure you're importing your Firebase config
@@ -25,6 +25,7 @@ const Feeds = ({ feeds: initialFeeds }) => {
   const commentPanelRef = useRef(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -109,7 +110,8 @@ const Feeds = ({ feeds: initialFeeds }) => {
 
     try {
       if (!currentUser) {
-        throw new Error('User not logged in.');
+        toast.error("you are not logged in")
+      navigate("/login")
       }
 
       await handlePostComment(feedId, currentUser.uid, newComment, setComments, commentPanelRef);
@@ -121,6 +123,7 @@ const Feeds = ({ feeds: initialFeeds }) => {
       setCommentLoading(false);
     }
   };
+
 
   return (
     <div className="dashboard-interface-feeds">
@@ -147,10 +150,29 @@ const Feeds = ({ feeds: initialFeeds }) => {
             </div>
 
             <div className="dashboard-interface-media-content">
-              {feed.mediaUrl && (
-                <img src={feed.mediaUrl} alt="Feed Media" className="admin-feed-interface-feed-image feed-image" />
-              )}
-            </div>
+  {feed.mediaUrl && feed.mediaType && (
+    <>
+      {feed.mediaType === 'image' ? (
+        <img 
+          src={feed.mediaUrl} 
+          alt="Feed Media" 
+          className="admin-feed-interface-feed-image feed-image" 
+        />
+      ) : feed.mediaType === 'video' ? (
+        <video 
+          src={feed.mediaUrl} 
+          controls 
+          className="admin-feed-interface-feed-video feed-video"
+        >
+          Your browser does not support the video tag.
+        </video>
+      ) : (
+        <p>Unsupported media format</p>
+      )}
+    </>
+  )}
+</div>
+
 
             <div className="dashboard-interface-interactions">
               {currentUser && (

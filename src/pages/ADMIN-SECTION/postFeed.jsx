@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, limit } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../../../config/firebase_config'; // Ensure paths are correct
-import './postFeed.css'; // Updated CSS file name for clarity
+import { db, storage } from '../../../config/firebase_config';
+import './postFeed.css';
 
 const AdminFeedPostInterface = () => {
   const [feeds, setFeeds] = useState([]);
@@ -10,10 +10,10 @@ const AdminFeedPostInterface = () => {
   const [media, setMedia] = useState(null); // Can be image or video
 
   // Helper function to check if the media is a video
-  const isVideo = (url) => {
+  const isVideo = (fileName) => {
     const videoExtensions = ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv']; // Common video file formats
-    const urlExtension = url.split('.').pop().toLowerCase();
-    return videoExtensions.includes(urlExtension);
+    const fileExtension = fileName.split('.').pop().toLowerCase();
+    return videoExtensions.includes(fileExtension);
   };
 
   // Fetch feeds function
@@ -36,24 +36,29 @@ const AdminFeedPostInterface = () => {
   const handleCreateFeed = async () => {
     try {
       let mediaUrl = '';
+      let mediaType = ''; // New variable to store the media type
+
       if (media) {
         const mediaRef = ref(storage, `feeds/${media.name}`);
         await uploadBytes(mediaRef, media);
         mediaUrl = await getDownloadURL(mediaRef);
+        mediaType = isVideo(media.name) ? 'video' : 'image'; // Determine if the media is a video or image
       }
 
+      // Store the content, mediaUrl, and mediaType in Firestore
       await addDoc(collection(db, 'feeds'), {
         content: content,
         mediaUrl: mediaUrl, // Can be either an image or video URL
+        mediaType: mediaType, // Store the media type ('video' or 'image')
         likes: [], // Initialize as empty arrays
         comments: [],
         shares: [],
         createdAt: new Date(),
       });
 
-      setContent('');
-      setMedia(null);
-      fetchFeeds(); // Refresh the list
+      setContent(''); // Reset the content input
+      setMedia(null); // Reset the media input
+      fetchFeeds(); // Refresh the feed list
     } catch (error) {
       console.error('Error creating feed:', error);
     }
@@ -62,7 +67,7 @@ const AdminFeedPostInterface = () => {
   const handleDeleteFeed = async (id) => {
     try {
       await deleteDoc(doc(db, 'feeds', id));
-      fetchFeeds(); // Refresh the list
+      fetchFeeds(); // Refresh the feed list
     } catch (error) {
       console.error('Error deleting feed:', error);
     }
@@ -105,7 +110,7 @@ const AdminFeedPostInterface = () => {
             <p className="admin-feed-interface-feed-content">{feed.content}</p>
             {feed.mediaUrl && (
               <>
-                {isVideo(feed.mediaUrl) ? (
+                {feed.mediaType === 'video' ? (
                   <video controls src={feed.mediaUrl} className="admin-feed-interface-feed-video" />
                 ) : (
                   <img src={feed.mediaUrl} alt="Feed Media" className="admin-feed-interface-feed-image" />

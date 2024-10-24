@@ -2,6 +2,7 @@
     padding: 20px;
     max-width: 800px;
     margin: 0 auto;
+    color: black;
   }
   
   .admin-feed-interface-title {
@@ -28,9 +29,21 @@
     border-radius: 5px;
     border: 1px solid #ccc;
   }
-  
   .admin-feed-interface-media-input {
-    margin-top: 10px;
+    display: block; /* Ensure it's visible as a block-level element */
+    margin-top: 10px; /* Add some space from the label */
+    padding: 10px; /* Add padding for better appearance */
+    border: 1px solid #ccc; /* Add a border to define the input box */
+    border-radius: 5px; /* Rounded corners */
+    background-color: red; /* Light background color */
+    font-size: 16px; /* Font size for better readability */
+    cursor: pointer; /* Show pointer cursor when hovering */
+    width: 100%; /* Make the input take up the full width of its container */
+  }
+  
+  .admin-feed-interface-media-input:hover {
+    background-color: #f1f1f1; /* Slightly darker background on hover */
+    border-color: #aaa; /* Darken border on hover */
   }
   
   .admin-feed-interface-submit-btn {

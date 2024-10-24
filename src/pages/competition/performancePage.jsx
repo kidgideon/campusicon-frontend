@@ -7,10 +7,11 @@ import Spinner from '../../assets/loadingSpinner';
 import toast from 'react-hot-toast'; // Import toast for notifications
 import { useQuery } from '@tanstack/react-query'; // Import React Query
 
-const fetchPerformanceData = async (competitionId) => {
+const fetchPerformanceData = async (competitionId, navigate) => {
   const currentUser = auth.currentUser;
   if (!currentUser) {
-    throw new Error("You need to be logged in to view your performance.");
+    toast.error("You need to be logged in to view your performance.");
+    navigate("/login")
   }
 
   const uid = currentUser.uid;
@@ -25,7 +26,8 @@ const fetchPerformanceData = async (competitionId) => {
   const videoSnapshot = await getDocs(videoQuery);
 
   if (videoSnapshot.empty) {
-    throw new Error("You don't have a video in this competition.");
+    toast.error("You dont have a video for this competition");
+    navigate(`/competition/${competitionId}`)
   }
 
   return videoSnapshot.docs[0].data(); // Return the first video document's data
@@ -37,7 +39,7 @@ const Performance = () => {
 
   const { data: videoData, isLoading, error } = useQuery({
     queryKey: ['performance', competitionId], // Ensure unique query key
-    queryFn: () => fetchPerformanceData(competitionId),
+    queryFn: () => fetchPerformanceData(competitionId, navigate),
     staleTime: 1200 * 1000, // Set stale time to 20 minutes (1200 seconds)
     cacheTime: 60 * 60 * 1000, // 1 hour
   });
