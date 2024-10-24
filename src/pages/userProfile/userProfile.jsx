@@ -1,12 +1,13 @@
 import React, { useEffect, useState , useRef} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs , getDoc} from 'firebase/firestore';
+import { collection, query, where, getDocs , getDoc, doc} from 'firebase/firestore';
 import { auth, db } from '../../../config/firebase_config';
 import '../userProfile/profile.css';
 import ReactPlayer from 'react-player';
 import normalStarAwards from '../../assets/starCup.png';
 import superCupAwards from '../../assets/superCup.png';
 import iconAwards from '../../assets/iconCup.png';
+import Spinner from "../../assets/loadingSpinner"
 import {handleVideoLike, handlePostComment, handleCommentLike, handleDeleteComment, handleEditComment } from "../competition/videoUtils"
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 
@@ -26,6 +27,7 @@ const UserProfile = () => {
   const [likedComments, setLikedComments] = useState({});
   const [loadingVotes, setLoadingVotes] = useState(false);
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
+  const [playingVideoId, setPlayingVideoId] = useState(null);
 
 
   const { username } = useParams();
@@ -106,8 +108,9 @@ const UserProfile = () => {
             }
           }
         }
-        setVideos(fetchedVideos);
-        setCreators(fetchedCreators);
+        const sortedFetchedVideos = (fetchedVideos || []).sort((a, b) => b.timestamp - a.timestamp);
+      setVideos(sortedFetchedVideos);
+      setCreators(fetchedCreators);
       } catch (error) {
         console.error('Error fetching videos:', error);
       }
@@ -117,7 +120,7 @@ const UserProfile = () => {
   }, [username, navigate]);
 
   if (loading) {
-    return <div>Loading...</div>; // Replace with your custom spinner
+    return <Spinner/>; // Replace with your custom spinner
   }
 
   if (!user) {
@@ -243,7 +246,6 @@ const UserProfile = () => {
 
   const campusStatus = calculateCampusStatus(user.points);
 
-
   const handleDeletePost = async (videoId) => {
     // Ask for confirmation before deleting
     const confirmDelete = window.confirm('Are you sure you want to delete this post?, this post will still be visible in the competion interface');
@@ -261,6 +263,15 @@ const UserProfile = () => {
       }
     }
   };
+
+  const handleVideoPlay = (videoId) => {
+    setPlayingVideoId(videoId); // Set the currently playing video ID
+  };
+
+  const handleVideoPause = () => {
+    setPlayingVideoId(null); // Reset when the video is paused
+  };
+
 
   return (
     <div className='profile-structure'>
@@ -339,10 +350,13 @@ const UserProfile = () => {
     
     <div className="video-watch-video-body">
       <ReactPlayer 
-        url={video.videoURL} 
-        controls 
-        width="100%" 
-        height="auto" 
+         url={video.videoURL} 
+         controls 
+         width="100%" 
+         height="auto" 
+         playing={playingVideoId === video.id} // Control playback
+         onPlay={() => handleVideoPlay(video.id)} // Handle play event
+         onPause={handleVideoPause} // Handle pause event
       />
     </div>
     

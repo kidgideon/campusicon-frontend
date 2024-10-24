@@ -5,6 +5,8 @@ import icon from '../../assets/logo.png';
 import { collection, getDocs, where, query, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../../../config/firebase_config';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
+
 
 // Function to fetch user data
 const fetchUserData = async (uid) => {

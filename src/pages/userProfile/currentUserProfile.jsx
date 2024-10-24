@@ -30,6 +30,7 @@ const CurrentUserProfile = () => {
   const [likedComments, setLikedComments] = useState({});
   const [loadingVotes, setLoadingVotes] = useState(false);
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
+  const [playingVideoId, setPlayingVideoId] = useState(null);
 
 
   useEffect(() => {
@@ -102,7 +103,9 @@ const CurrentUserProfile = () => {
           }
         }
       }
-      setVideos(fetchedVideos);
+  
+      const sortedFetchedVideos = (fetchedVideos || []).sort((a, b) => b.timestamp - a.timestamp);
+      setVideos(sortedFetchedVideos);
       setCreators(fetchedCreators);
     };
 
@@ -248,6 +251,15 @@ const CurrentUserProfile = () => {
     }
   };
 
+  
+  const handleVideoPlay = (videoId) => {
+    setPlayingVideoId(videoId); // Set the currently playing video ID
+  };
+
+  const handleVideoPause = () => {
+    setPlayingVideoId(null); // Reset when the video is paused
+  };
+
   return (
     <div className='profile-structure'>
        <div className="top-top-sideliners">
@@ -331,6 +343,9 @@ const CurrentUserProfile = () => {
           controls 
           width="100%" 
           height="auto" 
+          playing={playingVideoId === video.id} // Control playback
+          onPlay={() => handleVideoPlay(video.id)} // Handle play event
+          onPause={handleVideoPause} // Handle pause event
         />
       </div>
       

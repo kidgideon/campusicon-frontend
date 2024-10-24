@@ -20,7 +20,6 @@ const awardImages = {
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 
 const CompetitionsPage = () => {
-  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const navigate = useNavigate();
   const auth = getAuth();
 
@@ -76,55 +75,54 @@ const CompetitionsPage = () => {
     cacheTime: 1000 * 60 * 60, // 1 hour
   });
 
-  // Fetch unread notifications count
-  const { data: unreadNotifications } = useQuery({
-    queryKey: ['notifications'],
-    queryFn: async () => {
-      const userRef = collection(db, 'users');
-      const q = query(userRef);
-      const querySnapshot = await getDocs(q);
-
-      let unreadCount = 0;
-      querySnapshot.forEach((doc) => {
-        const user = doc.data();
-        const notifications = user.notifications || [];
-        notifications.forEach((notification) => {
-          if (!notification.read) {
-            unreadCount++;
-          }
-        });
+  // Fetch Unread Notifications using React Query
+  const fetchUnreadNotifications = async () => {
+    const userRef = collection(db, 'users');
+    const q = query(userRef); // Get all user documents
+    const querySnapshot = await getDocs(q);
+    let unreadCount = 0;
+    querySnapshot.forEach((doc) => {
+      const user = doc.data();
+      const notifications = user.notifications || [];
+      notifications.forEach((notification) => {
+        if (!notification.read) {
+          unreadCount++;
+        }
       });
+    });
+    return unreadCount;
+  };
 
-      return unreadCount;
-    },
-    onSuccess: (count) => setUnreadNotificationCount(count),
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    cacheTime: 1000 * 60 * 10, // 10 minutes
+  const { data: unreadNotificationCount = 0, isLoading: notificationsLoading } = useQuery({
+    queryKey: ['unreadNotifications'],
+    queryFn: fetchUnreadNotifications,
+    staleTime: 20 * 60 * 1000,  // 20 minutes
+    cacheTime: 60 * 60 * 1000   // 1 hour
   });
 
   // Mark all notifications as read
   const markAllAsRead = async () => {
-    const userRef = collection(db, 'users');
-    const q = query(userRef);
-    
-    try {
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach(async (docSnapshot) => {
-        const userDoc = docSnapshot.data();
-        const notifications = userDoc.notifications || [];
+    const currentUser = auth.currentUser;
+
+    if (currentUser) {
+      const userRef = doc(db, 'users', currentUser.uid);
+      const userSnapshot = await getDocs(query(collection(db, 'users'), where('uid', '==', currentUser.uid)));
+
+      if (!userSnapshot.empty) {
+        const userDoc = userSnapshot.docs[0];
+        const notifications = userDoc.data().notifications || [];
+
+        // Update all notifications to "read"
         const updatedNotifications = notifications.map((notification) => ({
           ...notification,
-          read: true,
+          read: true
         }));
 
-        await updateDoc(doc(db, 'users', docSnapshot.id), { notifications: updatedNotifications });
-      });
-
-      setUnreadNotificationCount(0);
-    } catch (error) {
-      console.error('Error marking notifications as read:', error);
+        await updateDoc(userRef, { notifications: updatedNotifications });
+      }
     }
   };
+
 
   if (competitionsLoading || profileLoading) {
     return <Spinner />;
@@ -170,9 +168,7 @@ const CompetitionsPage = () => {
             <Link to="/ads"><i className="fa-solid fa-bullhorn"></i></Link>
           </span>
         </div>
-        <div className="direction-text">
-          <h1>All Competitions</h1>
-        </div>
+       
         <div className="competition-list">
           {competitions.map((competition) => (
             <div 

@@ -7,12 +7,13 @@ import Spinner from "../../assets/loadingSpinner";
 import './notification.css';
 import icon from '../../assets/logo.png'; // Assuming the company logo path
 import { useQuery } from '@tanstack/react-query';
+const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
-  const [profilePicture, setProfilePicture] = useState('https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media'); // Default profile pic
+  const [profilePicture, setProfilePicture] = useState(''); // Default profile pic
   const navigate = useNavigate();
 
   // Fetch user profile picture
@@ -47,7 +48,7 @@ const Notifications = () => {
 
   useEffect(() => {
     if (userProfile) {
-      setProfilePicture(userProfile.profilePicture || 'https://example.com/default-profile-pic.png');
+      setProfilePicture(userProfile.profilePicture || defaultProfilePictureURL);
     }
   }, [userProfile]);
 
