@@ -88,33 +88,33 @@ function App() {
 
             {/* Toaster with Dark Theme */}
             <Toaster
-              toastOptions={{
-                success: {
-                  style: {
-                    background: '#333', // Dark background
-                    color: '#4caf50',    // Success green color
-                  },
-                  iconTheme: {
-                    primary: '#4caf50',
-                    secondary: '#fff',
-                  },
-                },
-                error: {
-                  style: {
-                    background: 'white', // Dark background
-                    color: '#ff5252',   // Error red color
-                  },
-                  iconTheme: {
-                    primary: '#ff5252',
-                    secondary: '#fff',
-                  },
-                },
-                style: {
-                  background: 'white',  // Default dark background for all toasts
-                  color: 'black',        // Default text color
-                },
-              }}
-            />
+  toastOptions={{
+    success: {
+      style: {
+        background: 'white', // White background for success toasts
+        color: 'black',       // Black text color for readability
+      },
+      iconTheme: {
+        primary: '#4caf50',   // Success green icon
+        secondary: '#fff',    // White icon background
+      },
+    },
+    error: {
+      style: {
+        background: 'white',  // White background for error toasts
+        color: 'black',        // Black text color
+      },
+      iconTheme: {
+        primary: '#ff5252',    // Error red icon
+        secondary: '#fff',     // White icon background
+      },
+    },
+    style: {
+      background: 'white',    // Default white background for all toasts
+      color: 'black',         // Default black text color
+    },
+  }}
+/>
           </BrowserRouter>
         )}
       </>

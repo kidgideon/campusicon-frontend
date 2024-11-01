@@ -10,6 +10,7 @@ import superCup from '../../assets/superCup.png';
 import normalStarCup from '../../assets/starCup.png';
 import iconAwardCup from '../../assets/iconCup.png';
 import iconLogo from '../../assets/logo.png';
+import CompetitionsPageSkeleton from './competionSkeleton';
 
 const awardImages = {
   'Normal Star Award': normalStarCup,
@@ -125,7 +126,7 @@ const CompetitionsPage = () => {
 
 
   if (competitionsLoading || profileLoading) {
-    return <Spinner />;
+    return <CompetitionsPageSkeleton />;
   }
 
   if (!competitions || competitions.length === 0) {

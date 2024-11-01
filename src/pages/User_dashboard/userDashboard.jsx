@@ -9,7 +9,7 @@ import TopAccounts from './components/topaccount';
 import ActiveCompetitions from './components/activeCompetions';
 import Feeds from './components/feed.jsx';
 import './userDashboard.css';
-import LoadingSpinner from '../../assets/loadingSpinner'; // Import the spinner
+import Skeleton from'./DashboardSkeleton.jsx'
 
 // Fetch user data function
 const fetchUserData = async () => {
@@ -26,20 +26,23 @@ const fetchUserData = async () => {
   if (!userDoc.exists()) {
     throw new Error('No such user!');
   }
-
   return userDoc.data();
 };
 
 // Fetch top users function
 const fetchTopUsers = async () => {
-  const topUsersQuery = query(collection(db, 'users'), orderBy('points', 'desc'), limit(10));
+  const topUsersQuery = query(collection(db, 'users'), orderBy('points', 'desc'), limit(4));
   const topUsersSnapshot = await getDocs(topUsersQuery);
   return topUsersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
-// Fetch active competitions function
 const fetchActiveCompetitions = async () => {
-  const activeCompetitionsQuery = query(collection(db, 'competitions'), orderBy('startDate', 'desc'));
+  // Step 1: Retrieve competitions ordered by startDate in descending order
+  const activeCompetitionsQuery = query(
+    collection(db, 'competitions'), 
+    orderBy('startDate', 'desc')
+  );
+  
   const activeCompetitionsSnapshot = await getDocs(activeCompetitionsQuery);
   const activeCompetitionsList = activeCompetitionsSnapshot.docs.map(doc => {
     const data = doc.data();
@@ -51,16 +54,22 @@ const fetchActiveCompetitions = async () => {
     };
   });
 
-  const now = new Date();
-  return activeCompetitionsList.filter(comp => {
-    if (comp.status === 'Ongoing') return true;
-    if (comp.status === 'Not Started' && comp.startDate > now) return true;
-    return false;
-  }).sort((a, b) => {
-    if (a.status === 'Ongoing' && b.status !== 'Ongoing') return -1;
-    if (a.status !== 'Ongoing' && b.status === 'Ongoing') return 1;
-    return a.startDate - b.startDate; // Sort by startDate within each status group
-  });
+  // Step 2: Filter for competitions with status 'Ongoing'
+  const ongoingCompetitions = activeCompetitionsList.filter(comp => comp.status === 'Ongoing');
+  
+  // Step 3: Sort ongoing competitions by participation count (highest first)
+  ongoingCompetitions.sort((a, b) => (b.videos?.length || 0) - (a.videos?.length || 0));
+
+  // Step 4: Retrieve top 3 competitions by participation count if we need more to fill 4 spots
+  const additionalCompetitions = activeCompetitionsList
+    .filter(comp => comp.status !== 'Ongoing')  // Only look at non-ongoing competitions
+    .sort((a, b) => (b.videos?.length || 0) - (a.videos?.length || 0))
+    .slice(0, 3);  // Get top 3 by participation count
+
+  // Step 5: Combine the lists, prioritizing ongoing competitions
+  const finalCompetitionsList = [...ongoingCompetitions, ...additionalCompetitions].slice(0, 3);
+
+  return finalCompetitionsList;
 };
 
 // Fetch feeds function
@@ -103,7 +112,7 @@ const UserDashboard = () => {
   const loading = userLoading || topUsersLoading || activeCompetitionsLoading || feedsLoading;
   const error = userError || topUsersError || activeCompetitionsError || feedsError;
 
-  if (loading) return <LoadingSpinner />; // Use the custom spinner component for loading
+  if (loading) return <Skeleton/>; // Use the custom spinner component for loading
   if (error) return <p>Error: {error.message}</p>; // Display error messages
   if (!userData) return <p>No user data available</p>;
 

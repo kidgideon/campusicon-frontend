@@ -8,7 +8,7 @@ import './notification.css';
 import icon from '../../assets/logo.png'; // Assuming the company logo path
 import { useQuery } from '@tanstack/react-query';
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
-
+import NotificationPageSkeleton from './skeleton.jsx'
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -132,7 +132,7 @@ const Notifications = () => {
   };
 
   if (isUserProfileLoading || isNotificationsLoading || loading) {
-    return <Spinner />;
+    return <NotificationPageSkeleton/>;
   }
 
   return (
