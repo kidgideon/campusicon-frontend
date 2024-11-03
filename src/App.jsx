@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { useState, useEffect } from 'react'; // Import necessary hooks
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import React Query
+import { useState, useEffect } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Register from './pages/register_components/register';
 import Login from './pages/login_components/login';
 import UserDashboard from './pages/User_dashboard/userDashboard';
@@ -31,30 +31,38 @@ import AdsPage from './pages/AdSPage/ads';
 import Settings from './pages/settingsPage/settings';
 import CampusIconMainPage from './pages/campusIcon';
 
-// Create a QueryClient instance
 const queryClient = new QueryClient();
 
 function App() {
-  const [showSplash, setShowSplash] = useState(true); // State to track splash screen visibility
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    // Hide the splash screen after 6 seconds
+    // Hide the splash screen after 3 seconds
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 3000); // Adjust the duration as needed
-
-    // Cleanup timer if component unmounts before timeout is completed
+    }, 3000);
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    // Register the service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered:', registration);
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
+    }
+  }, []);
+
   return (
-    <QueryClientProvider client={queryClient}> {/* Provide React Query to your app */}
+    <QueryClientProvider client={queryClient}>
       <>
         {showSplash ? (
-          // Show the splash screen while `showSplash` is true
           <SplashScreen />
         ) : (
-          // Render the app once the splash screen is hidden
           <BrowserRouter>
             <Routes>
               <Route path="/register" element={<Register />} />
@@ -82,39 +90,37 @@ function App() {
               <Route path="/ads" element={<AdsPage/>} />
               <Route path="/settings" element={<Settings/>} />
               <Route path="/icons page" element={<CampusIconMainPage/>} />
-              {/* Catch-all route for 404 Not Found */}
               <Route path="*" element={<NotFound />} />
             </Routes>
 
-            {/* Toaster with Dark Theme */}
             <Toaster
-  toastOptions={{
-    success: {
-      style: {
-        background: 'white', // White background for success toasts
-        color: 'black',       // Black text color for readability
-      },
-      iconTheme: {
-        primary: '#4caf50',   // Success green icon
-        secondary: '#fff',    // White icon background
-      },
-    },
-    error: {
-      style: {
-        background: 'white',  // White background for error toasts
-        color: 'black',        // Black text color
-      },
-      iconTheme: {
-        primary: '#ff5252',    // Error red icon
-        secondary: '#fff',     // White icon background
-      },
-    },
-    style: {
-      background: 'white',    // Default white background for all toasts
-      color: 'black',         // Default black text color
-    },
-  }}
-/>
+              toastOptions={{
+                success: {
+                  style: {
+                    background: 'white',
+                    color: 'black',
+                  },
+                  iconTheme: {
+                    primary: '#4caf50',
+                    secondary: '#fff',
+                  },
+                },
+                error: {
+                  style: {
+                    background: 'white',
+                    color: 'black',
+                  },
+                  iconTheme: {
+                    primary: '#ff5252',
+                    secondary: '#fff',
+                  },
+                },
+                style: {
+                  background: 'white',
+                  color: 'black',
+                },
+              }}
+            />
           </BrowserRouter>
         )}
       </>
