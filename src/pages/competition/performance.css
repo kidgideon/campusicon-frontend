@@ -2,18 +2,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: black; /* Light background */
+  background-color: white; /* Light background */
   font-family: "SUSE", sans-serif;
+  padding-bottom: 20px;
 }
 
 .video-performance-preview-area {
   width: 100%;
-  max-width: 700px;
-  margin-bottom: 20px;
-  background-color: black;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  border-radius: 10px;
-  padding: 20px;
   overflow: hidden;
   text-align: center;
 }
@@ -23,8 +18,9 @@
   height: auto;
   border-radius: 8px;
   margin-bottom: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Video shadow for visual pop */
   margin-top: 150px;
+  max-width: 500px;
+  height: 500px;
 }
 
 .icons {

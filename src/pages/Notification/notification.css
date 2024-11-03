@@ -38,7 +38,7 @@
 
 /* Unread notifications have a different style */
 .notification-card.unread {
-  background-color: #252525;
+  background-color: rgb(202, 232, 241);
 }
 
 /* Notification content layout */

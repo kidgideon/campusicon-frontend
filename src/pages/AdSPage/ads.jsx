@@ -122,7 +122,7 @@ const AdsPage = () => {
           <span className="competition-tab">
             <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
           </span>
-          <span className="notifications-tab" onClick={() => mutation.mutate()}> {/* Mark all as read on click */}
+          <span className="notifications-tab"> {/* Mark all as read on click */}
             <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
             <span className='unread-notification-count' style={{ display: unreadNotificationCount > 0 ? 'block' : 'none' }}>
               {unreadNotificationCount > 15 ? '15+' : unreadNotificationCount}

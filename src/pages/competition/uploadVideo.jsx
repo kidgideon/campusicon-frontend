@@ -270,7 +270,7 @@ const UploadVideoForm = () => {
     <i className="fa-solid fa-trophy interface-icon"></i>
   </div>
   <div onClick={() => navigate(`/watch-video/${competitionId}`)}>
-  <i className="fa-solid fa-play interface-icon" style={{color : '#205e78'}}></i>
+  <i className="fa-solid fa-play interface-icon"></i>
   </div>
   <div className="top-users-icon" onClick={() => navigate(`/ranks/${competitionId}`)}>
     <i className="fa-solid fa-sort interface-icon"></i>

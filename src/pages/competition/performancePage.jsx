@@ -82,15 +82,8 @@ const Performance = () => {
             <i className="fa-solid fa-thumbs-up"></i>
             <p>{videoData.votes.length || 0}</p>
           </div>
-          <div className="shares">
-            <i className="fa-solid fa-share"></i>
-            <p>{videoData.shares.length || 0}</p>
-          </div>
         </div>
 
-        <div className="views-counts">
-          <p>You have {videoData.views || 0} views on your video</p>
-        </div>
 
         <div className="competion-interface-footer">
           <div onClick={() => navigate(`/competition/${competitionId}`)}>

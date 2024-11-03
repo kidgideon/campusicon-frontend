@@ -171,7 +171,7 @@ const DiscoveryPage = () => {
           <span className="competition-tab">
             <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
           </span>
-          <span className="notifications-tab" onClick={markAllAsRead}>
+          <span className="notifications-tab">
             <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
             <span className='unread-notification-count' style={{ display: unreadNotificationCount > 0 ? 'block' : 'none' }}>
               {unreadNotificationCount > 15 ? '15+' : unreadNotificationCount}

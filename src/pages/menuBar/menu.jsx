@@ -4,7 +4,7 @@ import { auth, db } from '../../../config/firebase_config'; // Firebase setup
 import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
 import Logo from '../../assets/logo.png';
 import "./menu.css";
-
+const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 // Function to fetch user data
 const fetchUserData = async () => {
     const currentUser = auth.currentUser;
@@ -54,10 +54,10 @@ const Menu = () => {
                 <div className="menu-page-top-section">
                     <div className="menu-page-user-profile">
                         <div className="menu-page-user-profile-picture">
-                            <img src={user ? user.profilePicture : Logo} alt="User Profile" />
+                            <img src={user.profilePicture? user.profilePicture : defaultProfilePictureURL } alt="User Profile" />
                         </div>
                         <div className="menu-page-username">
-                            {isLoading ? 'Loading...' : user ? `${user.firstName} ${user.lastName}` : 'Error loading user'}
+                            {isLoading ? 'Loading...' : user ? `${user.firstName}  ${user.surname}` : 'Error loading user'}
                         </div>
                     </div>
                 </div>
@@ -128,12 +128,6 @@ const Menu = () => {
                         <i className="fa-solid fa-file-contract"></i>
                     </div>
                     <div className="settings-block-text">Sponsorship and Endorsement</div>
-                </div>
-                <div className="settings-block-menu-page" onClick={() => navigate("/about")}>
-                    <div className="settings-block-icon">
-                        <i className="fa-solid fa-address-card"></i>
-                    </div>
-                    <div className="settings-block-text">About</div>
                 </div>
                 <div className="settings-block-menu-page" onClick={handleLogout} style={{ color: "red" }}>
                     <div className="settings-block-icon">
