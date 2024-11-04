@@ -12,7 +12,9 @@
 }
 
 .splash-screen img {
-  width: 150px;
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
   margin-bottom: 5px;
   animation: logo-animation 3s ease forwards;
 }

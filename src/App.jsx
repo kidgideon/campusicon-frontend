@@ -30,6 +30,7 @@ import SplashScreen from './pages/SplashScreen';
 import AdsPage from './pages/AdSPage/ads';
 import Settings from './pages/settingsPage/settings';
 import CampusIconMainPage from './pages/campusIcon';
+import ImageViewer from './pages/imageViewer';
 
 const queryClient = new QueryClient();
 
@@ -91,6 +92,7 @@ function App() {
               <Route path="/settings" element={<Settings/>} />
               <Route path="/icons page" element={<CampusIconMainPage/>} />
               <Route path="*" element={<NotFound />} />
+              <Route path="/view-image" element={<ImageViewer />} />
             </Routes>
 
             <Toaster

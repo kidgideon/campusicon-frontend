@@ -15,7 +15,7 @@ const Notifications = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [profilePicture, setProfilePicture] = useState(''); // Default profile pic
   const navigate = useNavigate();
-
+ 
   // Fetch user profile picture
   const { data: userProfile, isLoading: isUserProfileLoading } = useQuery({
     queryKey: ['userProfile', currentUser?.uid],

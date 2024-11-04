@@ -1,23 +1,36 @@
 {
-    "name": "Campus Icon",
-    "short_name": "CampusIcon",
-    "description": "Campus Icon is a platform for campus competitions and social interaction.",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#277AA4",
-    "orientation": "portrait",
-    "icons": [
-      {
-        "src": "./src/assets/logo.png",
-        "sizes": "192x192",
-        "type": "image/png"
-      },
-      {
-        "src": "./src/assets/logo.png",
-        "sizes": "512x512",
-        "type": "image/png"
-      }
-    ]
-  }
-  
+  "name": "Campus Icon",
+  "short_name": "CampusIcon",
+  "description": "Campus Icon is a platform for campus competitions and social interaction.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#277AA4",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./src/assets/logo.png",
+      "sizes": "600x600",
+      "type": "image/png"
+    },
+    {
+      "src": "./src/assets/logo.png",
+      "sizes": "600x600",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./src/assets/screenshot1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"  
+    },
+    {
+      "src": "./src/assets/screenshot2.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide" 
+    }
+  ]
+}

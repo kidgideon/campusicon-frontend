@@ -153,11 +153,13 @@ const Feeds = ({ feeds: initialFeeds }) => {
   {feed.mediaUrl && feed.mediaType && (
     <>
       {feed.mediaType === 'image' ? (
-        <img 
+      <Link to={`/view-image?url=${encodeURIComponent(feed.mediaUrl)}`}>
+          <img 
           src={feed.mediaUrl} 
           alt="Feed Media" 
           className="admin-feed-interface-feed-image feed-image" 
         />
+        </Link>
       ) : feed.mediaType === 'video' ? (
         <video 
           src={feed.mediaUrl} 

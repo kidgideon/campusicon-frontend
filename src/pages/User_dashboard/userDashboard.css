@@ -52,7 +52,9 @@
 }
 
 .company-logo {
-    width: 100%;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -337,10 +339,10 @@ img {
 
 
   .dashboard-interface-feed-top img {
-    width: 80px;
-    height: 80px;
+    width: 40px;
+    height: 40px;
     border-radius: 100%;
-
+   margin: 20px;
   }
 
   .dashboard-interface-text-content {

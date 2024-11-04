@@ -1,5 +1,5 @@
 import React, { useEffect, useState , useRef} from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { collection, query, where, getDocs , getDoc, doc} from 'firebase/firestore';
 import { auth, db } from '../../../config/firebase_config';
 import '../userProfile/profile.css';
@@ -283,7 +283,9 @@ const UserProfile = () => {
     <div className="profile-top">
       <div className="profile-pic-name">
         <div className="profile-pic">
+        <Link to={`/view-image?url=${encodeURIComponent(user.profilePicture)}`}>
           <img src={user.profilePicture || defaultProfilePictureURL} alt="Profile" />
+          </Link>
         </div>
         <div className="fullname">
           <p>{user.firstName} {user.lastName}</p>

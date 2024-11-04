@@ -29,10 +29,11 @@ export default defineConfig({
           }
         ]
       },
+      manifestFilename: 'manifest.webmanifest', // Ensures manifest has a consistent filename
       workbox: {
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // Set to 5 MB (or adjust as needed)
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // Set to 5 MB to allow for larger files
       },
     })
   ],
-  base: './', // Use '.' since it's deployed at the root level
+  base: '/', // Set the base path to root for consistent URL resolution
 });
