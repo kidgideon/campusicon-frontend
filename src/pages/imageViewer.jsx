@@ -1,7 +1,7 @@
 // ImageViewer.jsx
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import './ImageViewer.css';
+import './imageViewer.css';
 
 const ImageViewer = () => {
     const navigate = useNavigate();
