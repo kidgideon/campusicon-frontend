@@ -7,6 +7,7 @@ import Spinner from "../../assets/loadingSpinner";
 import './notification.css';
 import { useQuery } from '@tanstack/react-query';
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
+const icon = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
 import NotificationPageSkeleton from './skeleton.jsx'
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -14,7 +15,7 @@ const Notifications = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [profilePicture, setProfilePicture] = useState(''); // Default profile pic
   const navigate = useNavigate();
-  const icon = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
+
 
   // Fetch user profile picture
   const { data: userProfile, isLoading: isUserProfileLoading } = useQuery({
@@ -79,34 +80,35 @@ const Notifications = () => {
     }
     return null;
   };
-
   const handleNotificationClick = async (notification, index) => {
-    // Update read status
+    // Optimistically update the UI to mark as read
     if (!notification.read) {
+      setNotifications((prevNotifications) =>
+        prevNotifications.map((notif, i) =>
+          i === index ? { ...notif, read: true } : notif
+        )
+      );
+  
       try {
+        // Fetch current user's notification list from Firestore
         const userDocRef = doc(db, 'users', currentUser.uid);
         const userDoc = await getDoc(userDocRef);
-
+  
         if (userDoc.exists()) {
           const userData = userDoc.data();
           const updatedNotifications = [...userData.notifications];
           updatedNotifications[index] = { ...notification, read: true };
-
+  
+          // Update notifications array in Firestore
           await updateDoc(userDocRef, {
             notifications: updatedNotifications,
           });
-
-          setNotifications((prevNotifications) =>
-            prevNotifications.map((notif, i) =>
-              i === index ? { ...notif, read: true } : notif
-            )
-          );
         }
       } catch (error) {
         console.error('Error marking notification as read:', error);
       }
     }
-
+  
     // Navigate based on notification type and competitionId
     switch (notification.type) {
       case 'friend':
@@ -124,12 +126,13 @@ const Notifications = () => {
         navigate(`/competition/${notification.competitionId}`);
         break;
       case 'notify':
-        window.location.href = notification.link; // Use the provided link in notification object
+        window.location.href = notification.link;
         break;
       default:
         break;
     }
   };
+  
 
   if (isUserProfileLoading || isNotificationsLoading || loading) {
     return <NotificationPageSkeleton/>;

@@ -54,12 +54,15 @@ const Performance = () => {
     return null; // Return null to avoid rendering the rest of the component
   }
 
+  const goBack = () => {
+    navigate(-1)
+  }
   return (
     <div className="full-house">
       <div className="performance-interface">
         <div className="video-performance-preview-area">
           <div className="top-top-sideliners">
-            <i className="fas fa-arrow-left" onClick={() => navigate(-1)}></i>
+            <i className="fas fa-arrow-left" onClick={goBack}></i>
             <h2> Performance </h2>
           </div>
           {/* Display the video preview */}
