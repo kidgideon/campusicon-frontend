@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { collection, query, where, getDocs, doc, updateDoc , getDoc,  deleteDoc} from 'firebase/firestore';
 import { auth, db } from '../../../config/firebase_config';
 import ReactPlayer from 'react-player';
@@ -12,62 +11,6 @@ import Spinner from '../../assets/loadingSpinner'
 import LoadingScreen from '../../assets/loadingSpinner'; // Custom spinner component
 import {handleVideoLike, handlePostComment, handleCommentLike, handleDeleteComment, handleEditComment } from "../competition/videoUtils"
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
-import { useQuery } from '@tanstack/react-query';
-
-const fetchUser = async () => {
-  const unsubscribe = onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      const q = query(collection(db, 'users'), where('email', '==', user.email));
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const userDoc = querySnapshot.docs[0];
-        const userData = userDoc.data();
-        userData.id = userDoc.id; // Store the document ID
-        return userData; // Directly return user data
-      } else {
-        console.error('No user found', error);
-        return null; // Return null or handle it appropriately
-      }
-    } else {
-      console.error('No user logged in' , error);
-      return null; // Return null or handle it appropriately
-    }
-  });
-
-  // Ensure you unsubscribe when the function is done
-  return () => unsubscribe();
-};
-
-// Function to fetch user videos
-const fetchUserVideos = async (userId) => {
-  const videosQuery = query(collection(db, 'videos'), where('userId', '==', userId));
-  const videoSnapshot = await getDocs(videosQuery);
-  const fetchedVideos = [];
-
-  for (const doc of videoSnapshot.docs) {
-    const videoData = doc.data();
-    videoData.id = doc.id;
-    fetchedVideos.push(videoData);
-  }
-
-  return fetchedVideos; // Return the sorted fetched videos
-};
-
-// Function to fetch creators based on an array of videos
-const fetchCreators = async (videos) => {
-  const fetchedCreators = {};
-
-  for (const video of videos) {
-    if (!fetchedCreators[video.userId]) {
-      const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', video.userId)));
-      if (!userDoc.empty) {
-        fetchedCreators[video.userId] = userDoc.docs[0].data();
-      }
-    }
-  }
-  return fetchedCreators; // Return the fetched creators
-};
-
 
 
 const CurrentUserProfile = () => {
@@ -75,6 +18,7 @@ const CurrentUserProfile = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [creators, setCreators] = useState({});
+  const [awardCounts, setAwardCounts] = useState({ normal: 0, super: 0, icon: 0 });
   const [commentLoading, setCommentLoading] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState({});
@@ -88,56 +32,85 @@ const CurrentUserProfile = () => {
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
   const [playingVideoId, setPlayingVideoId] = useState(null);
 
-  // Fetch the current user
-const { data: savedUser, isLoading: loadingUser, error: userError } = useQuery({
-  queryKey: ['user'],
-  queryFn: fetchUser,
-  onSuccess: async () => {
-    setCurrentUser(savedUser); // Set currentUser when user is fetched
-    setUser(savedUser); // Set the user state as well
-    console.log(savedUser); // Log the fetched user data
 
-    const updates = {};
-    if (!savedUser.win) updates.win = [];
-    if (!savedUser.hobbies) updates.hobbies = [];
-    if (!savedUser.campus) updates.campus = 'No campus added yet.';
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true); 
+      try {
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+          if (user) {
+            setCurrentUser(user); // Set currentUser when authenticated
+            const q = query(collection(db, 'users'), where('email', '==', user.email));
+            const querySnapshot = await getDocs(q);
 
-    if (Object.keys(updates).length > 0) {
-      await updateDoc(doc(db, 'users', userDocId), updates);
-      Object.assign(savedUser, updates);
-    }
+            if (!querySnapshot.empty) {
+              const userDoc = querySnapshot.docs[0];
+              const userData = userDoc.data();
+              const userDocId = userDoc.id;
 
-    const counts = { normal: 0, super: 0, icon: 0 };
-    savedUser.win.forEach((win) => {
-      if (win.awardType === 'Normal Star Award') counts.normal += 1;
-      else if (win.awardType === 'Super Star Award') counts.super += 1;
-      else if (win.awardType === 'Icon Award') counts.icon += 1;
-    });
-  },
-});
+              const updates = {};
+              if (!userData.win) updates.win = [];
+              if (!userData.hobbies) updates.hobbies = [];
+              if (!userData.campus) updates.campus = 'No campus added yet.';
 
+              if (Object.keys(updates).length > 0) {
+                await updateDoc(doc(db, 'users', userDocId), updates);
+                Object.assign(userData, updates);
+              }
 
-// Fetch user videos when user data is available
-const { data: savedVideos, isLoading: loadingVideos } = useQuery({
-  queryKey: ['videos', currentUser?.id],
-  queryFn: () => fetchUserVideos(currentUser.id),
-  enabled: !!currentUser, // Only run this query if currentUser is available
-  onSuccess: (fetchedVideos) => {
-    const sortedFetchedVideos = (fetchedVideos || []).sort((a, b) => b.timestamp - a.timestamp);
-    setVideos(sortedFetchedVideos);
-  },
-});
+              const counts = { normal: 0, super: 0, icon: 0 };
+              userData.win.forEach((win) => {
+                if (win.awardType === 'Normal Star Award') counts.normal += 1;
+                else if (win.awardType === 'Super Star Award') counts.super += 1;
+                else if (win.awardType === 'Icon Award') counts.icon += 1;
+              });
 
-// Fetch creators based on the saved videos when user videos are available
-const { data: savedCreators, isLoading: creatorLoading } = useQuery({
-  queryKey: ['creators', savedVideos],
-  queryFn: () => fetchCreators(savedVideos),
-  enabled: !!savedVideos, // Only run this query if savedVideos is available
-  onSuccess: () => {
-    setCreators(savedCreators)
-  },
-});
+              setAwardCounts(counts);
+              setUser(userData);
 
+              await fetchUserVideos(user.uid);
+            } else {
+              console.log('No user found');
+            }
+          } else {
+            console.log('No user logged in');
+          }
+          setLoading(false);
+        });
+
+        return () => unsubscribe();
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        setLoading(false);
+      }
+    };
+
+    const fetchUserVideos = async (userId) => {
+      const videosQuery = query(collection(db, 'videos'), where('userId', '==', userId));
+      const videoSnapshot = await getDocs(videosQuery);
+      const fetchedVideos = [];
+
+      const fetchedCreators = {};
+      for (const doc of videoSnapshot.docs) {
+        const videoData = doc.data();
+        videoData.id = doc.id;
+        fetchedVideos.push(videoData);
+
+        if (!fetchedCreators[videoData.userId]) {
+          const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', videoData.userId)));
+          if (!userDoc.empty) {
+            fetchedCreators[videoData.userId] = userDoc.docs[0].data();
+          }
+        }
+      }
+  
+      const sortedFetchedVideos = (fetchedVideos || []).sort((a, b) => b.timestamp - a.timestamp);
+      setVideos(sortedFetchedVideos);
+      setCreators(fetchedCreators);
+    };
+
+    fetchUser();
+  }, []);
 
   const handleOpenComments = async (videoId) => {
     setShowCommentPanel(videoId);
@@ -223,18 +196,14 @@ const { data: savedCreators, isLoading: creatorLoading } = useQuery({
   const goBack = () => {
     navigate(-1);
   };
- // Loading indicators
- if (loadingUser || loadingVideos) {
-  return <LoadingScreen />;
-}
 
-if (userError) {
-  return <div>Error fetching user: {userError}</div>;
-}
+  if (loading) {
+    return <LoadingScreen />; 
+  }
 
-if (!user) {
-  return <div>No user logged in</div>;
-}
+  if (!user) {
+    return <div>No user logged in</div>;
+  }
 
   function calculateCampusStatus(points) {
     const campusStatusTiers = [
