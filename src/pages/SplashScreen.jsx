@@ -1,6 +1,7 @@
 import React from 'react';
 import './SplashScreen.css';
-import logo from "../assets/logo.png";
+const logo = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
+
 
 const SplashScreen = () => {
   return (

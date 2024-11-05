@@ -5,7 +5,6 @@ import { db, auth } from '../../../config/firebase_config';
 import { Link, useNavigate } from 'react-router-dom';
 import Spinner from "../../assets/loadingSpinner";
 import './notification.css';
-import icon from '../../assets/logo.png'; // Assuming the company logo path
 import { useQuery } from '@tanstack/react-query';
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 import NotificationPageSkeleton from './skeleton.jsx'
@@ -15,7 +14,8 @@ const Notifications = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [profilePicture, setProfilePicture] = useState(''); // Default profile pic
   const navigate = useNavigate();
- 
+  const icon = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
+
   // Fetch user profile picture
   const { data: userProfile, isLoading: isUserProfileLoading } = useQuery({
     queryKey: ['userProfile', currentUser?.uid],

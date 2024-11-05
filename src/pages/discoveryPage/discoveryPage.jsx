@@ -4,12 +4,12 @@ import { getFirestore, collection, query, where, getDocs, updateDoc, doc } from 
 import { auth, db } from '../../../config/firebase_config';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import ReactPlayer from 'react-player';
-import logo from '../../assets/logo.png';
 import './discovery.css';
 import Spinner from "../../assets/loadingSpinner";
 import { useQuery } from '@tanstack/react-query';
 
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
+const logo = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
 
 const DiscoveryPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -172,7 +172,7 @@ const DiscoveryPage = () => {
             <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
           </span>
           <span className="notifications-tab">
-            <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
+            <Link to="/notifications"><i className="fa-solid fa-bell" onClick={() => markAllAsRead}></i></Link>
             <span className='unread-notification-count' style={{ display: unreadNotificationCount > 0 ? 'block' : 'none' }}>
               {unreadNotificationCount > 15 ? '15+' : unreadNotificationCount}
             </span>

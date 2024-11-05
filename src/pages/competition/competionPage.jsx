@@ -9,8 +9,10 @@ import './competionsPage.css';
 import superCup from '../../assets/superCup.png';
 import normalStarCup from '../../assets/starCup.png';
 import iconAwardCup from '../../assets/iconCup.png';
-import iconLogo from '../../assets/logo.png';
 import CompetitionsPageSkeleton from './competionSkeleton';
+
+const icon = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
+
 
 const awardImages = {
   'Normal Star Award': normalStarCup,
@@ -159,7 +161,7 @@ const CompetitionsPage = () => {
           <span className="competition-tab">
             <Link to="/competitions"><i className="fa-solid fa-trophy" style={{ color: '#205e78' }}></i></Link>
           </span>
-          <span className="notifications-tab">
+          <span className="notifications-tab" onClick={() => markAllAsRead}>
             <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
             <span className="unread-notification-count" style={{ display: unreadNotificationCount > 0 ? 'block' : 'none' }}>
               {unreadNotificationCount > 15 ? '15+' : unreadNotificationCount}

@@ -5,7 +5,7 @@ import StepOne from "./step1";
 import StepTwo from "./step2";
 import { handleSendVerificationCode, handleVerifyCode } from "./registerFunctions";
 import '../../assets/register.css';
-import whitelogo from '../../assets/logo.png';
+const whitelogo = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
 
 function Register() {
   const [firstName, setFirstName] = useState("");

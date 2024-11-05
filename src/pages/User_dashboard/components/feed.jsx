@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import logo from '../../../assets/logo.png';
 import { auth } from '../../../../config/firebase_config';
 import { db } from '../../../../config/firebase_config'; // Ensure you're importing your Firebase config
 import { doc, getDoc } from 'firebase/firestore';
@@ -15,7 +14,7 @@ import {
 } from './feedUtil.js';
 
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
-
+const logo = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
 const Feeds = ({ feeds: initialFeeds }) => {
   const [feeds, setFeeds] = useState([]);
   const [newComment, setNewComment] = useState('');

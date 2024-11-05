@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './ads.css';
 import { Link } from 'react-router-dom';
-import icon from '../../assets/logo.png';
 import { collection, getDocs, where, query, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../../../config/firebase_config';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
+const icon = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
 
 
 // Function to fetch user data
@@ -122,7 +122,7 @@ const AdsPage = () => {
           <span className="competition-tab">
             <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
           </span>
-          <span className="notifications-tab"> {/* Mark all as read on click */}
+          <span className="notifications-tab" onClick={() => markNotificationsAsRead}> {/* Mark all as read on click */}
             <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
             <span className='unread-notification-count' style={{ display: unreadNotificationCount > 0 ? 'block' : 'none' }}>
               {unreadNotificationCount > 15 ? '15+' : unreadNotificationCount}

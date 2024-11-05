@@ -2,7 +2,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query"; // Import useQuery
 import { auth, db } from '../../../config/firebase_config'; // Firebase setup
 import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
-import Logo from '../../assets/logo.png';
 import "./menu.css";
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 // Function to fetch user data
