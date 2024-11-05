@@ -11,7 +11,7 @@ import normalStarCup from '../../assets/starCup.png';
 import iconAwardCup from '../../assets/iconCup.png';
 import CompetitionsPageSkeleton from './competionSkeleton';
 
-const icon = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
+const iconLogo = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
 
 
 const awardImages = {
