@@ -5,111 +5,66 @@ import { db, auth } from '../../../config/firebase_config';
 import { Link, useNavigate } from 'react-router-dom';
 import Spinner from "../../assets/loadingSpinner";
 import './notification.css';
-import { useQuery } from '@tanstack/react-query';
+import NotificationPageSkeleton from './skeleton.jsx';
+
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 const icon = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
-import NotificationPageSkeleton from './skeleton.jsx'
+
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
-  const [profilePicture, setProfilePicture] = useState(''); // Default profile pic
+  const [profilePicture, setProfilePicture] = useState(defaultProfilePictureURL);
   const navigate = useNavigate();
-
-
-  // Fetch user profile picture
-  const { data: userProfile, isLoading: isUserProfileLoading } = useQuery({
-    queryKey: ['userProfile', currentUser?.uid],
-    queryFn: () => fetchUserProfile(currentUser.uid),
-    enabled: !!currentUser, // Only fetch if currentUser is available
-    staleTime: 1200 * 1000, // Set stale time to 20 minutes (1200 seconds)
-    cacheTime: 60 * 60 * 1000, // 1 hour
-  });
-
-  // Fetch notifications
-  const { data: userNotifications, isLoading: isNotificationsLoading } = useQuery({
-    queryKey: ['notifications', currentUser?.uid],
-    queryFn: () => fetchNotifications(currentUser.uid),
-    enabled: !!currentUser, // Only fetch if currentUser is available
-    staleTime: 1200 * 1000, // Set stale time to 20 minutes (1200 seconds)
-    cacheTime: 60 * 60 * 1000, // 1 hour
-  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUser(user);
+        await fetchUserData(user.uid);
       } else {
         navigate('/login');
       }
     });
-
     return () => unsubscribe();
   }, [navigate]);
 
-  useEffect(() => {
-    if (userProfile) {
-      setProfilePicture(userProfile.profilePicture || defaultProfilePictureURL);
-    }
-  }, [userProfile]);
-
-  useEffect(() => {
-    if (userNotifications) {
-      // Sort notifications by timestamp (newest first)
-      const sortedNotifications = (userNotifications || []).sort((a, b) => b.timestamp - a.timestamp);
-      setNotifications(sortedNotifications);
+  const fetchUserData = async (userId) => {
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setProfilePicture(userData.profilePicture || defaultProfilePictureURL);
+        setNotifications(userData.notifications || []);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
       setLoading(false);
     }
-  }, [userNotifications]);
-
-  const fetchNotifications = async (userId) => {
-    const userDocRef = doc(db, 'users', userId);
-    const userDoc = await getDoc(userDocRef);
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
-      return userData.notifications || [];
-    }
-    return [];
   };
 
-  const fetchUserProfile = async (userId) => {
-    const userDocRef = doc(db, 'users', userId);
-    const userDoc = await getDoc(userDocRef);
-    if (userDoc.exists()) {
-      return userDoc.data();
-    }
-    return null;
-  };
   const handleNotificationClick = async (notification, index) => {
-    // Optimistically update the UI to mark as read
     if (!notification.read) {
-      setNotifications((prevNotifications) =>
-        prevNotifications.map((notif, i) =>
-          i === index ? { ...notif, read: true } : notif
-        )
-      );
-  
       try {
-        // Fetch current user's notification list from Firestore
         const userDocRef = doc(db, 'users', currentUser.uid);
         const userDoc = await getDoc(userDocRef);
-  
+
         if (userDoc.exists()) {
           const userData = userDoc.data();
           const updatedNotifications = [...userData.notifications];
           updatedNotifications[index] = { ...notification, read: true };
-  
-          // Update notifications array in Firestore
-          await updateDoc(userDocRef, {
-            notifications: updatedNotifications,
-          });
+
+          await updateDoc(userDocRef, { notifications: updatedNotifications });
+
+          setNotifications(updatedNotifications);
         }
       } catch (error) {
         console.error('Error marking notification as read:', error);
       }
     }
-  
-    // Navigate based on notification type and competitionId
+
     switch (notification.type) {
       case 'friend':
         navigate(`/profile/${notification.username}`);
@@ -132,15 +87,13 @@ const Notifications = () => {
         break;
     }
   };
-  
 
-  if (isUserProfileLoading || isNotificationsLoading || loading) {
-    return <NotificationPageSkeleton/>;
+  if (loading) {
+    return <NotificationPageSkeleton />;
   }
 
   return (
     <div className="notification-page-interface">
-      {/* Top Section */}
       <div className="top-section">
         <span className="user-dp">
           <Link to="/profile">
@@ -155,7 +108,6 @@ const Notifications = () => {
         </span>
       </div>
 
-      {/* Top Tab */}
       <div className="top-tab">
         <span className="home-tab">
           <Link to="/"><i className="fa-solid fa-house"></i></Link>
@@ -167,7 +119,7 @@ const Notifications = () => {
           <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
         </span>
         <span className="notifications-tab">
-          <Link to="/notifications"><i className="fa-solid fa-bell" style={{color : '#205e78'}}></i></Link>
+          <Link to="/notifications"><i className="fa-solid fa-bell" style={{ color: '#205e78' }}></i></Link>
         </span>
         <span className="ad-tab">
           <Link to="/ads"><i className="fa-solid fa-bullhorn"></i></Link>
@@ -183,51 +135,18 @@ const Notifications = () => {
             onClick={() => handleNotificationClick(notification, index)}
           >
             <div className="notification-content">
-              {/* Render appropriate icon and link based on notification type */}
               <div className="icon-text-container">
-                {/* Dynamic Icons */}
-                {notification.type === 'friend' && (
-                  <i className="fa-solid fa-user-group notification-icon"></i>
-                )}
-                {(notification.type === 'like' || notification.type === 'comment' || notification.type === 'vote') && (
-                  <i className="fa-solid fa-thumbs-up notification-icon"></i>
-                )}
-                {(notification.type === 'match' || notification.type === 'competition') && (
-                  <i className="fa-solid fa-trophy notification-icon"></i>
-                )}
-                {notification.type === 'notify' && (
-                  <i className="fa-solid fa-bell notification-icon"></i>
-                )}
-
-                {/* Notification Text */}
+                {notification.type === 'friend' && <i className="fa-solid fa-user-group notification-icon"></i>}
+                {(notification.type === 'like' || notification.type === 'comment' || notification.type === 'vote') && <i className="fa-solid fa-thumbs-up notification-icon"></i>}
+                {(notification.type === 'match' || notification.type === 'competition') && <i className="fa-solid fa-trophy notification-icon"></i>}
+                {notification.type === 'notify' && <i className="fa-solid fa-bell notification-icon"></i>}
                 <p className="notification-text">
                   {notification.text}
-                  {/* Dynamic Links */}
-                  {notification.type === 'friend' && (
-                    <span className="notification-link">
-                      Go to {notification.username}'s profile
-                    </span>
-                  )}
-                  {(notification.type === 'like' || notification.type === 'comment' || notification.type === 'vote') && (
-                    <span className="notification-link">
-                      View the video performance
-                    </span>
-                  )}
-                  {notification.type === 'match' && (
-                    <span className="notification-link">
-                      View Match of the Day
-                    </span>
-                  )}
-                  {notification.type === 'competition' && (
-                    <span className="notification-link">
-                      View Competition Details
-                    </span>
-                  )}
-                  {notification.type === 'notify' && (
-                    <span className="notification-link">
-                      View Notification Details
-                    </span>
-                  )}
+                  {notification.type === 'friend' && <span className="notification-link">Go to {notification.username}'s profile</span>}
+                  {(notification.type === 'like' || notification.type === 'comment' || notification.type === 'vote') && <span className="notification-link">View the video performance</span>}
+                  {notification.type === 'match' && <span className="notification-link">View Match of the Day</span>}
+                  {notification.type === 'competition' && <span className="notification-link">View Competition Details</span>}
+                  {notification.type === 'notify' && <span className="notification-link">View Notification Details</span>}
                 </p>
               </div>
             </div>
