@@ -9,11 +9,6 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "./src/assets/logo.png",
-      "sizes": "600x600",
-      "type": "image/png"
-    },
-    {
       "src": "./src/assets/companyLogo.png", 
       "sizes": "144x144",
       "type": "image/png",
@@ -22,7 +17,7 @@
   ],
   "screenshots": [
     {
-      "src": "./src/assets/logo.png",
+      "src": "./src/assets/screenshot1.png",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow"  
