@@ -35,8 +35,14 @@ const Notifications = () => {
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists()) {
         const userData = userDoc.data();
+        
+        // Sort notifications by timestamp in descending order
+        const sortedNotifications = (userData.notifications || []).sort(
+          (a, b) => b.timestamp - a.timestamp
+        );
+        
         setProfilePicture(userData.profilePicture || defaultProfilePictureURL);
-        setNotifications(userData.notifications || []);
+        setNotifications(sortedNotifications);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -44,6 +50,7 @@ const Notifications = () => {
       setLoading(false);
     }
   };
+  
 
   const handleNotificationClick = async (notification, index) => {
     if (!notification.read) {
