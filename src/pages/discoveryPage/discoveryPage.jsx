@@ -93,43 +93,51 @@ const DiscoveryPage = () => {
       }
     }
   };
-
   const handleSearch = async () => {
     setHasSearched(true);
     if (searchTerm.trim().length >= 3) {
       setLoading(true); // Start loading spinner
       const lowercasedSearchTerm = searchTerm.toLowerCase();
-      const competitionQuery = query(
-        collection(db, 'competitions'),
-        where('name', '>=', lowercasedSearchTerm),
-        where('name', '<=', lowercasedSearchTerm + '\uf8ff')
-      );
-      const userQuery = query(
-        collection(db, 'users'),
-        where('username', '>=', lowercasedSearchTerm),
-        where('username', '<=', lowercasedSearchTerm + '\uf8ff')
-      );
-
-      const competitionSnapshot = await getDocs(competitionQuery);
-      const userSnapshot = await getDocs(userQuery);
+  
+      // Broader query fetching more data
+      const competitionQuery = collection(db, 'competitions');
+      const userQuery = collection(db, 'users');
+  
+      const [competitionSnapshot, userSnapshot] = await Promise.all([
+        getDocs(competitionQuery),
+        getDocs(userQuery)
+      ]);
+  
       const results = [];
-
+  
+      // Filter competitions by substring match
       competitionSnapshot.forEach((doc) => {
         const competitionData = doc.data();
-        results.push({
-          type: 'competition',
-          data: competitionData
-        });
+        if (
+          competitionData.name &&
+          competitionData.name.toLowerCase().includes(lowercasedSearchTerm)
+        ) {
+          results.push({
+            type: 'competition',
+            data: competitionData
+          });
+        }
       });
-
+  
+      // Filter users by substring match
       userSnapshot.forEach((doc) => {
         const userData = doc.data();
-        results.push({
-          type: 'user',
-          data: userData
-        });
+        if (
+          userData.username &&
+          userData.username.toLowerCase().includes(lowercasedSearchTerm)
+        ) {
+          results.push({
+            type: 'user',
+            data: userData
+          });
+        }
       });
-
+  
       setSearchResults(results);
       setLoading(false); // Stop loading spinner
     } else {
@@ -137,6 +145,7 @@ const DiscoveryPage = () => {
       setHasSearched(false);
     }
   };
+  
 
   return (
     <div className="full-house">
