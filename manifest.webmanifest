@@ -9,7 +9,7 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "./src/assets/companyLogo.png", 
+      "src":  "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7", 
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
@@ -17,13 +17,13 @@
   ],
   "screenshots": [
     {
-      "src": "./src/assets/screenshot1.png",
+      "src": "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/screenshot1.png?alt=media&token=18829d58-01ee-46a6-ad49-3be1a5e4b758",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow"  
     },
     {
-      "src": "./src/assets/screenshot2.png",
+      "src": "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/screenshot2.png?alt=media&token=436e691f-9442-4374-bed5-c8e49572b890",
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide" 
