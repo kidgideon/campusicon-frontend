@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Register from './pages/register_components/register';
 import Login from './pages/login_components/login';
@@ -26,7 +26,6 @@ import AwardsandRank from './pages/Awards-and-Rank/awards-and-rank';
 import Friends from './pages/Friends/friends';
 import Notifications from './pages/Notification/notification';
 import NotFound from './pages/404/NotFound';
-import SplashScreen from './pages/SplashScreen';
 import AdsPage from './pages/AdSPage/ads';
 import Settings from './pages/settingsPage/settings';
 import CampusIconMainPage from './pages/campusIcon';
@@ -35,16 +34,6 @@ import ImageViewer from './pages/imageViewer';
 const queryClient = new QueryClient();
 
 function App() {
-  const [showSplash, setShowSplash] = useState(true);
-
-  useEffect(() => {
-    // Hide the splash screen after 3 seconds
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
   useEffect(() => {
     // Register the service worker
     if ('serviceWorker' in navigator) {
@@ -60,72 +49,66 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <>
-        {showSplash ? (
-          <SplashScreen />
-        ) : (
-          <BrowserRouter>
-            <Routes>
-              <Route path="/register" element={<Register />} />
-              <Route path="/friends" element={<Friends />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/admin" element={<CreateComp />} />
-              <Route path="/post" element={<AdminFeedPostInterface />} />
-              <Route path="/awards-ranks" element={<AwardsandRank />} />
-              <Route path="" element={<ProtectedRoute element={<UserDashboard />} />} />
-              <Route path="/campus-rank" element={<CampusRank />} />
-              <Route path='/fake-users' element={<AddFakeUsers />} />
-              <Route path="/profile/:username" element={<UserProfile />} />
-              <Route path='/profile' element={<CurrentUserProfile />} />
-              <Route path='/edit-profile' element={<EditProfile />} />
-              <Route path='competitions' element={<CompetitionsPage />} />
-              <Route path="/competition/:competitionId" element={<Competition />} />
-              <Route path="/upload/:competitionId" element={<UploadVideoForm />} />
-              <Route path="/video-performance/:competitionId" element={<Performance />} />
-              <Route path="/ranks/:competitionId" element={<CompetionRank />} />
-              <Route path="/watch-video/:competitionId" element={<VideoWatch />} />
-              <Route path="/discovery-page" element={<DiscoveryPage />} />
-              <Route path="/menu" element={<Menu />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/ads" element={<AdsPage/>} />
-              <Route path="/settings" element={<Settings/>} />
-              <Route path="/icons page" element={<CampusIconMainPage/>} />
-              <Route path="*" element={<NotFound />} />
-              <Route path="/view-image" element={<ImageViewer />} />
-            </Routes>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+          <Route path="/friends" element={<Friends />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/admin" element={<CreateComp />} />
+          <Route path="/post" element={<AdminFeedPostInterface />} />
+          <Route path="/awards-ranks" element={<AwardsandRank />} />
+          <Route path="" element={<ProtectedRoute element={<UserDashboard />} />} />
+          <Route path="/campus-rank" element={<CampusRank />} />
+          <Route path='/fake-users' element={<AddFakeUsers />} />
+          <Route path="/profile/:username" element={<UserProfile />} />
+          <Route path='/profile' element={<CurrentUserProfile />} />
+          <Route path='/edit-profile' element={<EditProfile />} />
+          <Route path='competitions' element={<CompetitionsPage />} />
+          <Route path="/competition/:competitionId" element={<Competition />} />
+          <Route path="/upload/:competitionId" element={<UploadVideoForm />} />
+          <Route path="/video-performance/:competitionId" element={<Performance />} />
+          <Route path="/ranks/:competitionId" element={<CompetionRank />} />
+          <Route path="/watch-video/:competitionId" element={<VideoWatch />} />
+          <Route path="/discovery-page" element={<DiscoveryPage />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/ads" element={<AdsPage />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/icons page" element={<CampusIconMainPage />} />
+          <Route path="*" element={<NotFound />} />
+          <Route path="/view-image" element={<ImageViewer />} />
+        </Routes>
 
-            <Toaster
-              toastOptions={{
-                success: {
-                  style: {
-                    background: 'white',
-                    color: 'black',
-                  },
-                  iconTheme: {
-                    primary: '#4caf50',
-                    secondary: '#fff',
-                  },
-                },
-                error: {
-                  style: {
-                    background: 'white',
-                    color: 'black',
-                  },
-                  iconTheme: {
-                    primary: '#ff5252',
-                    secondary: '#fff',
-                  },
-                },
-                style: {
-                  background: 'white',
-                  color: 'black',
-                },
-              }}
-            />
-          </BrowserRouter>
-        )}
-      </>
+        <Toaster
+          toastOptions={{
+            success: {
+              style: {
+                background: 'white',
+                color: 'black',
+              },
+              iconTheme: {
+                primary: '#4caf50',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              style: {
+                background: 'white',
+                color: 'black',
+              },
+              iconTheme: {
+                primary: '#ff5252',
+                secondary: '#fff',
+              },
+            },
+            style: {
+              background: 'white',
+              color: 'black',
+            },
+          }}
+        />
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }

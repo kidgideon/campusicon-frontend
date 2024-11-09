@@ -5,7 +5,7 @@ import { getAuth } from 'firebase/auth';
 import toast from 'react-hot-toast';
 import Spinner from '../assets/loadingSpinner';
 import { useQuery } from '@tanstack/react-query';
-import SkeletonLoader from '../pages/User_dashboard/DashboardSkeleton';
+import SplashScreen from '../pages/SplashScreen';
 
 const fetchUser = async () => {
   const auth = getAuth();
@@ -49,7 +49,7 @@ const ProtectedRoute = ({ element: Component }) => {
   }, [isError]);
 
   if (isLoading) {
-    return <SkeletonLoader/>;
+    return <SplashScreen/>;
   }
 
   if (redirect) {

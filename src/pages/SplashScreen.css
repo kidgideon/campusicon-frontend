@@ -4,8 +4,8 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: white; /* Your company color */
-  color:  #205e78;
+  background-color: white;
+  color: #205e78;
   text-align: center;
   font-family: "SUSE", sans-serif;
   overflow: hidden;
@@ -15,55 +15,33 @@
   width: 100px;
   height: 100px;
   border-radius: 100%;
-  margin-bottom: 5px;
-  animation: logo-animation 3s ease forwards;
+  margin-bottom: 10px;
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
 .splash-screen h1 {
   font-size: 2rem;
-  animation: text-animation 3s ease forwards;
+  animation: fadeInOut 1.5s ease-in-out infinite;
 }
 
-/* Animation for the logo (icon) */
-@keyframes logo-animation {
-  0% {
-    transform: translateX(-100vw); /* Start off-screen to the left */
-  }
-  40% {
-    transform: translateX(0); /* Slide to the center */
+/* Infinite pulsing animation for the logo */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
   }
   50% {
-    transform: translateY(-20px); /* Bounce up */
-  }
-  60% {
-    transform: translateY(0); /* Bounce down */
-  }
-  80% {
-    transform: translateX(50vw) rotate(360deg); /* Rotate and move to the right */
-  }
-  100% {
-    transform: translateX(100vw); /* Completely exit to the right */
+    transform: scale(1.1); /* Slightly enlarge */
+    opacity: 0.8;
   }
 }
 
-/* Animation for the text */
-@keyframes text-animation {
-  0% {
-    transform: translateY(100vh); /* Start off-screen below */
-  }
-  40% {
-    transform: translateY(0); /* Move to the center */
+/* Infinite fade in and out animation for the text */
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 1;
   }
   50% {
-    transform: translateY(-20px); /* Bounce slightly */
-  }
-  60% {
-    transform: translateY(0); /* Settle */
-  }
-  80% {
-    transform: translateX(-50vw); /* Move to the left */
-  }
-  100% {
-    transform: translateX(-100vw); /* Exit completely to the left */
+    opacity: 0.5;
   }
 }
