@@ -1,211 +1,139 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, updateDoc , getDoc,  deleteDoc} from 'firebase/firestore';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate} from 'react-router-dom';
+import { collection, query, where, getDocs, doc, updateDoc, getDoc, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '../../../config/firebase_config';
+import { useQuery } from '@tanstack/react-query';
 import ReactPlayer from 'react-player';
 import '../userProfile/profile.css';
 import normalStarAwards from '../../assets/starCup.png';
 import superCupAwards from '../../assets/superCup.png';
 import iconAwards from '../../assets/iconCup.png';
-import Spinner from '../../assets/loadingSpinner'
 import LoadingScreen from '../../assets/loadingSpinner'; // Custom spinner component
-import {handleVideoLike, handlePostComment, handleCommentLike, handleDeleteComment, handleEditComment } from "../competition/videoUtils"
+import { handleVideoLike, handlePostComment, handleCommentLike, handleDeleteComment, handleEditComment } from "../competition/videoUtils";
+
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 
 
+// Function to fetch user videos
+const fetchUserVideos = async (userId) => {
+  const videosQuery = query(collection(db, 'videos'), where('userId', '==', userId));
+  const videoSnapshot = await getDocs(videosQuery);
+  const fetchedVideos = [];
+
+  for (const doc of videoSnapshot.docs) {
+    const videoData = doc.data();
+    videoData.id = doc.id;
+    fetchedVideos.push(videoData);
+  }
+
+  return fetchedVideos; // Return the sorted fetched videos
+};
+
+// Function to fetch creators based on an array of videos
+const fetchCreators = async (videos) => {
+  const fetchedCreators = {};
+
+  for (const video of videos) {
+    if (!fetchedCreators[video.userId]) {
+      const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', video.userId)));
+      if (!userDoc.empty) {
+        fetchedCreators[video.userId] = userDoc.docs[0].data();
+      }
+    }
+  }
+  return fetchedCreators; // Return the fetched creators
+};
+
+
 const CurrentUserProfile = () => {
-  const [user, setUser] = useState(null);
-  const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [creators, setCreators] = useState({});
-  const [awardCounts, setAwardCounts] = useState({ normal: 0, super: 0, icon: 0 });
-  const [commentLoading, setCommentLoading] = useState(false);
-  const [newComment, setNewComment] = useState('');
-  const [comments, setComments] = useState({});
-  const [showCommentPanel, setShowCommentPanel] = useState(null);
-  const [votedVideos, setVotedVideos] = useState({});
-  const navigate = useNavigate();
-  const commentPanelRef = useRef(null);
-  const [currentUser, setCurrentUser] = useState(null); // Define currentUser state
-  const [likedComments, setLikedComments] = useState({});
-  const [loadingVotes, setLoadingVotes] = useState(false);
-  const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
-  const [playingVideoId, setPlayingVideoId] = useState(null);
+ 
+const [videos, setVideos] = useState([]);
+const [loading, setLoading] = useState(true);
+const [creators, setCreators] = useState({});
+const [awardCounts, setAwardCounts] = useState({ normal: 0, super: 0, icon: 0 });
+const [commentLoading, setCommentLoading] = useState(false);
+const [newComment, setNewComment] = useState('');
+const [comments, setComments] = useState({});
+const [showCommentPanel, setShowCommentPanel] = useState(null);
+const [votedVideos, setVotedVideos] = useState({});
+const navigate = useNavigate();
+const commentPanelRef = useRef(null);
+const [currentUser, setCurrentUser] = useState(null); // Define currentUser state
+const [likedComments, setLikedComments] = useState({});
+const [loadingVotes, setLoadingVotes] = useState(false);
+const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
+const [playingVideoId, setPlayingVideoId] = useState(null);
 
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      setLoading(true); 
-      try {
-        const unsubscribe = auth.onAuthStateChanged(async (user) => {
-          if (user) {
-            setCurrentUser(user); // Set currentUser when authenticated
-            const q = query(collection(db, 'users'), where('email', '==', user.email));
-            const querySnapshot = await getDocs(q);
 
-            if (!querySnapshot.empty) {
-              const userDoc = querySnapshot.docs[0];
-              const userData = userDoc.data();
-              const userDocId = userDoc.id;
-
-              const updates = {};
-              if (!userData.win) updates.win = [];
-              if (!userData.hobbies) updates.hobbies = [];
-              if (!userData.campus) updates.campus = 'No campus added yet.';
-
-              if (Object.keys(updates).length > 0) {
-                await updateDoc(doc(db, 'users', userDocId), updates);
-                Object.assign(userData, updates);
-              }
-
-              const counts = { normal: 0, super: 0, icon: 0 };
-              userData.win.forEach((win) => {
-                if (win.awardType === 'Normal Star Award') counts.normal += 1;
-                else if (win.awardType === 'Super Star Award') counts.super += 1;
-                else if (win.awardType === 'Icon Award') counts.icon += 1;
-              });
-
-              setAwardCounts(counts);
-              setUser(userData);
-
-              await fetchUserVideos(user.uid);
-            } else {
-              console.log('No user found');
-            }
-          } else {
-            console.log('No user logged in');
-          }
-          setLoading(false);
-        });
-
-        return () => unsubscribe();
-      } catch (error) {
-        console.error('Error fetching user:', error);
-        setLoading(false);
-      }
-    };
-
-    const fetchUserVideos = async (userId) => {
-      const videosQuery = query(collection(db, 'videos'), where('userId', '==', userId));
-      const videoSnapshot = await getDocs(videosQuery);
-      const fetchedVideos = [];
-
-      const fetchedCreators = {};
-      for (const doc of videoSnapshot.docs) {
-        const videoData = doc.data();
-        videoData.id = doc.id;
-        fetchedVideos.push(videoData);
-
-        if (!fetchedCreators[videoData.userId]) {
-          const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', videoData.userId)));
-          if (!userDoc.empty) {
-            fetchedCreators[videoData.userId] = userDoc.docs[0].data();
-          }
-        }
-      }
-  
-      const sortedFetchedVideos = (fetchedVideos || []).sort((a, b) => b.timestamp - a.timestamp);
-      setVideos(sortedFetchedVideos);
-      setCreators(fetchedCreators);
-    };
-
-    fetchUser();
-  }, []);
-
-  const handleOpenComments = async (videoId) => {
-    setShowCommentPanel(videoId);
-    setNewComment('');
-    setLikedComments((prev) => ({ ...prev, [videoId]: {} })); // Reset liked comments state for the current video
-  
-    // Fetch comments and show loading spinner
-    setCommentLoading(true);
-    const videoRef = doc(db, 'videos', videoId);
-    const videoDoc = await getDoc(videoRef);
-    const videoData = videoDoc.data();
-    const fetchedComments = videoData.comments || [];
-  
-    // Retrieve the details of each comment's creator
-    const commentsWithUserDetails = await Promise.all(
-      fetchedComments.map(async (comment) => {
-        const userRef = doc(db, 'users', comment.userId);  // Get the user document based on userId
-        const userDoc = await getDoc(userRef);
-  
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          return {
-            ...comment,
-            username: userData.username || 'Unknown User',  // Add username from the user document
-            userProfilePicture: userData.profilePicture || defaultProfilePictureURL,  // Add profile picture
-          };
-        } else {
-          return {
-            ...comment,
-            username: 'Unknown User',
-            userProfilePicture: defaultProfilePictureURL,
-          };
-        }
-      })
-    );
-  
-    setComments((prevComments) => ({
-      ...prevComments,
-      [videoId]: commentsWithUserDetails,  // Save the comments with user details
-    }));
-  
-    setCommentLoading(false);  // Hide the loading spinner after fetching data
-  };
-
-  const handleCommentLikeClick = async (videoId, commentTimestamp, currentUserId, setComments) => {
-    setLoadingCommentLikes(true); // Start loading
-  
-    try {
-      await handleCommentLike(videoId, commentTimestamp, currentUserId, setComments);
-    } catch (error) {
-      console.error('Error liking comment:', error);
-      toast.error('Error liking comment');
-    } finally {
-      setLoadingCommentLikes(false); // Stop loading
+useEffect(() => {
+  // Track Firebase authentication state changes
+  const unsubscribe = auth.onAuthStateChanged((user) => {
+    if (user) {
+      setCurrentUser(user);
+      console.log(currentUser.uid)
+    } else {
+      setCurrentUser(null);
     }
-  };
-  
-  
-  const handleSendComment = async (videoId) => {
-    if (!newComment.trim()) {
-      toast.error('Comment cannot be empty');
-      return;
-    }
+  });
+  return () => unsubscribe();
+}, []);
 
-    setCommentLoading(true);  // Set loading to true
+const { data: user, isLoading } = useQuery({
+  queryKey: ['userProfile'],
+  queryFn: async () => {
+    if (!currentUser) throw new Error("No user logged in");
 
-    try {
-      await handlePostComment(videoId, currentUser.uid, newComment, setComments, commentPanelRef);
-      setNewComment('');  // Clear the comment input after successful post
-    } catch (error) {
-      console.error('Error posting comment:', error);
-    } finally {
-      setCommentLoading(false);  // Stop loading after the process completes
-    }
-  };
+    const userQuery = query(collection(db, 'users'), where('email', '==', currentUser.email));
+    const querySnapshot = await getDocs(userQuery);
+    if (querySnapshot.empty) throw new Error("User not found");
 
+    const userDoc = querySnapshot.docs[0];
+    const userData = userDoc.data();
 
+    // Initialize missing fields and calculate award counts
+    const updates = {};
+    if (!userData.win) updates.win = [];
+    if (!userData.hobbies) updates.hobbies = [];
+    if (!userData.campus) updates.campus = 'No campus added yet.';
+    if (Object.keys(updates).length > 0) await updateDoc(userDoc.ref, updates);
 
-  const closeCommentPanel = () => {
-    setShowCommentPanel(null);
-  };
+    const counts = { normal: 0, super: 0, icon: 0 };
+    userData.win.forEach((win) => {
+      if (win.awardType === 'Normal Star Award') counts.normal++;
+      else if (win.awardType === 'Super Star Award') counts.super++;
+      else if (win.awardType === 'Icon Award') counts.icon++;
+    });
+    setAwardCounts(counts);
 
-  const goBack = () => {
-    navigate(-1);
-  };
+    return { ...userData, ...updates };
+  },
+  enabled: !!currentUser,
+  staleTime: 20 * 60 * 1000,
+  cacheTime: 60 * 60 * 1000,
+  onSuccess: (data) => setVideos([]),
+});
+// Fetch user videos when user data is available
+const { data: savedVideos, isLoading: loadingVideos } = useQuery({
+  queryKey: ['videos', currentUser?.uid],
+  queryFn: () => fetchUserVideos(currentUser.uid),
+  enabled: !!currentUser, // Only run this query if currentUser is available
+  onSuccess: (fetchedVideos) => {
+    const sortedFetchedVideos = (fetchedVideos || []).sort((a, b) => b.timestamp - a.timestamp);
+    setVideos(sortedFetchedVideos);
+  },
+});
 
-  if (loading) {
-    return <LoadingScreen />; 
-  }
-
-  if (!user) {
-    return <div>No user logged in</div>;
-  }
-
-  function calculateCampusStatus(points) {
+// Fetch creators based on the saved videos when user videos are available
+const { data: savedCreators, isLoading: creatorLoading } = useQuery({
+  queryKey: ['creators', savedVideos],
+  queryFn: () => fetchCreators(savedVideos),
+  enabled: !!savedVideos, // Only run this query if savedVideos is available
+  onSuccess: () => {
+    setCreators(savedCreators)
+  },
+});
+  const calculateCampusStatus = (points) => {
     const campusStatusTiers = [
       { status: 'Lad', minPoints: 0, maxPoints: 499 },
       { status: 'Rising Star', minPoints: 500, maxPoints: 1499 },
@@ -219,19 +147,94 @@ const CurrentUserProfile = () => {
       { status: 'Campus Icon', minPoints: 8500, maxPoints: 10000 },
     ];
 
-    for (const tier of campusStatusTiers) {
-      if (points >= tier.minPoints && points <= tier.maxPoints) {
-        return tier.status;
+    return campusStatusTiers.find((tier) => points >= tier.minPoints && points <= tier.maxPoints)?.status || 'Invalid Points';
+  };
+
+  const campusStatus = calculateCampusStatus(user?.points || 0);
+
+  const goBack = () => navigate(-1);
+
+  
+const handleOpenComments = async (videoId) => {
+  setShowCommentPanel(videoId);
+  setNewComment('');
+  setLikedComments((prev) => ({ ...prev, [videoId]: {} })); // Reset liked comments state for the current video
+
+  // Fetch comments and show loading spinner
+  setCommentLoading(true);
+  const videoRef = doc(db, 'videos', videoId);
+  const videoDoc = await getDoc(videoRef);
+  const videoData = videoDoc.data();
+  const fetchedComments = videoData.comments || [];
+
+  // Retrieve the details of each comment's creator
+  const commentsWithUserDetails = await Promise.all(
+    fetchedComments.map(async (comment) => {
+      const userRef = doc(db, 'users', comment.userId);  // Get the user document based on userId
+      const userDoc = await getDoc(userRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        return {
+          ...comment,
+          username: userData.username || 'Unknown User',  // Add username from the user document
+          userProfilePicture: userData.profilePicture || defaultProfilePictureURL,  // Add profile picture
+        };
+      } else {
+        return {
+          ...comment,
+          username: 'Unknown User',
+          userProfilePicture: defaultProfilePictureURL,
+        };
       }
-    }
-    return 'Invalid Points';
+    })
+  );
+
+  setComments((prevComments) => ({
+    ...prevComments,
+    [videoId]: commentsWithUserDetails,  // Save the comments with user details
+  }));
+
+  setCommentLoading(false);  // Hide the loading spinner after fetching data
+};
+
+const handleCommentLikeClick = async (videoId, commentTimestamp, currentUserId, setComments) => {
+  setLoadingCommentLikes(true); // Start loading
+
+  try {
+    await handleCommentLike(videoId, commentTimestamp, currentUserId, setComments);
+  } catch (error) {
+    console.error('Error liking comment:', error);
+    toast.error('Error liking comment');
+  } finally {
+    setLoadingCommentLikes(false); // Stop loading
+  }
+};
+
+
+const handleSendComment = async (videoId) => {
+  if (!newComment.trim()) {
+    toast.error('Comment cannot be empty');
+    return;
   }
 
-  const campusStatus = calculateCampusStatus(user.points);
+  setCommentLoading(true);  // Set loading to true
 
-  const handleEditProfile = () => {
-    navigate('/edit-profile');
-  };
+  try {
+    await handlePostComment(videoId, currentUser.uid, newComment, setComments, commentPanelRef);
+    setNewComment('');  // Clear the comment input after successful post
+  } catch (error) {
+    console.error('Error posting comment:', error);
+  } finally {
+    setCommentLoading(false);  // Stop loading after the process completes
+  }
+};
+
+
+
+const closeCommentPanel = () => {
+  setShowCommentPanel(null);
+};
 
   const handleDeletePost = async (videoId) => {
     // Ask for confirmation before deleting
@@ -259,6 +262,14 @@ const CurrentUserProfile = () => {
   const handleVideoPause = () => {
     setPlayingVideoId(null); // Reset when the video is paused
   };
+
+  const handleEditProfile = () => {
+    navigate('/edit-profile');
+  };
+
+  if (isLoading) return <LoadingScreen />;
+
+  if (!user) return <div>No user logged in</div>;
 
   return (
     <div className='profile-structure'>
@@ -456,3 +467,5 @@ comments[video.id]
 };
 
 export default CurrentUserProfile;
+
+ 
