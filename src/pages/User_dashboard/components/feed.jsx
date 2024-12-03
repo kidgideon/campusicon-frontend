@@ -24,8 +24,10 @@ const Feeds = ({ feeds: initialFeeds }) => {
   const commentPanelRef = useRef(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
-  const navigate = useNavigate();
+  const videoRefs = useRef([]); // To hold references to all video elements
 
+  const navigate = useNavigate();
+ 
   useEffect(() => {
     const user = auth.currentUser;
     if (user) {
@@ -38,6 +40,35 @@ const Feeds = ({ feeds: initialFeeds }) => {
     // Initialize the feeds state with the parameter value
     setFeeds(initialFeeds);
   }, [initialFeeds]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+          if (entry.isIntersecting) {
+            video.play();
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.5 } // 50% of the video should be visible to trigger play
+    );
+
+    // Attach the observer to all video elements
+    videoRefs.current.forEach((video) => {
+      if (video) observer.observe(video);
+    });
+
+    // Cleanup observer
+    return () => {
+      videoRefs.current.forEach((video) => {
+        if (video) observer.unobserve(video);
+      });
+    };
+  }, [feeds]);
+
 
   const handleToggleCommentPanel = async (feedId) => {
     setShowCommentPanel(feedId);
@@ -129,7 +160,7 @@ const Feeds = ({ feeds: initialFeeds }) => {
       {feeds.length === 0 ? (
         <p>No feeds available.</p>
       ) : (
-        feeds.map(feed => (
+        feeds.map((feed, index) => (
           <div key={feed.id} className="dashboard-interface-feed">
             <div className="dashboard-interface-feed-top">
               <div className="dashboard-interface-feed-profile-pic">
@@ -164,6 +195,7 @@ const Feeds = ({ feeds: initialFeeds }) => {
           src={feed.mediaUrl} 
           controls 
           className="admin-feed-interface-feed-video feed-video"
+          ref={(el) => (videoRefs.current[index] = el)}
         >
           Your browser does not support the video tag.
         </video>

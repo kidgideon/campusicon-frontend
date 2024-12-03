@@ -26,8 +26,9 @@ const VideoWatch = () => {
   const [loadingVotes, setLoadingVotes] = useState(false);
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
   const [videos, setVideos] = useState([]);
+  const videoRefs = useRef({});
 
- 
+
   const fetchVideos = async () => {
     try {
       const videosQuery = query(
@@ -98,6 +99,37 @@ const VideoWatch = () => {
     };
 
     fetchCreators();
+  }, [videos]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const videoId = entry.target.dataset.videoid;
+          if (entry.isIntersecting) {
+            videoRefs.current[videoId]?.play();
+          } else {
+            videoRefs.current[videoId]?.pause();
+          }
+        });
+      },
+      {
+        threshold: 0.5, // Play when at least 50% of the video is in view
+      }
+    );
+
+    Object.values(videoRefs.current).forEach((videoElement) => {
+      observer.observe(videoElement);
+    });
+
+    return () => {
+      videos.forEach((video) => {
+        if (video instanceof Element) {
+          observer.unobserve(video);
+        }
+      });
+      observer.disconnect();
+    };
   }, [videos]);
 
   const handleVoteClick = (videoId) => {
@@ -215,12 +247,15 @@ const VideoWatch = () => {
       </Link>
    
       <div className="video-watch-video-body">
-        <ReactPlayer 
-          url={video.videoURL} 
-          controls 
-          width="100%" 
-          height="auto" 
-        />
+      <video
+                ref={(el) => (videoRefs.current[video.id] = el)}
+                data-videoid={video.id}
+                src={video.videoURL}
+                controls
+                width="100%"
+                height="auto"
+                muted
+              />
       </div>
       
       <div className="video-watch-video-data">
