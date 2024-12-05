@@ -113,6 +113,10 @@ export const handleVerifyCode = async ({
         hobbies: [],
         wins: [],
         notifications: [],
+        icoins : 50,
+        icoin_History: [
+          "earned 50 icoins as login bonus"
+        ]
       });
 
       // Send welcome notification to the new user

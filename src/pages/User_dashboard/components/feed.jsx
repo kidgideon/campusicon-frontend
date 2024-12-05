@@ -25,6 +25,12 @@ const Feeds = ({ feeds: initialFeeds }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
   const videoRefs = useRef([]); // To hold references to all video elements
+  const [zoomLevel, setZoomLevel] = useState(1); // For image zooming
+  const [lastTapTime, setLastTapTime] = useState(0); // For double-tap detection
+  const [likeAnimating, setLikeAnimating] = useState(false);
+  const [zoomingImageId, setZoomingImageId] = useState(null); // Tracks the currently zooming image
+
+
 
   const navigate = useNavigate();
  
@@ -40,6 +46,37 @@ const Feeds = ({ feeds: initialFeeds }) => {
     // Initialize the feeds state with the parameter value
     setFeeds(initialFeeds);
   }, [initialFeeds]);
+  
+  const handleImageZoom = (e, zoomIn, imageId) => {
+    e.preventDefault();
+  
+    // Only allow zooming for the currently active image
+    if (zoomingImageId && zoomingImageId !== imageId) return;
+  
+    setZoomingImageId(imageId); // Set the active image being zoomed
+    setZoomLevel((prev) => {
+      const newZoomLevel = zoomIn ? Math.min(prev + 0.5, 3) : Math.max(prev - 0.5, 1);
+  
+      // Reset zoomingImageId if zoom level is back to default
+      if (newZoomLevel === 1) setZoomingImageId(null);
+      return newZoomLevel;
+    });
+  };
+  const handleDoubleTap = (feedId) => {
+    const now = Date.now();
+    const timeSinceLastTap = now - lastTapTime;
+
+    if (timeSinceLastTap < 300) {
+      // Double tap detected
+      setLikeAnimating(true);
+      setTimeout(() => setLikeAnimating(false), 500); // Reset animation state after 500ms
+
+      // Trigger the like functionality
+      handleFeedLike(feedId, true); // Assuming `true` is for liking
+    }
+
+    setLastTapTime(now);
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -180,16 +217,31 @@ const Feeds = ({ feeds: initialFeeds }) => {
             </div>
 
             <div className="dashboard-interface-media-content">
+            
   {feed.mediaUrl && feed.mediaType && (
     <>
       {feed.mediaType === 'image' ? (
-      <Link to={`/view-image?url=${encodeURIComponent(feed.mediaUrl)}`}>
-          <img 
-          src={feed.mediaUrl} 
-          alt="Feed Media" 
-          className="admin-feed-interface-feed-image feed-image" 
-        />
-        </Link>
+    
+          <div
+                className="image-container"
+                onDoubleClick={() => handleDoubleTap(feed.id)}
+                onWheel={(e) => handleImageZoom(e, e.deltaY < 0, feed.id)}
+              >
+                <img
+                  src={feed.mediaUrl}
+                  alt="Feed Media"
+                  style={{
+                    transform: `scale(${zoomingImageId === feed.id ? zoomLevel : 1})`, // Apply zoom only to the active image
+                    transition: 'transform 0.3s ease',
+                  }}
+                   className="admin-feed-interface-feed-image feed-image"
+                />
+                {likeAnimating && (
+                  <div className="like-animation">
+                    <i className="fa-solid fa-heart" style={{ color: '#ff0000', fontSize: '3rem' }}></i>
+                  </div>
+                )}    
+        </div>
       ) : feed.mediaType === 'video' ? (
         <video 
           src={feed.mediaUrl} 

@@ -105,6 +105,15 @@ const Menu = () => {
                         <div className="menu-page-option-text">Awards and Ranks</div>
                     </div>
                 </div>
+                <div className="menu-page-option-list">
+                    <div className="menu-page-option" onClick={() => navigate("/icoins")}>
+                        <div className="menu-page-option-icon">
+                          <i className="fa-solid fa-wallet"></i>
+                        </div>
+                        <div className="menu-page-option-text">Wallet</div>
+                    </div>
+            
+                </div>
             </div>
 
             <div className="menu-page-settings-privacy">

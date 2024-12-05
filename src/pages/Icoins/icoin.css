@@ -1,0 +1,168 @@
+.coinBalanceInterface {
+     height: 100vh;
+     width: 100%;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     flex-direction: column;
+     background-color:  #277AA4;
+}
+
+.coin-balance-area {
+    background-color:  #277AA4;
+    color: white;
+    height: 40%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.coin-balance-area .balance-itself p {
+    font-size: 300%;
+    font-weight: bold;
+}
+
+.balance-itself {
+    height: 80%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}
+
+.controls {
+    height: 20%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.coin-history {
+    height: 60%;
+    width: 100%;
+    background-color: white;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-direction: column;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 60%; /* Adjust this value as needed */
+}
+
+.coin-history::-webkit-scrollbar {
+   display: none;
+}
+
+
+.fund-wallet,.withdraw,.value-check {
+    background-color: white;
+    color: rgb(168, 168, 168);
+    border: none;
+    width: 100px;
+    border-radius: 5px;
+}
+
+.history-paragraph {
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.history {
+    width: 97%;
+    background-color: rgb(226, 226, 226);
+    margin: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.history span {
+    margin: 10px;
+}
+/* Overlay styles */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+    backdrop-filter: blur(5px); /* Blurs the background */
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Popup styles */
+  .purchase-popup {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+    z-index: 1001;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .purchase-popup .option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .purchase-popup .coin-animation .coin {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: gold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .purchase-popup .coin-label {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  /* Prevent popup from closing when clicking inside the popup */
+  .purchase-popup * {
+    pointer-events: auto;
+  }
+  
+
+  .coin-animation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px auto;
+  }
+  
+  .coin {
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle, #f0c419, #d89a00);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  
+  .coin-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+  }
+   

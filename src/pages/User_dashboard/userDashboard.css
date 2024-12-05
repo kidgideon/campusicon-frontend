@@ -449,3 +449,42 @@ img {
    width: 100%;
    object-fit: cover;
  }
+ .image-container {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.image-container.zoomed {
+  transform: scale(1.5); /* Adjust zoom level */
+}
+
+.feed-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.like-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 3rem;
+  color: red;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.like-icon.liked {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.like-animation {
+  transform: translate(-50%, -50%) scale(1.5);
+  opacity: 1;
+}

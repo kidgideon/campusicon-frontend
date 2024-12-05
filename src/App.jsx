@@ -30,6 +30,7 @@ import AdsPage from './pages/AdSPage/ads';
 import Settings from './pages/settingsPage/settings';
 import CampusIconMainPage from './pages/campusIcon';
 import ImageViewer from './pages/imageViewer';
+import IcoinInterface from './pages/Icoins/icoinInterface';
 
 const queryClient = new QueryClient();
 
@@ -78,8 +79,8 @@ function App() {
           <Route path="/icons page" element={<CampusIconMainPage />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/view-image" element={<ImageViewer />} />
+          <Route path="/icoins" element={<IcoinInterface/>} />
         </Routes>
-
         <Toaster
           toastOptions={{
             success: {
