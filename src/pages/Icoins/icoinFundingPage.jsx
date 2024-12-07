@@ -69,7 +69,9 @@ const IcoinPayment = () => {
   };
 
   return (
-    <div style={{ textAlign: "center", padding: "2rem" }}>
+    <div style={{
+      
+      textAlign: "center", padding: "2rem", width: "100%", height: "100vh", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
       <h1>Confirm Your Payment</h1>
       <p>You are paying ₦{amount} for iCoins.</p>
       <PaystackButton {...paystackProps} />
