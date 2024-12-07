@@ -31,6 +31,8 @@ import Settings from './pages/settingsPage/settings';
 import CampusIconMainPage from './pages/campusIcon';
 import ImageViewer from './pages/imageViewer';
 import IcoinInterface from './pages/Icoins/icoinInterface';
+import PaymentPage from './pages/Icoins/icoinFundingPage';
+import SuccessPage from './pages/Icoins/sucessPage';
 
 const queryClient = new QueryClient();
 
@@ -80,6 +82,8 @@ function App() {
           <Route path="*" element={<NotFound />} />
           <Route path="/view-image" element={<ImageViewer />} />
           <Route path="/icoins" element={<IcoinInterface/>} />
+          <Route path="/icoin-payment/:amount" element={<PaymentPage/>} />
+          <Route path="/payment/success" element={<SuccessPage/>} />
         </Routes>
         <Toaster
           toastOptions={{

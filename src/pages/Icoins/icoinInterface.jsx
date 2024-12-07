@@ -3,6 +3,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "../../../config/firebase_config";
 import "./icoin.css";
+import { useNavigate } from "react-router-dom";
 
 const IcoinInterface = () => {
   const [userData, setUserData] = useState({
@@ -11,6 +12,9 @@ const IcoinInterface = () => {
   });
   const [loading, setLoading] = useState(true);
   const [isPopupVisible, setIsPopupVisible] = useState(false); // State for controlling popup visibility
+ 
+// Inside the IcoinInterface component
+const navigate = useNavigate();
 
   const fundPopup = () => {
     setIsPopupVisible(true);
@@ -50,6 +54,14 @@ const IcoinInterface = () => {
     fetchUserData();
   }, []);
 
+  const handleBundleSelection = (amount) => {
+    navigate(`/icoin-payment/${amount}`);
+  };
+
+  const goBack =() => {
+    navigate("/")
+  }
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -58,12 +70,13 @@ const IcoinInterface = () => {
     );
   }
 
+
   return (
     <div className="full-house">
       <div className="coinBalanceInterface">
         {/* Top Sideliner */}
         <div className="top-top-sideliners">
-          <i className="fas fa-arrow-left"></i>
+          <i className="fas fa-arrow-left" onClick={goBack}></i>
           <h2>Icoin Wallet</h2>
         </div>
 
@@ -107,7 +120,7 @@ const IcoinInterface = () => {
         {isPopupVisible && (
           <div className="overlay" onClick={closePopup}>
             <div className="purchase-popup" onClick={(e) => e.stopPropagation()}>
-              <div className="option">
+              <div className="option" onClick={() => handleBundleSelection(800)}>
                 <p>Starter Bundle</p>
                 <div className="coin-animation">
                   <div className="coin">
@@ -117,7 +130,7 @@ const IcoinInterface = () => {
                 <p>50 iCoins: ₦800</p>
               </div>
 
-              <div className="option">
+              <div className="option" onClick={() => handleBundleSelection(1700)} >
                 <p>Small Bundle</p>
                 <div className="coin-animation">
                   <div className="coin">
@@ -127,7 +140,7 @@ const IcoinInterface = () => {
                 <p>120 iCoins: ₦1,700</p>
               </div>
 
-              <div className="option">
+              <div className="option" onClick={() => handleBundleSelection(3500)}>
                 <p>Medium Bundle</p>
                 <div className="coin-animation">
                   <div className="coin">
@@ -137,7 +150,7 @@ const IcoinInterface = () => {
                 <p>250 iCoins: ₦3,500</p>
               </div>
 
-              <div className="option">
+              <div className="option" onClick={() => handleBundleSelection(8000)}>
                 <p>Large Bundle</p>
                 <div className="coin-animation">
                   <div className="coin">

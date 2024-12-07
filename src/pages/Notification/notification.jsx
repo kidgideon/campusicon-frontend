@@ -123,6 +123,9 @@ const Notifications = () => {
       case 'competition':
         navigate(`/competition/${notification.competitionId}`);
         break;
+        case 'icoin': // Handle icoin notification type
+        navigate('/icoins'); // Navigate to /icoins page
+        break;
       case 'notify':
         window.location.href = notification.link; // Use the provided link in notification object
         break;
@@ -195,7 +198,9 @@ const Notifications = () => {
                 {notification.type === 'notify' && (
                   <i className="fa-solid fa-bell notification-icon"></i>
                 )}
-
+                 {notification.type === 'icoin' && (
+                  <i className="fa-solid fa-coins notification-icon"></i> // Icon for icoin notifications
+                )}
                 {/* Notification Text */}
                 <p className="notification-text">
                   {notification.text}
@@ -223,6 +228,11 @@ const Notifications = () => {
                   {notification.type === 'notify' && (
                     <span className="notification-link">
                       View Notification Details
+                    </span>
+                  )}
+                   {notification.type === 'icoin' && (
+                    <span className="notification-link">
+                      View your iCoins
                     </span>
                   )}
                 </p>
