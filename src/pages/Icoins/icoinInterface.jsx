@@ -62,6 +62,10 @@ const navigate = useNavigate();
     navigate("/")
   }
 
+  const withdraw = () => {
+    navigate("/withdraw")
+  }
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -91,7 +95,7 @@ const navigate = useNavigate();
             <button className="fund-wallet" onClick={fundPopup}>
               Fund
             </button>
-            <button className="withdraw">Withdraw</button>
+            <button className="withdraw" onClick={withdraw}>Withdraw</button>
             <button className="value-check">Value</button>
           </div>
         </div>

@@ -33,6 +33,9 @@ import ImageViewer from './pages/imageViewer';
 import IcoinInterface from './pages/Icoins/icoinInterface';
 import PaymentPage from './pages/Icoins/icoinFundingPage';
 import SuccessPage from './pages/Icoins/sucessPage';
+import WithdrawalPage from './pages/Icoins/icoins_withdrawal';
+import WithdrawalPayment from './pages/Icoins/withdrawal_payment';
+import BankAccountForm from './pages/Icoins/bankAccountForm';
 
 const queryClient = new QueryClient();
 
@@ -84,6 +87,9 @@ function App() {
           <Route path="/icoins" element={<IcoinInterface/>} />
           <Route path="/icoin-payment/:amount" element={<PaymentPage/>} />
           <Route path="/payment/success" element={<SuccessPage/>} />
+          <Route path="/withdraw" element={<WithdrawalPage/>} />
+          <Route path="/withdrawal/:amount" element={<WithdrawalPayment/>} />
+          <Route path="/account-verification" element={<BankAccountForm/>} />
         </Routes>
         <Toaster
           toastOptions={{

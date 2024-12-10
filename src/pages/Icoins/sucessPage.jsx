@@ -10,32 +10,39 @@ const SuccessPage = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const paymentReference = location.state?.reference;
-  const bundlePrice = location.state?.amount; 
+  const bundlePrice = location.state?.amount;
+
+  let purchasedIcoins = 0;
 
   const getCoinsForBundle = (price) => {
-   if (price == 800) {
-    return 50;
-   } else if (price == 1700) {
-        return 120;
-    } else if (price == 3500) {
-        return 250
-     } else if (price == 8000) {
-        return 600
-     }
+    if (price == 800) {
+    purchasedIcoins = 50;
+    } else if (price == 1700) {
+     purchasedIcoins = 120;
+    }  else if (price == 3500) {
+     purchasedIcoins = 250;
+    }
+      else if (price == 8000){
+      purchasedIcoins = 600;
+      } 
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const userRef = doc(db, "users", user.uid);
-        const purchasedIcoins = getCoinsForBundle(bundlePrice);
- console.log(purchasedIcoins)
+        const companyFundsRef = doc(db, "companyfunds", "funds");
+
+        getCoinsForBundle(bundlePrice);
+    
+        console.log(purchasedIcoins)
         if (paymentReference && paymentReference.status === "success") {
           setPaymentStatus("Payment successful!");
 
           try {
+            // Update user's iCoin balance
             await updateDoc(userRef, {
               icoins: increment(purchasedIcoins),
               icoin_history: arrayUnion(`Purchased ${purchasedIcoins} iCoins`),
@@ -47,10 +54,31 @@ const SuccessPage = () => {
               }),
             });
 
-            toast.success("Your iCoin balance has been updated!");
+            // Calculate company funds details
+            let profit = 0;
+
+            if (purchasedIcoins == 50) {
+              profit = 300;}
+             else if (purchasedIcoins == 120) {
+              profit = 500;}
+            else if (purchasedIcoins == 250) {
+              profit = 1000;}
+            else if (purchasedIcoins == 600){ 
+              profit = 2000;}
+
+            const liability = bundlePrice - profit;
+
+            // Update company funds
+            await updateDoc(companyFundsRef, {
+              balance: increment(bundlePrice),
+              liability: increment(liability),
+              profit: increment(profit),
+            });
+
+            toast.success("Your iCoin balance and company funds have been updated!");
           } catch (error) {
-            console.error("Error updating user details:", error);
-            toast.error("Failed to update iCoin balance.");
+            console.error("Error updating user or company funds:", error);
+            toast.error("Failed to update iCoin balance or company funds.");
           }
         } else {
           setPaymentStatus("Payment failed");
