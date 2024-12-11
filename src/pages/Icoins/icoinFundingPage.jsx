@@ -13,7 +13,7 @@ const IcoinPayment = () => {
   const [loading, setLoading] = useState(true);
 
   // Paystack configuration
-  const publicKey = "pk_live_34e2037efd63904c29ff6a9163a29c662409d8de";
+  const publicKey =import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
   const amountInKobo = amount * 100; // Paystack requires amount in kobo (Naira * 100)
   const reference = `ref-${Math.floor(Math.random() * 1000000000)}`; // Unique reference
 
@@ -68,8 +68,16 @@ const IcoinPayment = () => {
     reference,
   };
 
+  const goBack =() => {
+    navigate(-1)
+  }
+
   return (
     <div className="amount-div">
+      <div className="top-top-sideliners">
+        <i className="fas fa-arrow-left" onClick={goBack}></i>
+        <h2>Fund wallet</h2>
+      </div>
       <h1>Confirm Your Payment</h1>
       <p>You are paying ₦{amount} for iCoins.</p>
       <PaystackButton {...paystackProps} />

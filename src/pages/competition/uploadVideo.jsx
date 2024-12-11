@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { addDoc, collection, getDoc, doc, updateDoc, query, where, getDocs, setDoc } from 'firebase/firestore';
+import { addDoc, collection, getDoc, doc, updateDoc, query, where, getDocs, setDoc, arrayUnion} from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { toast } from 'react-hot-toast';
 import { storage, db, auth } from '../../../config/firebase_config'; // Firebase config
@@ -23,6 +23,7 @@ const UploadVideoForm = () => {
   const [showTrashIcon, setShowTrashIcon] = useState(false); // State to manage trash icon visibility
   const [username, setUsername] = useState(''); // Store username from Firestore
   const [competitionStatus, setCompetitionStatus] = useState('');
+  const [competitionType, setCompetitionType] = useState('');
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
@@ -52,6 +53,7 @@ const UploadVideoForm = () => {
           setCompetitionVideos(competitionData.videos || []);
           setCompetitionName(competitionData.name); // Store competition name
           setCompetitionStatus(competitionData.status);
+          setCompetitionType(competitionData.type);
 
           if (currentUser) {
             const userVideoExists = competitionData.videos.some(video => video.userId === currentUser.uid);
@@ -118,93 +120,146 @@ const UploadVideoForm = () => {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-
-      // Check if competition has ended
+  
+    // Check if competition has ended
     if (competitionStatus === 'Ended') {
       toast.error('This competition has ended. You cannot upload a video.');
-      return; // Stop further execution
+      return;
     }
-
+  
     if (competitionStatus === 'Not Started') {
       toast.error('This competition has not started. You cannot upload a video yet. Check the start date to participate.');
-      return; // Stop further execution
+      return;
     }
-
-    
+  
     if (!title || !description || !videoFile || !currentUser || !username) {
       toast.error('Please fill in all fields, choose a video, and ensure you are logged in.');
       return;
     }
-
-    setUploading(true);
-
-    const storageRef = ref(storage, `videos/${currentUser.uid}/${videoFile.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, videoFile);
-
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(progress); // Track progress in %
-      },
-      (error) => {
-        toast.error('Error uploading video: ' + error.message);
-        setUploading(false);
-      },
-      async () => {
-        const videoURL = await getDownloadURL(uploadTask.snapshot.ref);
-        try {
-          const videoDocRef = await addDoc(collection(db, 'videos'), {
-            title,
-            description,
-            videoURL,
-            userId: currentUser.uid,
-            username,
-            competitionId,
-            timestamp: new Date(),
-            votes: [],
-            comments: [],
-            shares: [],
-            likes: [],
-          });
-
-          const videoId = videoDocRef.id;
-
-          const competitionRef = doc(db, 'competitions', competitionId);
-          await updateDoc(competitionRef, {
-            videos: [...competitionVideos, { videoId, userId: currentUser.uid }]
-          });
-
-          const userRef = doc(db, 'users', currentUser.uid);
-          const userDoc = await getDoc(userRef);
-
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            const userPosts = userData.posts || [];
-            await updateDoc(userRef, {
-              posts: [...userPosts, videoId]
-            });
-          } else {
-            await setDoc(userRef, {
-              posts: [videoId]
-            });
-          }
-
-          toast.success('Video uploaded successfully!');
-          setTitle('');
-          setDescription('');
-          setVideoFile(null);
-          setVideoPreviewURL(null);
-          setShowTrashIcon(false);
-          navigate(`/video-performance/${competitionId}`);
-        } catch (err) {
-          toast.error('Error saving video metadata: ' + err.message);
-        }
-        setUploading(false);
+  
+    // Step 1: Fetch the user's iCoin balance
+    const userRef = doc(db, 'users', currentUser.uid);
+    const userDoc = await getDoc(userRef);
+    
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      const currentICoins = userData.icoins || 0; // Default to 0 if iCoins are not found
+  
+      // Step 2: Determine deduction amount
+      let deductionAmount = 0;
+      if (competitionType === 'Normal Star Award') {
+        deductionAmount = 10;
+      } else if (competitionType === 'Super Star Award') {
+        deductionAmount = 30;
+      } else if (competitionType === 'Icon Awards') {
+        deductionAmount = 50;
       }
-    );
+  
+      // Step 3: Check if the user has enough iCoins
+      if (currentICoins < deductionAmount) {
+        toast.error('You do not have enough iCoins. Please fund your wallet.');
+        return;
+      }
+  
+      // Step 4: Show confirmation window
+      const proceed = window.confirm(`You are about to spend ${deductionAmount} iCoins to participate in the ${competitionName} competition. Do you want to proceed?`);
+      if (!proceed) {
+        return; // Stop if the user doesn't confirm
+      }
+  
+      setUploading(true);
+  
+      // Step 5: Deduct iCoins and update user data
+      const newICoins = currentICoins - deductionAmount;
+      await updateDoc(userRef, { icoins: newICoins });
+  
+      // Update iCoin history with arrayUnion to avoid duplicates
+      const historyEntry = `Deducted ${deductionAmount} iCoins for ${competitionName} competition`;
+      await updateDoc(userRef, {
+        icoin_history: arrayUnion(historyEntry)
+      });
+  
+      // Step 6: Update competition's iCoin balance
+      const competitionRef = doc(db, 'competitions', competitionId);
+      const competitionSnap = await getDoc(competitionRef);
+      if (competitionSnap.exists()) {
+        const competitionData = competitionSnap.data();
+        const currentCompetitionBalance = competitionData.balance || 0;
+        const newCompetitionBalance = currentCompetitionBalance + deductionAmount;
+        await updateDoc(competitionRef, { balance: newCompetitionBalance });
+      }
+  
+      // Proceed with video upload
+      const storageRef = ref(storage, `videos/${currentUser.uid}/${videoFile.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, videoFile);
+  
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setProgress(progress); // Track progress in %
+        },
+        (error) => {
+          toast.error('Error uploading video: ' + error.message);
+          setUploading(false);
+        },
+        async () => {
+          const videoURL = await getDownloadURL(uploadTask.snapshot.ref);
+          try {
+            const videoDocRef = await addDoc(collection(db, 'videos'), {
+              title,
+              description,
+              videoURL,
+              userId: currentUser.uid,
+              username,
+              competitionId,
+              timestamp: new Date(),
+              votes: [],
+              comments: [],
+              shares: [],
+              likes: [],
+            });
+  
+            const videoId = videoDocRef.id;
+  
+            const competitionRef = doc(db, 'competitions', competitionId);
+            await updateDoc(competitionRef, {
+              videos: [...competitionVideos, { videoId, userId: currentUser.uid }]
+            });
+  
+            const userRef = doc(db, 'users', currentUser.uid);
+            const userDoc = await getDoc(userRef);
+  
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+              const userPosts = userData.posts || [];
+              await updateDoc(userRef, {
+                posts: [...userPosts, videoId]
+              });
+            } else {
+              await setDoc(userRef, {
+                posts: [videoId]
+              });
+            }
+  
+            toast.success('Video uploaded successfully!');
+            setTitle('');
+            setDescription('');
+            setVideoFile(null);
+            setVideoPreviewURL(null);
+            setShowTrashIcon(false);
+            navigate(`/video-performance/${competitionId}`);
+          } catch (err) {
+            toast.error('Error saving video metadata: ' + err.message);
+          }
+          setUploading(false);
+        }
+      );
+    } else {
+      toast.error('User not found.');
+    }
   };
-
+  
   const goBack = () => {
     navigate(-1);
   };
@@ -262,6 +317,7 @@ const UploadVideoForm = () => {
        Post 
         </button>
         {uploading && <p>Uploading... {Math.round(progress)}%</p>}
+        {uploading && <p>please dont leave the page </p>}
       </form>
 
     

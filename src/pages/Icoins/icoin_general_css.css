@@ -1,0 +1,29 @@
+.withdrawal-page {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.withdrawal-page input {
+    width: 300px;
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+}
+
+.withdrawal-page p {
+    width: 100%;
+    text-align: center;
+}
+
+.withdrawal-page h1 {
+    font-size: 90%;
+}
+
+.withdrawal-container h1 {
+    font-size: 90%;
+}

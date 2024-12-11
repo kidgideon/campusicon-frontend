@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../../config/firebase_config";
 import { doc, getDoc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
+import "./icoin_general_css.css"
+import LoadingSpinner from "../../assets/loadingSpinner"
 
 const WithdrawalPage = () => {
   const [user, setUser] = useState(null);
@@ -41,6 +43,10 @@ const WithdrawalPage = () => {
     return () => unsubscribe();
   }, [navigate]);
 
+  const goBack = () => {
+    navigate(-1)
+  }
+
   const handleWithdraw = () => {
     const withdrawAmountNumber = parseInt(withdrawAmount);
 
@@ -49,7 +55,7 @@ const WithdrawalPage = () => {
       return;
     }
 
-    if (withdrawAmountNumber < 1) {
+    if (withdrawAmountNumber < 1000) {
       toast.error("You must withdraw at least 1,000 iCoins (₦10,000 equivalent).");
       return;
     }
@@ -70,11 +76,15 @@ const WithdrawalPage = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingSpinner></LoadingSpinner>;
   }
 
   return (
     <div className="withdrawal-page">
+       <div className="top-top-sideliners">
+          <i className="fas fa-arrow-left" onClick={goBack}></i>
+          <h2>Withdraw</h2>
+        </div>
       <h1>Enter the amount of iCoins you want to withdraw</h1>
       <p>Available Balance: {userData.icoins || 0} iCoins</p>
       <p>

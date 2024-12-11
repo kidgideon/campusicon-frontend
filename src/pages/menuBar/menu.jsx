@@ -3,11 +3,15 @@ import { useQuery } from "@tanstack/react-query"; // Import useQuery
 import { auth, db } from '../../../config/firebase_config'; // Firebase setup
 import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
 import "./menu.css";
+
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
+
 // Function to fetch user data
 const fetchUserData = async () => {
     const currentUser = auth.currentUser;
-    if (!currentUser) throw new Error("User not authenticated");
+    if (!currentUser) {
+        throw new Error("User not authenticated");
+    }
 
     const userDocRef = doc(db, 'users', currentUser.uid); // Correct way to reference a document
     const userDocSnap = await getDoc(userDocRef); // Fetch the document snapshot
@@ -20,12 +24,13 @@ const fetchUserData = async () => {
 
 const Menu = () => {
     const navigate = useNavigate();
-    
+
     // Fetch user data with React Query
     const { data: user, error, isLoading } = useQuery({
         queryKey: ['userData'], // Key for the query
         queryFn: fetchUserData, // Fetch function
-        staleTime: 20 * 60 * 1000 // 20 minutes stale time
+        staleTime: 20 * 60 * 1000, // 20 minutes stale time
+        enabled: auth.currentUser !== null, // Only run the query if the user is logged in
     });
 
     // Go back function
@@ -45,22 +50,32 @@ const Menu = () => {
     return (
         <div className="menu-page-interface">
             <div className="top-top-sideliners">
-                <i className="fas fa-arrow-left " onClick={goBack}></i>
+                <i className="fas fa-arrow-left" onClick={goBack}></i>
                 <h2>Menu</h2>
             </div>
 
-            <Link to="/profile" style={{ width: '100%' }}>
-                <div className="menu-page-top-section">
-                    <div className="menu-page-user-profile">
-                        <div className="menu-page-user-profile-picture">
-                            <img src={user.profilePicture? user.profilePicture : defaultProfilePictureURL } alt="User Profile" />
-                        </div>
-                        <div className="menu-page-username">
-                            {isLoading ? 'Loading...' : user ? `${user.firstName}  ${user.surname}` : 'Error loading user'}
+            {isLoading ? (
+                <p>Loading...</p>
+            ) : error ? (
+                <p>Error: {error.message}</p>
+            ) : user ? (
+                <Link to="/profile" style={{ width: '100%' }}>
+                    <div className="menu-page-top-section">
+                        <div className="menu-page-user-profile">
+                            <div className="menu-page-user-profile-picture">
+                                <img src={user.profilePicture || defaultProfilePictureURL} alt="User Profile" />
+                            </div>
+                            <div className="menu-page-username">
+                                {`${user.firstName}  ${user.surname}`}
+                            </div>
                         </div>
                     </div>
+                </Link>
+            ) : (
+                <div className="menu-page-top-section">
+                    <p>User not authenticated</p>
                 </div>
-            </Link>
+            )}
 
             <div className="menu-page-menu-options">
                 <div className="menu-page-option-list">
@@ -112,7 +127,6 @@ const Menu = () => {
                         </div>
                         <div className="menu-page-option-text">Wallet</div>
                     </div>
-            
                 </div>
             </div>
 

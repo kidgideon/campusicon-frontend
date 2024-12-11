@@ -48,12 +48,14 @@ const AdminCompetitionInterface = () => {
         type: competitionType,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
-        rules: rules,
         description: description,
         imageUrl: imageUrl,
         status: 'Not Started',
         createdAt: new Date(),
-        videos: []
+        videos: [],
+        pricing: "paid",
+        sponsores: "campusicon",
+        balance: 0,
       });
   
       // After the competition is created, fetch all users
@@ -165,21 +167,21 @@ const AdminCompetitionInterface = () => {
       }
   
       const competitionData = competitionSnapshot.data();
-      const { videos, type: competitionType, name: competitionName } = competitionData;
+      const { videos, type: competitionType, name: competitionName, balance } = competitionData;
   
       if (!videos || videos.length === 0) {
         throw new Error('No videos in this competition');
       }
   
-      // Determine the winning video (video with the most votes)
-      let winningVideo = videos[0];
-      for (let video of videos) {
-        if (video.votes > winningVideo.votes) {
-          winningVideo = video;
-        }
-      }
+     const prizePool = balance;
+
+      // Sort the videos based on votes in descending order
+      const sortedVideos = videos.sort((a, b) => b.votes - a.votes);
   
-      const winnerUserId = winningVideo.userId;
+      // Get the top 3 winners (1st, 2nd, and 3rd place)
+      const firstPlaceWinner = sortedVideos[0];
+      const secondPlaceWinner = sortedVideos[1];
+      const thirdPlaceWinner = sortedVideos[2];
   
       // Calculate Campus Streak points based on competition type
       let pointsToAdd = 0;
@@ -217,14 +219,21 @@ const AdminCompetitionInterface = () => {
         timestamp: Date.now()
       };
   
-      // Specific notification for the winner
-      const winnerNotification = {
-        read: false,
-        type: 'competition',
-        competitionId: competitionId,
-        text: `Congratulations! You have won the competition ${competitionName}.`,
-        timestamp: Date.now()
-      };
+      // Notifications for the winners (1st, 2nd, and 3rd)
+      const winnerNotifications = [
+        {
+          userId: firstPlaceWinner.userId,
+          text: `Congratulations! You have won the competition ${competitionName}.`,
+        },
+        {
+          userId: secondPlaceWinner.userId,
+          text: `Great job! You placed second in the competition ${competitionName}.`,
+        },
+        {
+          userId: thirdPlaceWinner.userId,
+          text: `Nice work! You placed third in the competition ${competitionName}.`,
+        }
+      ];
   
       // Loop through all users and send notifications
       usersSnapshot.docs.forEach((userDoc) => {
@@ -235,39 +244,61 @@ const AdminCompetitionInterface = () => {
         batch.update(userRef, { notifications: updatedNotifications });
       });
   
-      // Send winner notification and update their Campus Streaks
-      const winnerRef = doc(db, 'users', winnerUserId);
-      const winnerDoc = await getDoc(winnerRef);
+      // Distribute the icoin: 
+      // App takes 40%, and the remaining 60% will be split among the top 3 winners
+      const appShare = prizePool * 0.4;
+      const winnerShare = prizePool * 0.6;
+      
+      // Distribute the winner's share (60%) between 1st, 2nd, and 3rd place
+      const firstPlaceShare = winnerShare * 0.35; // 35% of 60% for 1st place
+      const secondPlaceShare = winnerShare * 0.25; // 25% of 60% for 2nd place
+      const thirdPlaceShare = winnerShare * 0.10; // 10% of 60% for 3rd place
   
-      if (!winnerDoc.exists()) {
-        throw new Error('Winner user not found');
+      // Loop through each winner to distribute the icoin and send them notifications
+      const winners = [
+        { user: firstPlaceWinner, share: firstPlaceShare, notification: winnerNotifications[0] },
+        { user: secondPlaceWinner, share: secondPlaceShare, notification: winnerNotifications[1] },
+        { user: thirdPlaceWinner, share: thirdPlaceShare, notification: winnerNotifications[2] }
+      ];
+  
+      for (const { user, share, notification } of winners) {
+        const winnerRef = doc(db, 'users', user.userId);
+        const winnerDoc = await getDoc(winnerRef);
+  
+        if (!winnerDoc.exists()) {
+          throw new Error('Winner user not found');
+        }
+  
+        const winnerData = winnerDoc.data();
+        const updatedCampusStreaks = (winnerData.points || 0) + pointsToAdd;
+  
+        // Update the winner's notifications and points
+        const winnerNotifications = winnerData.notifications || [];
+        const updatedWinnerNotifications = [...winnerNotifications, notification];
+  
+        // Update the winner's balance, notifications, and points
+        const winnerWins = winnerData.win || [];
+        const newWin = {
+          competitionId: competitionId,
+          awardType: awardType,
+        };
+        const updatedWinnerWins = [...winnerWins, newWin];
+  
+        // Increase their icoin balance
+        const updatediCoins = (winnerData.icoin || 0) + share;
+  
+        batch.update(winnerRef, {
+          notifications: updatedWinnerNotifications,
+          points: updatedCampusStreaks,
+          win: updatedWinnerWins, // Update or create the 'wins' field
+          icoins: updatediCoins, // Increase the icoin balance for the winner
+        });
       }
-  
-      const winnerData = winnerDoc.data();
-      const updatedCampusStreaks = (winnerData.points || 0) + pointsToAdd;
-  
-      // Update the winner's notifications and points
-      const winnerNotifications = winnerData.notifications || [];
-      const updatedWinnerNotifications = [...winnerNotifications, winnerNotification];
-  
-      // Check if the winner has a 'wins' field, create it if not, and add the new win object
-      const winnerWins = winnerData.win || [];
-      const newWin = {
-        competitionId: competitionId,
-        awardType: awardType,
-      };
-      const updatedWinnerWins = [...winnerWins, newWin];
-  
-      batch.update(winnerRef, {
-        notifications: updatedWinnerNotifications,
-        points: updatedCampusStreaks,
-        win: updatedWinnerWins // Update or create the 'wins' field
-      });
   
       // Update the competition status and winner in the competition document
       batch.update(competitionRef, {
         status: 'Ended',
-        winner: winnerUserId
+        winner: firstPlaceWinner.userId
       });
   
       // Commit the batch
@@ -280,6 +311,7 @@ const AdminCompetitionInterface = () => {
       setLoading(false); // Set loading to false
     }
   };
+  
   
   
 
