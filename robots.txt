@@ -1,6 +1,2 @@
 User-agent: *
-Disallow: /admin
-Disallow: /admin/post
-Disallow: /dashboard
-
 Allow: /
