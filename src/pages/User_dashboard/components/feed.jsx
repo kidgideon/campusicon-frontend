@@ -46,7 +46,8 @@ const Feeds = ({ feeds: initialFeeds }) => {
     // Initialize the feeds state with the parameter value
     setFeeds(initialFeeds);
   }, [initialFeeds]);
-  
+
+ 
   const handleImageZoom = (e, zoomIn, imageId) => {
     e.preventDefault();
   
@@ -246,7 +247,7 @@ const Feeds = ({ feeds: initialFeeds }) => {
         <video 
           src={feed.mediaUrl} 
           controls 
-          className="admin-feed-interface-feed-video feed-video"
+          className="feed-video"
           ref={(el) => (videoRefs.current[index] = el)}
         >
           Your browser does not support the video tag.
@@ -271,6 +272,10 @@ const Feeds = ({ feeds: initialFeeds }) => {
                 <i className="fa-solid fa-comment"></i>
                 <span>{feed.comments.length || 0}</span>
               </div>
+            </div>
+            <div className="add-comment">
+            <div className="user-image">dgdg</div>
+            <div className="comment-prompt">gdggd</div>
             </div>
 
             {showCommentPanel === feed.id && (

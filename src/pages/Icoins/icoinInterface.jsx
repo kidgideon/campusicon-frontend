@@ -12,6 +12,7 @@ const IcoinInterface = () => {
   });
   const [loading, setLoading] = useState(true);
   const [isPopupVisible, setIsPopupVisible] = useState(false); // State for controlling popup visibility
+  const [valuePopup, setValuePopup] = useState(false)
  
 // Inside the IcoinInterface component
 const navigate = useNavigate();
@@ -19,6 +20,14 @@ const navigate = useNavigate();
   const fundPopup = () => {
     setIsPopupVisible(true);
   };
+
+  const value = () => {
+    setValuePopup(true)
+  }
+
+  const closeValue = () => {
+    setValuePopup(false)
+  }
 
   const closePopup = () => {
     setIsPopupVisible(false);
@@ -96,7 +105,7 @@ const navigate = useNavigate();
               Fund
             </button>
             <button className="withdraw" onClick={withdraw}>Withdraw</button>
-            <button className="value-check">Value</button>
+            <button className="value-check" onClick={value}>Value</button>
           </div>
         </div>
 
@@ -119,6 +128,16 @@ const navigate = useNavigate();
             <p className="no-history">No transactions made yet</p>
           )}
         </div>
+
+  {
+    valuePopup && (
+      <div className="overlay" onClick={closeValue}>
+<div className="value-popup">
+   your icoins is valued at {userData.icoins * 10} NGN
+</div>
+      </div>
+    )
+  }
 
         {/* Overlay for Popup */}
         {isPopupVisible && (

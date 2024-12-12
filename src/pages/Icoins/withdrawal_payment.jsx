@@ -151,7 +151,7 @@ const WithdrawalPayment = () => {
 
       {processing && (
         <div className="processing-container">
-          <div className="spinner"></div>
+          <div className="spinner-payment"></div>
           <p>Processing your withdrawal, please wait...</p>
         </div>
       )}

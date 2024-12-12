@@ -323,6 +323,7 @@ img {
    flex-direction: column;
    border: 1px solid rgb(197, 197, 197);
    margin: 10px;
+   border-radius: 30px;
  }
 
   .dashboard-interface-feed-top {
@@ -404,6 +405,7 @@ img {
    font-size: 17px;
   }
 
+    
 
   .modal-overlay {
    position: fixed;
@@ -487,4 +489,8 @@ img {
 .like-animation {
   transform: translate(-50%, -50%) scale(1.5);
   opacity: 1;
+}
+
+.feed-video {
+  width: 200px;
 }
