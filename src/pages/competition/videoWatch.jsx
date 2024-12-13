@@ -26,8 +26,63 @@ const VideoWatch = () => {
   const [loadingVotes, setLoadingVotes] = useState(false);
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
   const [videos, setVideos] = useState([]);
+  const [userDataItem, setUserDataItem] = useState("");
   const videoRefs = useRef({});
 
+  const fetchUserData = async () => {
+    try {
+      // Get the current user from authentication
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        console.log("No user is currently logged in.");
+        return null; // Return null if no user is logged in
+      }
+  
+      const userUid = currentUser.uid; // Get the UID of the current user
+      console.log("Fetching user data for UID:", userUid); // Debugging log
+  
+      // Define the user document reference
+      const userDocRef = doc(db, 'users', userUid);
+  
+      // Create a promise to handle real-time updates
+      return new Promise((resolve, reject) => {
+        const unsubscribe = onSnapshot(
+          userDocRef,
+          (docSnapshot) => {
+            if (!docSnapshot.exists()) {
+              console.log("No user data found for UID:", userUid); // Debugging log
+              resolve(null); // Resolve with null if the document doesn't exist
+            } else {
+              const userData = { id: docSnapshot.id, ...docSnapshot.data() };
+              console.log("Fetched user data:", userData); // Debugging log
+              resolve(userData);
+              setUserDataItem(userData)
+            }
+          },
+          (error) => {
+            console.error("Error fetching user data from Firestore:", error);
+            reject(error);
+          }
+        );
+        return unsubscribe; // Return the unsubscribe function
+      });
+    } catch (error) {
+      console.error("Error in fetchUserData:", error);
+      throw error; // Rethrow the error
+    }
+  };
+  
+  // React Query integration for user data
+  const { data: userData, problem, loading } = useQuery({
+    queryKey: ['user', auth.currentUser?.uid], // React Query key tied to the user's UID
+    queryFn: fetchUserData,
+    enabled: !!auth.currentUser, // Only fetch if a user is logged in
+    staleTime: 20 * 60 * 1000, // Cache for 20 minutes
+    cacheTime: 60 * 60 * 1000, // Keep cache for 1 hour
+  });
+  
+
+  
 
   const fetchVideos = async () => {
     try {
@@ -138,6 +193,10 @@ const VideoWatch = () => {
     handleVideoVote(videoId, currentUser.uid, setVideos, votedVideos)
       .finally(() => setLoadingVotes(false));
   };
+
+  const userPage = () => {
+    navigate("/profile")
+  }
 
   // Open comment panel
   const handleOpenComments = async (videoId) => {
@@ -254,7 +313,7 @@ const VideoWatch = () => {
                 controls
                 width="100%"
                 height="auto"
-                muted
+               
               />
       </div>
       
@@ -284,10 +343,11 @@ style={{
 />
 <span>{video.votes.length}</span>
 </div>
-
-
       </div>
-
+      <div className="add-comment">
+            <div className="user-image" onClick={userPage}><img src={userDataItem?.profilePicture || defaultProfilePictureURL} alt="profile" /></div>
+            <div className="comment-prompt" onClick={() => handleOpenComments(video.id)}>add your comment...</div>
+            </div>
     {/* Comment Panel (only show if open) */}
     {showCommentPanel === video.id && (
 <div className="comment-panel" id={`comment-panel-${video.id}`} ref={commentPanelRef}>

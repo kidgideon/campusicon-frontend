@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate} from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../../../../config/firebase_config';
 import { db } from '../../../../config/firebase_config'; // Ensure you're importing your Firebase config
 import { doc, getDoc } from 'firebase/firestore';
 import ReactHotToast, { toast } from 'react-hot-toast';
 import Spinner from '../../../assets/loadingSpinner';
+import { useQuery } from '@tanstack/react-query';
 import {
   handleFeedLike,
   handlePostComment,
@@ -15,39 +17,49 @@ import {
 
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 const logo = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
-const Feeds = ({ feeds: initialFeeds }) => {
+const Feeds = ({ feeds: initialFeeds ,  userData: userData}) => {
   const [feeds, setFeeds] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [showCommentPanel, setShowCommentPanel] = useState(null);
   const [comments, setComments] = useState({});
   const [commentLoading, setCommentLoading] = useState(false);
   const commentPanelRef = useRef(null);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(userData || null)
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
   const videoRefs = useRef([]); // To hold references to all video elements
   const [zoomLevel, setZoomLevel] = useState(1); // For image zooming
   const [lastTapTime, setLastTapTime] = useState(0); // For double-tap detection
   const [likeAnimating, setLikeAnimating] = useState(false);
   const [zoomingImageId, setZoomingImageId] = useState(null); // Tracks the currently zooming image
-
+  const [authInitialized, setAuthInitialized] = useState(false); // Track auth initialization
 
 
   const navigate = useNavigate();
- 
+  // Fetch current Firebase user
   useEffect(() => {
-    const user = auth.currentUser;
-    if (user) {
-      setCurrentUser({
-        uid: user.uid,
-        name: user.displayName || 'Anonymous',
+    // Update currentUser if no userData is passed as a prop
+    if (!userData) {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setCurrentUser({
+            uid: user.uid,
+            name: user.displayName || 'Anonymous', // Default to displayName from Firebase
+            email: user.email, // Optional, include other auth properties if needed
+          });
+        } else {
+          setCurrentUser(null); // Handle logged-out state
+        }
       });
-    }
 
-    // Initialize the feeds state with the parameter value
+      return () => unsubscribe(); // Cleanup on component unmount
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    // Initialize feeds state with the provided initialFeeds
     setFeeds(initialFeeds);
   }, [initialFeeds]);
 
- 
   const handleImageZoom = (e, zoomIn, imageId) => {
     e.preventDefault();
   
@@ -106,7 +118,10 @@ const Feeds = ({ feeds: initialFeeds }) => {
       });
     };
   }, [feeds]);
-
+  
+  const userPage = () => {
+    navigate("/profile")
+  }
 
   const handleToggleCommentPanel = async (feedId) => {
     setShowCommentPanel(feedId);
@@ -274,12 +289,14 @@ const Feeds = ({ feeds: initialFeeds }) => {
               </div>
             </div>
             <div className="add-comment">
-            <div className="user-image">dgdg</div>
-            <div className="comment-prompt">gdggd</div>
+            <div className="user-image" onClick={userPage}><img src={currentUser?.profilePicture || defaultProfilePictureURL} alt="profile" /></div>
+            <div className="comment-prompt" onClick={() => handleToggleCommentPanel(feed.id)}>add your comment...</div>
             </div>
 
             {showCommentPanel === feed.id && (
-              <div className="comment-panel" id={`comment-panel-${feed.id}`} ref={commentPanelRef}>
+             
+   <div className="comment-panel" id={`comment-panel-${feed.id}`} ref={commentPanelRef}>
+   
                 <div className="comment-header">
                   <h3>Comments</h3>
                   <i className="fa-solid fa-x" onClick={() => setShowCommentPanel(null)}></i>
@@ -346,6 +363,7 @@ const Feeds = ({ feeds: initialFeeds }) => {
                   )}
                 </div>
               </div>
+            
             )}
           </div>
         ))

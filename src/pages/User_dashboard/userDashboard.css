@@ -335,15 +335,15 @@ img {
    margin: 0px;
    color: black;
    font-weight: bold;
-   font-size: 17px;
+   font-size: 140%;
   }
 
 
   .dashboard-interface-feed-top img {
-    width: 40px;
-    height: 40px;
-    border-radius: 100%;
-   margin: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 60px;
+   margin: 10px;
   }
 
   .dashboard-interface-text-content {
@@ -360,6 +360,7 @@ img {
   .dashboard-interface-text-content p {
    margin: 4px 20px;
    color: black;
+  font-size: 105%;
   }
 
   .dashboard-interface-media-content {
@@ -493,4 +494,20 @@ img {
 
 .feed-video {
   width: 200px;
+}
+
+.add-comment {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  flex-direction: row;
+  color: black;
+}
+
+.add-comment img {
+  width: 50px;
+  height: 50px;
+  border-radius: 40px;
+  margin: 10px;
 }

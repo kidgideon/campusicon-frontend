@@ -123,7 +123,7 @@ const UserDashboard = () => {
         <TopTab />
         <TopAccounts topUsers={topUsers} />
         <ActiveCompetitions activeCompetitions={activeCompetitions} />
-        <Feeds feeds={feeds} /> 
+        <Feeds feeds={feeds} userData={userData} /> 
       </div>
     </div>
   );
