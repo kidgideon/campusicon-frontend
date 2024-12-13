@@ -10,6 +10,7 @@ import ActiveCompetitions from './components/activeCompetions';
 import Feeds from './components/feed.jsx';
 import './userDashboard.css';
 import Skeleton from'./DashboardSkeleton.jsx'
+import {Helmet} from "react-helmet"
 
 // Fetch user data function
 const fetchUserData = async () => {
@@ -118,6 +119,13 @@ const UserDashboard = () => {
 
   return (
     <div className="full-house">
+       <Helmet>
+      <title>Campus Icon - Compete, Rise, and Shine</title>
+      <meta name="description" content="Join exciting competitions, rise to the top, and win rewards with Campus Icon!" />
+      <meta name="keywords" content="Campus Icon, competitions, rewards, university" />
+      <meta name="robots" content="index, follow" />
+      <link rel="canonical" href="https://www.campusicon.ng" />
+    </Helmet>
       <div className="layout-dashboard">
         <TopSection userData={userData} />
         <TopTab />
