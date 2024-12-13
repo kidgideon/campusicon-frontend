@@ -68,7 +68,7 @@ const navigate = useNavigate();
   };
 
   const goBack =() => {
-    navigate("/")
+    navigate("/dashboard")
   }
 
   const withdraw = () => {
