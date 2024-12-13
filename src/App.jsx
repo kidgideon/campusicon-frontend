@@ -63,7 +63,7 @@ function App() {
           <Route path="/admin" element={<CreateComp />} />
           <Route path="/post" element={<AdminFeedPostInterface />} />
           <Route path="/awards-ranks" element={<AwardsandRank />} />
-          <Route path="/dashboard" element={<ProtectedRoute element={<UserDashboard />} />} />
+          <Route path="/" element={<ProtectedRoute element={<UserDashboard />} />} />
           <Route path="/campus-rank" element={<CampusRank />} />
           <Route path='/fake-users' element={<AddFakeUsers />} />
           <Route path="/profile/:username" element={<UserProfile />} />
