@@ -28,10 +28,8 @@ const StepOne = ({
   error,
 }) => {
   return (
-    <div className="register-page-whole-body">
-  <div className='register-interface'>
-
-<div className="container-form">
+<div className="full-house">
+<div className="container-form-register">
  
     <h1>Create Your Account</h1>
 
@@ -124,7 +122,6 @@ const StepOne = ({
   </div>
 </div>
 
-    </div>
   );
 };
 

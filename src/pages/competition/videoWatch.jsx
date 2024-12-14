@@ -200,41 +200,65 @@ const VideoWatch = () => {
 
   // Open comment panel
   const handleOpenComments = async (videoId) => {
-    setShowCommentPanel(videoId);
+    setShowCommentPanel(videoId); // Open the panel
     setNewComment('');
-    setLikedComments((prev) => ({ ...prev, [videoId]: {} })); 
-
+    setLikedComments((prev) => ({ ...prev, [videoId]: {} }));
+  
+    // Push a state into history to track the comment panel
+    history.pushState({ commentPanelOpen: true }, '');
+  
     // Fetch comments
     setCommentLoading(true);
     const videoRef = doc(db, 'videos', videoId);
     const videoDoc = await getDoc(videoRef);
     const videoData = videoDoc.data();
     const fetchedComments = videoData.comments || [];
-
+  
     const commentsWithUserDetails = await Promise.all(
       fetchedComments.map(async (comment) => {
         const userRef = doc(db, 'users', comment.userId);
         const userDoc = await getDoc(userRef);
-
+  
         return {
           ...comment,
           username: userDoc.exists() ? userDoc.data().username || ' ' : ' ',
-          userProfilePicture: userDoc.exists() ? userDoc.data().profilePicture || defaultProfilePictureURL : defaultProfilePictureURL,
+          userProfilePicture: userDoc.exists()
+            ? userDoc.data().profilePicture || defaultProfilePictureURL
+            : defaultProfilePictureURL,
         };
       })
     );
-
+  
     setComments((prevComments) => ({
       ...prevComments,
       [videoId]: commentsWithUserDetails,
     }));
-
-    setCommentLoading(false); 
+  
+    setCommentLoading(false);
   };
-
+  
   const closeCommentPanel = () => {
-    setShowCommentPanel(null);
+    setShowCommentPanel(null); // Close the panel
   };
+  
+  useEffect(() => {
+    const handlePopState = (event) => {
+      // Close the comment panel if it's open
+      if (showCommentPanel) {
+        closeCommentPanel();
+      } else {
+        // If no panel is open, let the back button behave normally
+        history.go(-1);
+      }
+    };
+  
+    window.addEventListener('popstate', handlePopState);
+  
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [showCommentPanel]); // Dependency ensures the listener always has the latest state
+  
 
   const handleCommentLikeClick = async (videoId, commentTimestamp, currentUserId, setComments) => {
     setLoadingCommentLikes(true);

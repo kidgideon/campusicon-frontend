@@ -17,21 +17,42 @@ const IcoinInterface = () => {
 // Inside the IcoinInterface component
 const navigate = useNavigate();
 
-  const fundPopup = () => {
-    setIsPopupVisible(true);
+const fundPopup = () => {
+  setIsPopupVisible(true);
+  window.history.pushState({ popup: "fund" }, ""); // Push a new history state
+};
+
+const value = () => {
+  setValuePopup(true);
+  window.history.pushState({ popup: "value" }, ""); // Push a new history state
+};
+
+const closePopup = () => {
+  setIsPopupVisible(false);
+  window.history.back(); // Trigger the back action to maintain consistency
+};
+
+const closeValue = () => {
+  setValuePopup(false);
+  window.history.back(); // Trigger the back action to maintain consistency
+};
+
+// Handle back button behavior
+useEffect(() => {
+  const handlePopState = (event) => {
+    if (isPopupVisible) {
+      setIsPopupVisible(false); // Close the "fund" popup if it's open
+    } else if (valuePopup) {
+      setValuePopup(false); // Close the "value" popup if it's open
+    }
   };
 
-  const value = () => {
-    setValuePopup(true)
-  }
-
-  const closeValue = () => {
-    setValuePopup(false)
-  }
-
-  const closePopup = () => {
-    setIsPopupVisible(false);
+  window.addEventListener("popstate", handlePopState);
+  return () => {
+    window.removeEventListener("popstate", handlePopState);
   };
+}, [isPopupVisible, valuePopup]);
+
 
   useEffect(() => {
     const fetchUserData = async () => {

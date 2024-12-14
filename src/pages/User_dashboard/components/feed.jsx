@@ -122,23 +122,25 @@ const Feeds = ({ feeds: initialFeeds ,  userData: userData}) => {
   const userPage = () => {
     navigate("/profile")
   }
-
   const handleToggleCommentPanel = async (feedId) => {
-    setShowCommentPanel(feedId);
+    setShowCommentPanel(feedId); // Open the comment panel
     setNewComment('');
     setCommentLoading(true);
-
+  
+    // Push state to track comment panel visibility in history
+    history.pushState({ commentPanelOpen: true }, '');
+  
     try {
       const feedRef = doc(db, 'feeds', feedId);
       const feedDoc = await getDoc(feedRef);
       const feedData = feedDoc.data();
       const fetchedComments = feedData.comments || [];
-
+  
       const commentsWithUserDetails = await Promise.all(
         fetchedComments.map(async (comment) => {
           const userRef = doc(db, 'users', comment.userId);
           const userDoc = await getDoc(userRef);
-
+  
           if (userDoc.exists()) {
             const userData = userDoc.data();
             return {
@@ -157,7 +159,7 @@ const Feeds = ({ feeds: initialFeeds ,  userData: userData}) => {
           }
         })
       );
-
+  
       setComments((prevComments) => ({
         ...prevComments,
         [feedId]: commentsWithUserDetails,
@@ -166,9 +168,30 @@ const Feeds = ({ feeds: initialFeeds ,  userData: userData}) => {
       console.error('Error fetching comments with user details:', error);
       toast.error('Failed to load comments.');
     }
-
+  
     setCommentLoading(false); // Hide the loading spinner after fetching data
   };
+  
+  const closeCommentPanel = () => {
+    setShowCommentPanel(null); // Close the comment panel
+  };
+  
+  useEffect(() => {
+    const handlePopState = (event) => {
+      if (showCommentPanel) {
+        closeCommentPanel(); // Close the comment panel if it's open
+      } else {
+        history.go(-1); // Otherwise, let the back button work normally
+      }
+    };
+  
+    window.addEventListener('popstate', handlePopState);
+  
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [showCommentPanel]); // Listen to showCommentPanel changes
+  
 
   const handleCommentLikeClick = async (feedId, commentTimestamp, currentUserId, setComments) => {
     setLoadingCommentLikes(true); // Start loading

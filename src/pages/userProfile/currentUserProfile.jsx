@@ -143,11 +143,13 @@ const CurrentUserProfile = () => {
     };
   }, [videos]);
   
-
   const handleOpenComments = async (videoId) => {
-    setShowCommentPanel(videoId);
+    setShowCommentPanel(videoId);  // Open the comment panel
     setNewComment('');
     setLikedComments((prev) => ({ ...prev, [videoId]: {} })); // Reset liked comments state for the current video
+  
+    // Push state to track comment panel visibility in history
+    history.pushState({ commentPanelOpen: true }, '');
   
     // Fetch comments and show loading spinner
     setCommentLoading(true);
@@ -186,6 +188,30 @@ const CurrentUserProfile = () => {
   
     setCommentLoading(false);  // Hide the loading spinner after fetching data
   };
+  
+  // Function to close the comment panel
+  const closeCommentPanel = () => {
+    setShowCommentPanel(null); // Close the comment panel
+  };
+  
+  // Popstate listener for the back button
+  useEffect(() => {
+    const handlePopState = () => {
+      if (showCommentPanel) {
+        closeCommentPanel(); // Close the comment panel if it's open
+      } else {
+        history.go(-1); // Otherwise, let the back button work normally
+      }
+    };
+  
+    window.addEventListener('popstate', handlePopState);
+  
+    return () => {
+      window.removeEventListener('popstate', handlePopState); // Cleanup the event listener
+    };
+  }, [showCommentPanel]); // Listen to showCommentPanel changes
+  
+
 
   const handleCommentLikeClick = async (videoId, commentTimestamp, currentUserId, setComments) => {
     setLoadingCommentLikes(true); // Start loading
@@ -220,10 +246,6 @@ const CurrentUserProfile = () => {
   };
 
 
-
-  const closeCommentPanel = () => {
-    setShowCommentPanel(null);
-  };
 
   const goBack = () => {
     navigate(-1);
