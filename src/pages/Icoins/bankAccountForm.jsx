@@ -96,6 +96,10 @@ const BankAccountForm = () => {
       });
   };
 
+   const goBack = () => {
+    navigate(-1)
+   }
+
   // Update user data in Firestore
   const updateUserInDatabase = async (recipientCode) => {
     if (!userId) {
@@ -107,15 +111,21 @@ const BankAccountForm = () => {
       const userRef = doc(db, 'users', userId);
       await updateDoc(userRef, { bank: true, transfer_recipient: recipientCode });
       toast.success('Bank details updated successfully!');
-      navigate('/withdraw'); // Navigate to the "withdraw" page
+      navigate('/withdraw', { replace: true }); // Navigate to the "withdraw" page
     } catch (error) {
       toast.error('Error updating Firestore: ' + error.message);
     }
   };
 
   return (
-    <div>
-      <h1>Resolve Bank Account</h1>
+    <div className='bank-verification-page'>
+       <div className="top-top-sideliners">
+        <i className="fas fa-arrow-left" onClick={goBack}></i>
+        <h2>verify account</h2>
+      </div>
+
+      <h1>verify your bank account</h1>
+      <p>note: once verified you will need to contact support to change</p>
 
       <label htmlFor="bank">Select Bank</label>
       <select

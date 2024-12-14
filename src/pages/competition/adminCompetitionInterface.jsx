@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { doc, addDoc, collection, getDocs, query, orderBy, deleteDoc, updateDoc, limit, getDoc, writeBatch } from 'firebase/firestore';
+import { doc, addDoc, collection, getDocs, query, orderBy, deleteDoc, updateDoc, limit, getDoc, writeBatch, increment } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../../config/firebase_config';
 import '../../assets/adminCompCreation.css';
@@ -173,8 +173,9 @@ const AdminCompetitionInterface = () => {
         throw new Error('No videos in this competition');
       }
   
-     const prizePool = balance;
-
+      const prizePool = balance;
+      console.log(prizePool)
+  
       // Sort the videos based on votes in descending order
       const sortedVideos = videos.sort((a, b) => b.votes - a.votes);
   
@@ -186,6 +187,7 @@ const AdminCompetitionInterface = () => {
       // Calculate Campus Streak points based on competition type
       let pointsToAdd = 0;
       let awardType = '';
+  
       switch (competitionType) {
         case 'Normal Star Award':
           pointsToAdd = 20;
@@ -224,14 +226,26 @@ const AdminCompetitionInterface = () => {
         {
           userId: firstPlaceWinner.userId,
           text: `Congratulations! You have won the competition ${competitionName}.`,
+          timestamp: Date.now(),
+          read: false,
+          type: 'competition',
+          competitionId: competitionId,
         },
         {
           userId: secondPlaceWinner.userId,
           text: `Great job! You placed second in the competition ${competitionName}.`,
+          timestamp: Date.now(),
+          read: false,
+          type: 'competition',
+          competitionId: competitionId,
         },
         {
           userId: thirdPlaceWinner.userId,
           text: `Nice work! You placed third in the competition ${competitionName}.`,
+          timestamp: Date.now(),
+          read: false,
+          type: 'competition',
+          competitionId: competitionId,
         }
       ];
   
@@ -245,16 +259,17 @@ const AdminCompetitionInterface = () => {
       });
   
       // Distribute the icoin: 
-      // App takes 40%, and the remaining 60% will be split among the top 3 winners
       const appShare = prizePool * 0.4;
       const winnerShare = prizePool * 0.6;
-      
-      // Distribute the winner's share (60%) between 1st, 2nd, and 3rd place
-      const firstPlaceShare = winnerShare * 0.35; // 35% of 60% for 1st place
-      const secondPlaceShare = winnerShare * 0.25; // 25% of 60% for 2nd place
-      const thirdPlaceShare = winnerShare * 0.10; // 10% of 60% for 3rd place
+      console.log(appShare)
+      console.log(winnerShare)
   
-      // Loop through each winner to distribute the icoin and send them notifications
+      const firstPlaceShare = winnerShare * 0.50; // 30% of the total prize pool for 1st place
+      const secondPlaceShare = winnerShare * 0.30; // 18% of the total prize pool for 2nd place
+      const thirdPlaceShare = winnerShare * 0.20; // 12% of the total prize pool for 3rd place
+  
+      console.log(firstPlaceShare, secondPlaceShare, thirdPlaceShare)
+  
       const winners = [
         { user: firstPlaceWinner, share: firstPlaceShare, notification: winnerNotifications[0] },
         { user: secondPlaceWinner, share: secondPlaceShare, notification: winnerNotifications[1] },
@@ -272,11 +287,23 @@ const AdminCompetitionInterface = () => {
         const winnerData = winnerDoc.data();
         const updatedCampusStreaks = (winnerData.points || 0) + pointsToAdd;
   
-        // Update the winner's notifications and points
-        const winnerNotifications = winnerData.notifications || [];
-        const updatedWinnerNotifications = [...winnerNotifications, notification];
+        // Add the notification for streak points and icoin earnings
+        const earnedPointsNotification = `You earned ${pointsToAdd} Campus Streak points and ${share} iCoins from the competition ${competitionName}!`;
   
-        // Update the winner's balance, notifications, and points
+        const winnerNotifications = winnerData.notifications || [];
+        const updatedWinnerNotifications = [
+          ...winnerNotifications,
+          notification,
+          {
+            userId: user.userId,
+            text: earnedPointsNotification,
+            timestamp: Date.now(),
+            read: false,
+            type: 'competition',
+            competitionId: competitionId,
+          }
+        ];
+  
         const winnerWins = winnerData.win || [];
         const newWin = {
           competitionId: competitionId,
@@ -284,14 +311,17 @@ const AdminCompetitionInterface = () => {
         };
         const updatedWinnerWins = [...winnerWins, newWin];
   
-        // Increase their icoin balance
-        const updatediCoins = (winnerData.icoin || 0) + share;
+        const icoinHistory = winnerData.icoin_history || [];
+        const newHistory = `Congratulations! You earned from the ${competitionName} prize pool.`;
+        const updatedIcoinHistory = [...icoinHistory, newHistory];
   
+       
         batch.update(winnerRef, {
           notifications: updatedWinnerNotifications,
           points: updatedCampusStreaks,
-          win: updatedWinnerWins, // Update or create the 'wins' field
-          icoins: updatediCoins, // Increase the icoin balance for the winner
+          win: updatedWinnerWins,
+          icoin_history: updatedIcoinHistory,
+          icoins: increment(share)
         });
       }
   
@@ -311,6 +341,7 @@ const AdminCompetitionInterface = () => {
       setLoading(false); // Set loading to false
     }
   };
+  
   
   
   

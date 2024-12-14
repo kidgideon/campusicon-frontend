@@ -277,10 +277,34 @@ const Feeds = ({ feeds: initialFeeds ,  userData: userData}) => {
 
             <div className="dashboard-interface-interactions">
               {currentUser && (
-                <div className="like" onClick={() => handleFeedLike(feed.id, feed.likes.includes(currentUser.uid), currentUser.uid, setFeeds)}>
-                  <i className="fa-solid fa-heart" style={{ color: feed.likes.includes(currentUser.uid) ? '#277AA4' : 'rgb(88, 88, 88)' }} />
+                <div className="like" onClick={() => {
+                  // Check if the feed is already liked by the user
+                  const isLiked = feed.likes.includes(currentUser.uid);
+                
+                  // Toggle the like status immediately
+                  const updatedLikes = isLiked
+                    ? feed.likes.filter(userId => userId !== currentUser.uid)
+                    : [...feed.likes, currentUser.uid];
+                
+                  // Immediately update the like count and color in the UI
+                  setFeeds(prevFeeds => prevFeeds.map(f => 
+                    f.id === feed.id
+                      ? { ...f, likes: updatedLikes }
+                      : f
+                  ));
+                
+                  // Call the handleFeedLike function to update the backend after the UI update
+                  handleFeedLike(feed.id, isLiked, currentUser.uid, setFeeds);
+                }}>
+                  <i 
+                    className="fa-solid fa-heart"
+                    style={{ 
+                      color: feed.likes.includes(currentUser.uid) ? '#277AA4' : 'rgb(88, 88, 88)' 
+                    }}
+                  />
                   <span>{feed.likes.length}</span>
                 </div>
+                
               )}
 
               <div onClick={() => handleToggleCommentPanel(feed.id)}>

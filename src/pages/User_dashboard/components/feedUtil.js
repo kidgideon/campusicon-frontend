@@ -38,8 +38,7 @@ export const handleFeedLike = async (feedId, isLiked, currentUserId, setFeeds) =
   }
 };
 
-
-export const fetchCommentsWithUserDetails = async (feedId) => {
+export const fetchCommentsWithUserDetails = async (feedId, batchSize = 10, setComments) => {
   try {
     const feedRef = doc(db, 'feeds', feedId);
     const feedDoc = await getDoc(feedRef);
@@ -47,17 +46,44 @@ export const fetchCommentsWithUserDetails = async (feedId) => {
 
     const fetchedComments = Array.isArray(feedData.comments) ? feedData.comments : [];
 
-    // Process each comment and add user details
-    const commentsWithUserDetails = await Promise.all(
-      fetchedComments.map(fetchCommentUserDetails)
-    );
+    // Helper function to fetch user details for each comment
+    const fetchCommentUserDetailsBatch = async (batchComments) => {
+      return await Promise.all(batchComments.map(fetchCommentUserDetails));
+    };
 
-    return commentsWithUserDetails;
+    // Start with the first batch
+    let batchIndex = 0;
+    const totalComments = fetchedComments.length;
+
+    const loadBatch = async () => {
+      // Determine the next batch of comments to load
+      const start = batchIndex * batchSize;
+      const end = start + batchSize;
+      const batchComments = fetchedComments.slice(start, end);
+
+      // Fetch user details for the current batch
+      const commentsWithUserDetails = await fetchCommentUserDetailsBatch(batchComments);
+
+      // Update the state with the new batch of comments
+      setComments(prevComments => [...prevComments, ...commentsWithUserDetails]);
+
+      // Increment the batch index for the next batch
+      batchIndex++;
+
+      // If there are more comments to load, load the next batch after a slight delay
+      if (end < totalComments) {
+        setTimeout(loadBatch, 500);  // Delay to simulate loading (500ms, you can adjust this)
+      }
+    };
+
+    // Start loading the first batch
+    loadBatch();
   } catch (error) {
     console.error('Error fetching comments with user details:', error);
-    return [];
+    setComments([]);
   }
 };
+
 
 /**
  * Function to handle posting a comment to a feed

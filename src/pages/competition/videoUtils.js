@@ -3,25 +3,62 @@ import { toast } from 'react-hot-toast';
 import { db } from '../../../config/firebase_config';
 
 // Fetch the user details for a comment
-export const fetchCommentUserDetails = async (comment) => {
-  const userRef = doc(db, 'users', comment.userId);
-  const userDoc = await getDoc(userRef);
+export const fetchCommentUserDetails = async (comments, batchSize = 10, setComments) => {
+  try {
+    let batchIndex = 0;
+    const totalComments = comments.length;
 
-  if (userDoc.exists()) {
-    const userData = userDoc.data();
-    return {
-      ...comment,
-      username: userData.username || 'Unknown User',
-      userProfilePicture: userData.profilePicture || 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media'
+    const fetchUserDetailsForBatch = async (batchComments) => {
+      // Process each comment to fetch user details
+      return await Promise.all(batchComments.map(async (comment) => {
+        const userRef = doc(db, 'users', comment.userId);
+        const userDoc = await getDoc(userRef);
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          return {
+            ...comment,
+            username: userData.username || 'Unknown User',
+            userProfilePicture: userData.profilePicture || 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media'
+          };
+        } else {
+          return {
+            ...comment,
+            username: 'Unknown User',
+            userProfilePicture: 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media'
+          };
+        }
+      }));
     };
-  } else {
-    return {
-      ...comment,
-      username: 'Unknown User',
-      userProfilePicture: 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media'
+
+    const loadBatch = async () => {
+      const start = batchIndex * batchSize;
+      const end = start + batchSize;
+      const batchComments = comments.slice(start, end);
+
+      // Fetch user details for the current batch of comments
+      const commentsWithUserDetails = await fetchUserDetailsForBatch(batchComments);
+
+      // Update the state with the new batch of comments
+      setComments(prevComments => [...prevComments, ...commentsWithUserDetails]);
+
+      // Increment the batch index for the next batch
+      batchIndex++;
+
+      // If there are more comments to load, continue loading the next batch after a delay
+      if (end < totalComments) {
+        setTimeout(loadBatch, 500);  // Delay to simulate loading (500ms, you can adjust this)
+      }
     };
+
+    // Start loading the first batch of comments
+    loadBatch();
+  } catch (error) {
+    console.error('Error fetching user details for comments:', error);
+    setComments([]);
   }
 };
+
 
 /**
  * Function to send a notification to the creator of a video.

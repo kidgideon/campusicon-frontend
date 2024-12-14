@@ -103,7 +103,8 @@ const CurrentUserProfile = () => {
           }
         }
       }
-      setVideos(fetchedVideos);
+      const sortedFetchedVideos = (fetchedVideos || []).sort((a, b) => b.timestamp - a.timestamp);
+      setVideos(sortedFetchedVideos);
       setCreators(fetchedCreators);
     };
 
@@ -374,13 +375,32 @@ const CurrentUserProfile = () => {
       </div>
       
       <div className="video-watch-icon-and-button">
-        <div className="like" onClick={() => handleVideoLike(video.id, video.likes.includes(currentUser.uid), currentUser.uid, setVideos)}>
-          <i 
-            className="fa-solid fa-heart" 
-            style={{ color: video.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }} // Apply company color if liked
-          />
-          <span>{video.likes.length}</span>
-        </div>
+      <div className="like" onClick={() => {
+  // Check if the video is already liked by the user
+  const isLiked = video.likes.includes(currentUser.uid);
+
+  // Toggle the like status immediately
+  const updatedLikes = isLiked
+    ? video.likes.filter(userId => userId !== currentUser.uid)
+    : [...video.likes, currentUser.uid];
+
+  // Immediately update the like count and color in the UI
+  setVideos(prevVideos => prevVideos.map(v => 
+    v.id === video.id
+      ? { ...v, likes: updatedLikes }
+      : v
+  ));
+
+  // Proceed with the backend update if necessary (e.g., handleVideoLike function call)
+  handleVideoLike(video.id, isLiked, currentUser.uid, setVideos);
+}}>
+  <i 
+    className="fa-solid fa-heart" 
+    style={{ color: video.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }} // Apply company color if liked
+  />
+  <span>{video.likes.length}</span>
+</div>
+
         <div className="comment" onClick={() => handleOpenComments(video.id)}>
           <i className="fa-solid fa-comment" />
           <span>{video.comments.length}</span>

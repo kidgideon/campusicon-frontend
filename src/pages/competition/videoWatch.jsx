@@ -322,27 +322,66 @@ const VideoWatch = () => {
       </div>
       
       <div className="video-watch-icon-and-button">
-        <div className="like" onClick={() => handleVideoLike(video.id, video.likes.includes(currentUser.uid), currentUser.uid, setVideos)}>
-          <i 
-            className="fa-solid fa-heart" 
-            style={{ color: video.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }} // Apply company color if liked
-          />
-          <span>{video.likes.length}</span>
-        </div>
+      <div className="like" onClick={() => {
+  // Toggle the like status immediately
+  const isLiked = video.likes.includes(currentUser.uid);
+  const updatedLikes = isLiked
+    ? video.likes.filter(userId => userId !== currentUser.uid)
+    : [...video.likes, currentUser.uid];
+
+  // Immediately update the like count and color in the UI
+  setVideos(prevVideos => prevVideos.map(v => 
+    v.id === video.id
+      ? { ...v, likes: updatedLikes }
+      : v
+  ));
+  
+  // Call the handleVideoLike function to update Firestore after the UI update
+  handleVideoLike(video.id, isLiked, currentUser.uid, setVideos);
+}}>
+  <i 
+    className="fa-solid fa-heart" 
+    style={{ color: video.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }} // Apply company color if liked
+  />
+  <span>{video.likes.length}</span>
+</div>
+
         <div className="comment" onClick={() => handleOpenComments(video.id)}>
           <i className="fa-solid fa-comment" />
           <span>{video.comments.length}</span>
         </div>
-        <div className="vote" onClick={() => handleVoteClick(video.id)}>
-<i 
-className="fa-solid fa-thumbs-up"
-style={{ 
-  color: votedVideos[video.id] ? '#277AA4' : 'rgb(88, 88, 88)', 
-  pointerEvents: loadingVotes ? 'none' : 'auto'  // Disable button while loading
-}} 
-/>
-<span>{video.votes.length}</span>
+      <div className="vote" onClick={() => {
+  // Check if the video is already voted by the user
+  const isVoted = votedVideos[video.id];
+
+  // Toggle the vote status immediately
+  const updatedVotes = isVoted
+    ? video.votes.filter(userId => userId !== currentUser.uid)
+    : [...video.votes, currentUser.uid];
+
+  // Immediately update the vote count and color in the UI
+  setVideos(prevVideos => prevVideos.map(v => 
+    v.id === video.id
+      ? { ...v, votes: updatedVotes }
+      : v
+  ));
+
+  // Update the votedVideos state to track user's vote status
+  setVotedVideos(prev => ({ ...prev, [video.id]: !isVoted }));
+
+  // Call the handleVoteClick function to update backend after the UI update
+  handleVoteClick(video.id);
+}}>
+  <i 
+    className="fa-solid fa-thumbs-up"
+    style={{ 
+      color: votedVideos[video.id] ? '#277AA4' : 'rgb(88, 88, 88)', 
+      pointerEvents: loadingVotes ? 'none' : 'auto'  // Disable button while loading
+    }}
+  />
+  <span>{video.votes.length}</span>
 </div>
+
       </div>
       <div className="add-comment">
             <div className="user-image" onClick={userPage}><img src={userDataItem?.profilePicture || defaultProfilePictureURL} alt="profile" /></div>
