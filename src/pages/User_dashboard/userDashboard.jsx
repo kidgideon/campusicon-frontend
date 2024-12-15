@@ -119,13 +119,6 @@ const UserDashboard = () => {
 
   return (
     <div className="full-house">
-       <Helmet>
-      <title>Campus Icon - Compete, Rise, and Shine</title>
-      <meta name="description" content="Join exciting competitions, rise to the top, and win rewards with Campus Icon!" />
-      <meta name="keywords" content="Campus Icon, competitions, rewards, university, campusicon, icoins, earn as a student, Nigerian campus software, campusicon, campus icon, campus, campus icon" />
-      <meta name="robots" content="index, follow" />
-      <link rel="canonical" href="https://www.campusicon.ng"/>
-    </Helmet>
       <div className="layout-dashboard">
         <TopSection userData={userData} />
         <TopTab />
