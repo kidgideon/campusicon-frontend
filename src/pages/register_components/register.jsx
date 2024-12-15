@@ -105,12 +105,8 @@ function Register() {
   };
 
   return (
-    <div className="register-page-whole-bodypage">
-      <div className="head">
-        <div className="register-page-logo">
-          <img src={whitelogo} alt="Campus Icon Logo" />
-        </div>
-      </div>
+    
+     <div className="registration-page-management-div">
       <div>
         {step === 1 && (
           <StepOne
@@ -151,8 +147,14 @@ function Register() {
           />
         )}
       </div>
-    </div>
+   </div>
   );
 }
 
 export default Register;
+
+<div className="head">
+<div className="register-page-logo">
+  <img src={whitelogo} alt="Campus Icon Logo" />
+</div>
+</div>

@@ -1,6 +1,8 @@
 import React from "react";
 import svg from '../../assets/the.svg';
 import { Link } from "react-router-dom";
+const whitelogo = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
+
 
 const StepOne = ({
   firstName,
@@ -31,8 +33,13 @@ const StepOne = ({
 <div className="full-house">
 <div className="container-form-register">
  
-    <h1>Create Your Account</h1>
+<div className="head">
+<div className="register-page-logo">
+  <img src={whitelogo} alt="Campus Icon Logo" />
+</div>
+</div>
 
+    <h1>Create Your Account</h1>
     <div className="input-icon">
       <i className="fas fa-user"></i>
       <input
