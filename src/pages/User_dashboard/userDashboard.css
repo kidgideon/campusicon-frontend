@@ -138,21 +138,10 @@ img {
  }
 
  .top-accounts {
-  position: relative;
   width: 100%;
-  overflow-x: scroll;
-  overflow-y: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.top-accounts::-webkit-scrollbar {
-  display: none;
-}
-
-.top-accounts::-webkit-scrollbar-thumb {
-  display: none;
 }
 
 .user-list {
@@ -160,6 +149,7 @@ img {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  padding: 0px;
 }
 
 .user-card {
@@ -169,7 +159,6 @@ img {
  align-items: center;
  flex-direction: column;
  margin: 5px;
- padding-top: 5px;
 }
 
 

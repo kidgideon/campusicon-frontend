@@ -152,9 +152,3 @@ function Register() {
 }
 
 export default Register;
-
-<div className="head">
-<div className="register-page-logo">
-  <img src={whitelogo} alt="Campus Icon Logo" />
-</div>
-</div>

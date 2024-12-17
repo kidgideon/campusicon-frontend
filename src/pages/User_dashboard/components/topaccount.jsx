@@ -16,7 +16,7 @@ const TopAccounts = ({ topUsers }) => {
             />
           </div>
           
-           <div> {user.username}</div>
+          <div>{user.username.length > 4 ? `${user.username.slice(0, 4)}...` : user.username}</div>
           </Link>
         </li>
       ))}

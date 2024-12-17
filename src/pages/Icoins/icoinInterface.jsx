@@ -118,7 +118,7 @@ useEffect(() => {
         <div className="coin-balance-area">
           <div className="balance-itself">
             <p>
-              <span>I</span> {userData.icoins}
+              <span> <i className="fa-solid fa-coins balance-icon-main"></i></span> {userData.icoins}
             </p>
           </div>
           <div className="controls">
@@ -166,41 +166,25 @@ useEffect(() => {
             <div className="purchase-popup" onClick={(e) => e.stopPropagation()}>
               <div className="option" onClick={() => handleBundleSelection(800)}>
                 <p>Starter Bundle</p>
-                <div className="coin-animation">
-                  <div className="coin">
-                    <span className="coin-label">iCoin</span>
-                  </div>
-                </div>
+                 <i className="fa-solid fa-coins balance-icon"></i>
                 <p>50 iCoins: ₦800</p>
               </div>
 
               <div className="option" onClick={() => handleBundleSelection(1700)} >
                 <p>Small Bundle</p>
-                <div className="coin-animation">
-                  <div className="coin">
-                    <span className="coin-label">iCoin</span>
-                  </div>
-                </div>
+                <i className="fa-solid fa-coins balance-icon"></i>
                 <p>120 iCoins: ₦1,700</p>
               </div>
 
               <div className="option" onClick={() => handleBundleSelection(3500)}>
                 <p>Medium Bundle</p>
-                <div className="coin-animation">
-                  <div className="coin">
-                    <span className="coin-label">iCoin</span>
-                  </div>
-                </div>
+                <i className="fa-solid fa-coins balance-icon"></i>
                 <p>250 iCoins: ₦3,500</p>
               </div>
 
               <div className="option" onClick={() => handleBundleSelection(8000)}>
                 <p>Large Bundle</p>
-                <div className="coin-animation">
-                  <div className="coin">
-                    <span className="coin-label">iCoin</span>
-                  </div>
-                </div>
+                <i className="fa-solid fa-coins balance-icon"></i>
                 <p>600 iCoins: ₦8,000</p>
               </div>
             </div>

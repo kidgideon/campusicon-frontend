@@ -151,7 +151,7 @@ const UploadVideoForm = () => {
         deductionAmount = 10;
       } else if (competitionType === 'Super Star Award') {
         deductionAmount = 30;
-      } else if (competitionType === 'Icon Awards') {
+      } else if (competitionType === 'Icon Award') {
         deductionAmount = 50;
       }
   

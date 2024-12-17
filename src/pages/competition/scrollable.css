@@ -231,3 +231,25 @@
   font-size: 0.9rem;
 }
 
+.competition-balance {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.balance-icon {
+  font-size: 1.5rem;
+  color: #ffd700; /* Gold color for the coin icon */
+  margin-right: 0.5rem;
+}
+
+.balance-icon-main {
+  font-size: 3.0rem;
+  color: #ffd700; /* Gold color for the coin icon */
+  margin-right: 0.5rem;
+}

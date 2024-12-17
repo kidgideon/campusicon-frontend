@@ -45,8 +45,10 @@ const AwardsandRank = () => {
     <div className="awards-rank-interface">
       <div className="top-top-sideliners">
         <i className="fas fa-arrow-left " onClick={goBack}></i>
-        <h2> Awards and ranks </h2>
+        <h2>Awards and Ranks</h2>
       </div>
+
+      {/* How to Earn Points */}
       <section className="awards-rank-interface-section fade-in">
         <h2>How to Earn Campus Streaks</h2>
         <p>
@@ -57,6 +59,7 @@ const AwardsandRank = () => {
         </p>
       </section>
 
+      {/* Inviting Friends */}
       <section className="awards-rank-interface-section fade-in">
         <h2>Earn Streaks by Inviting Friends</h2>
         <p>
@@ -64,6 +67,7 @@ const AwardsandRank = () => {
         </p>
       </section>
 
+      {/* Cup Types and Points */}
       <section className="awards-rank-interface-section fade-in">
         <h2>Cup Types and Points</h2>
         <div className="awards-rank-cups">
@@ -88,6 +92,7 @@ const AwardsandRank = () => {
         </p>
       </section>
 
+      {/* Campus Status Levels */}
       <section className="awards-rank-interface-section fade-in">
         <h2>Campus Status Levels</h2>
         <p>Your progression in Campus Icon is marked by your Campus Streaks. Here's how you can level up:</p>
@@ -99,6 +104,38 @@ const AwardsandRank = () => {
           ))}
         </ul>
         <p>Reach the ultimate status and become a Campus Icon!</p>
+      </section>
+
+      {/* Facts and Procedures */}
+      <section className="awards-rank-interface-section fade-in">
+        <h2>Facts and Procedures of Icons</h2>
+        <p>
+          Becoming an Icon requires consistent effort and participation in the app's ecosystem. Icons are users who embody talent, creativity, and influence on Campus Icon. Here's how you can work your way to the top:
+        </p>
+        <ol>
+          <li>Participate actively in competitions to gain visibility and votes.</li>
+          <li>Engage with other users by voting, commenting, and sharing content.</li>
+          <li>Maintain a positive reputation by adhering to community guidelines and fostering a supportive environment.</li>
+          <li>Maximize your chances by inviting friends and leveraging your social network for more votes.</li>
+          <li>Climb the status tiers by earning Campus Streaks and achieving milestones.</li>
+        </ol>
+        <p>
+          Remember, the first user to reach the "Rising Star" status will win a reward of 100,000 Naira. Keep pushing, and you could be the next big Icon!
+        </p>
+      </section>
+
+      {/* Earning Icons and Transfers */}
+      <section className="awards-rank-interface-section fade-in">
+        <h2>Earn Icons and Transfer Earnings</h2>
+        <p>
+          You can earn Icons by winning competitions on Campus Icon. Every competition you participate in brings an opportunity to increase your rank and Icon balance.
+        </p>
+        <p>
+          Once you have accumulated enough Icons, you can convert them into monetary value and transfer them to your bank account. Ensure you meet the minimum withdrawal threshold to request a transfer. Withdrawals are processed twice every 30 days to ensure smooth transactions.
+        </p>
+        <p>
+          Keep competing, winning, and building your earnings as you rise to become a Campus Icon!
+        </p>
       </section>
     </div>
   );

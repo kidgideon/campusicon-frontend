@@ -95,116 +95,128 @@ const Competition = () => {
     return <div>{error.message}</div>;
   }
 
-  const { name, imageUrl, description, startDate, endDate, type, status, winnerDetails, topCompetitors } = competition;
+  const { name, imageUrl, description, startDate, endDate, type, status, winnerDetails, topCompetitors, balance } = competition;
 
   return (
     <div className="full-house">
-      <div className="competition-interface">
-        <div className="top-top-sideliners">
-          <i className="fas fa-arrow-left" onClick={goBack}></i>
-          <h2>{name}</h2>
+    <div className="competition-interface">
+      <div className="top-top-sideliners">
+        <i className="fas fa-arrow-left" onClick={goBack}></i>
+        <h2>{name}</h2>
+      </div>
+  
+      <div className="competion-interface-competion-image">
+        <img src={imageUrl} alt="Competition" />
+      </div>
+  
+      {/* New Div for Current Balance */}
+      <div className="competition-balance">
+  <i className="fa-solid fa-coins balance-icon"></i>
+  {balance < 500 ? (
+    <span>Top 3 winners are eligible to split 1000 iCoins depending on participation</span>
+  ) : (
+    <span>Top 3 winners are eligible to split {Math.floor(balance * 0.7)} iCoins</span>
+  )}
+</div>
+
+  
+      <div className="competion-description">
+        <div className="description">
+          <p className="description-text">{description}</p>
         </div>
-
-        <div className="competion-interface-competion-image">
-          <img src={imageUrl} alt="Competition" />
-        </div>
-
-        <div className="competion-description">
-          <div className="description">
-            <p className="description-text">{description}</p>
-          </div>
-
-          {status === 'Ended' ? (
-            // Competition ended, display winner
-            <div>
-              <h4 className="tc">Winner</h4>
-              {winnerDetails ? (
-                <div className="competitor-in-competion" onClick={() => navigate(`/profile/${winnerDetails.username}`)}>
-                  <div className="competitors-profile-picture-in-comp">
-                    <img src={winnerDetails.profilePicture || defaultProfilePictureURL} alt="Winner" />
-                  </div>
-                  <div className="competitors-name">{winnerDetails.username}</div>
+  
+        {status === 'Ended' ? (
+          // Competition ended, display winner
+          <div>
+            <h4 className="tc">Winner</h4>
+            {winnerDetails ? (
+              <div className="competitor-in-competion" onClick={() => navigate(`/profile/${winnerDetails.username}`)}>
+                <div className="competitors-profile-picture-in-comp">
+                  <img src={winnerDetails.profilePicture || defaultProfilePictureURL} alt="Winner" />
                 </div>
+                <div className="competitors-name">{winnerDetails.username}</div>
+              </div>
+            ) : (
+              <p>No winner information available.</p>
+            )}
+          </div>
+        ) : (
+          // Competition ongoing, display top competitors
+          <div>
+            <h4 className="tc">Top Competitors</h4>
+            <div className="top-3-competitors">
+              {topCompetitors.length > 0 ? (
+                topCompetitors.map((competitor, index) => (
+                  <div key={index} className="competitor-in-competion" onClick={() => navigate(`/profile/${competitor.name}`)}>
+                    <div className="competitors-profile-picture-in-comp">
+                      <img src={competitor.profilePicture} alt="Profile" />
+                    </div>
+                    <div className="competitors-name">{competitor.name}</div>
+                    <div className="competitors-votes-amount">{competitor.votes} votes</div>
+                  </div>
+                ))
               ) : (
-                <p>No winner information available.</p>
+                <p>No competitors yet.</p>
               )}
             </div>
-          ) : (
-            // Competition ongoing, display top competitors
-            <div>
-              <h4 className="tc">Top Competitors</h4>
-              <div className="top-3-competitors">
-                {topCompetitors.length > 0 ? (
-                  topCompetitors.map((competitor, index) => (
-                    <div key={index} className="competitor-in-competion" onClick={() => navigate(`/profile/${competitor.name}`)}>
-                      <div className="competitors-profile-picture-in-comp">
-                        <img src={competitor.profilePicture} alt="Profile" />
-                      </div>
-                      <div className="competitors-name">{competitor.name}</div>
-                      <div className="competitors-votes-amount">{competitor.votes} votes</div>
-                    </div>
-                  ))
-                ) : (
-                  <p>No competitors yet.</p>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="date">
-          <div className="start-date">Start: {new Date(startDate.toDate()).toLocaleDateString()}</div>
-          <div className="end-date">End: {new Date(endDate.toDate()).toLocaleDateString()}</div>
-        </div>
-
-        <div className="competion-award-details-render">
-          <div>
-            <img
-              src={
-                type === 'Icon Award'
-                  ? iconAwards
-                  : type === 'Normal Star Award'
-                  ? normalAward
-                  : type === 'Super Star Award'
-                  ? superCup
-                  : normalAward
-              }
-              alt={type}
-            />
-
-            <div className="win-worth">
-              <p>
-                {type === 'Icon Award'
-                  ? 'This is an Icon Award worth 100 Campus Streaks.'
-                  : type === 'Normal Star Award'
-                  ? 'This is a Normal Star Award worth 20 Campus Streaks.'
-                  : type === 'Super Star Award'
-                  ? 'This is a Super Cup Award worth 50 Campus Streaks.'
-                  : 'This is a Normal Star Award worth 20 Campus Streaks.'}
-              </p>
-            </div>
           </div>
-        </div>
-
-        <div className="competion-interface-footer">
-          <div onClick={() => navigate(`/competition/${competitionId}`)}>
-            <i className="fa-solid fa-trophy interface-icon" style={{ color: '#205e78' }}></i>
-          </div>
-          <div onClick={() => navigate(`/watch-video/${competitionId}`)}>
-            <i className="fa-solid fa-play interface-icon"></i>
-          </div>
-          <div className="top-users-icon" onClick={() => navigate(`/ranks/${competitionId}`)}>
-            <i className="fa-solid fa-sort interface-icon"></i>
-          </div>
-          <div className="add-icon" onClick={() => navigate(`/upload/${competitionId}`)}>
-            <i className="fa-solid fa-plus interface-icon"></i>
-          </div>
-          <div className="to-see-video-performance interface-icon" onClick={() => navigate(`/video-performance/${competitionId}`)}>
-            <i className="fa-solid fa-square-poll-vertical interface-icon"></i>
+        )}
+      </div>
+  
+      <div className="date">
+        <div className="start-date">Start: {new Date(startDate.toDate()).toLocaleDateString()}</div>
+        <div className="end-date">End: {new Date(endDate.toDate()).toLocaleDateString()}</div>
+      </div>
+  
+      <div className="competion-award-details-render">
+        <div>
+          <img
+            src={
+              type === 'Icon Award'
+                ? iconAwards
+                : type === 'Normal Star Award'
+                ? normalAward
+                : type === 'Super Star Award'
+                ? superCup
+                : normalAward
+            }
+            alt={type}
+          />
+  
+          <div className="win-worth">
+            <p>
+              {type === 'Icon Award'
+                ? 'This is an Icon Award worth 100 Campus Streaks.'
+                : type === 'Normal Star Award'
+                ? 'This is a Normal Star Award worth 20 Campus Streaks.'
+                : type === 'Super Star Award'
+                ? 'This is a Super Cup Award worth 50 Campus Streaks.'
+                : 'This is a Normal Star Award worth 20 Campus Streaks.'}
+            </p>
           </div>
         </div>
       </div>
+  
+      <div className="competion-interface-footer">
+        <div onClick={() => navigate(`/competition/${competitionId}`)}>
+          <i className="fa-solid fa-trophy interface-icon" style={{ color: '#205e78' }}></i>
+        </div>
+        <div onClick={() => navigate(`/watch-video/${competitionId}`)}>
+          <i className="fa-solid fa-play interface-icon"></i>
+        </div>
+        <div className="top-users-icon" onClick={() => navigate(`/ranks/${competitionId}`)}>
+          <i className="fa-solid fa-sort interface-icon"></i>
+        </div>
+        <div className="add-icon" onClick={() => navigate(`/upload/${competitionId}`)}>
+          <i className="fa-solid fa-plus interface-icon"></i>
+        </div>
+        <div className="to-see-video-performance interface-icon" onClick={() => navigate(`/video-performance/${competitionId}`)}>
+          <i className="fa-solid fa-square-poll-vertical interface-icon"></i>
+        </div>
+      </div>
     </div>
+  </div>
+  
   );
 };
 

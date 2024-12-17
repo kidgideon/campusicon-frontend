@@ -32,7 +32,7 @@ const fetchUserData = async () => {
 
 // Fetch top users function
 const fetchTopUsers = async () => {
-  const topUsersQuery = query(collection(db, 'users'), orderBy('points', 'desc'), limit(4));
+  const topUsersQuery = query(collection(db, 'users'), orderBy('points', 'desc'), limit(5));
   const topUsersSnapshot = await getDocs(topUsersQuery);
   return topUsersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
