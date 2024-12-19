@@ -55,8 +55,8 @@ const WithdrawalPage = () => {
       return;
     }
 
-    if (withdrawAmountNumber < 1000) {
-      toast.error("You must withdraw at least 1,000 iCoins (₦10,000 equivalent).");
+    if (withdrawAmountNumber < 5000) {
+      toast.error("You must withdraw at least 5000 iCoins");
       return;
     }
 

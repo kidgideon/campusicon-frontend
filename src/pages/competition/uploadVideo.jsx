@@ -148,11 +148,11 @@ const UploadVideoForm = () => {
       // Step 2: Determine deduction amount
       let deductionAmount = 0;
       if (competitionType === 'Normal Star Award') {
-        deductionAmount = 10;
-      } else if (competitionType === 'Super Star Award') {
-        deductionAmount = 30;
-      } else if (competitionType === 'Icon Award') {
         deductionAmount = 50;
+      } else if (competitionType === 'Super Star Award') {
+        deductionAmount = 150;
+      } else if (competitionType === 'Icon Award') {
+        deductionAmount = 250;
       }
   
       // Step 3: Check if the user has enough iCoins
