@@ -259,15 +259,11 @@ const AdminCompetitionInterface = () => {
       });
   
       // Distribute the icoin: 
-      const appShare = prizePool * 0.4;
-      const winnerShare = prizePool * 0.6;
-      console.log(appShare)
-      console.log(winnerShare)
-  
-      const firstPlaceShare = winnerShare * 0.50; // 30% of the total prize pool for 1st place
-      const secondPlaceShare = winnerShare * 0.30; // 18% of the total prize pool for 2nd place
-      const thirdPlaceShare = winnerShare * 0.20; // 12% of the total prize pool for 3rd place
-  
+      const appShare = prizePool * 0.2; // 20% of the total prize pool for the app
+      const firstPlaceShare = prizePool * 0.5; // 50% of the total prize pool for 1st place
+      const secondPlaceShare = prizePool * 0.2; // 20% of the total prize pool for 2nd place
+      const thirdPlaceShare = prizePool * 0.1; // 10% of the total prize pool for 3rd place
+      
       console.log(firstPlaceShare, secondPlaceShare, thirdPlaceShare)
   
       const winners = [

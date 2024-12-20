@@ -154,7 +154,7 @@ useEffect(() => {
     valuePopup && (
       <div className="overlay" onClick={closeValue}>
 <div className="value-popup">
-   your icoins is valued at {userData.icoins * 10} NGN
+   your icoins is valued at {userData.icoins * 5} NGN
 </div>
       </div>
     )
@@ -164,22 +164,22 @@ useEffect(() => {
         {isPopupVisible && (
           <div className="overlay" onClick={closePopup}>
             <div className="purchase-popup" onClick={(e) => e.stopPropagation()}>
-              <div className="option" onClick={() => handleBundleSelection(1000)}>
+              <div className="option" onClick={() => handleBundleSelection(1200)}>
                 <p>Small Bundle</p>
                  <i className="fa-solid fa-coins balance-icon"></i>
-                <p>150 icoins : ₦957</p>
+                <p>80 icoins: ₦1,200</p>
               </div>
 
-              <div className="option" onClick={() => handleBundleSelection(2500)} >
+              <div className="option" onClick={() => handleBundleSelection(2550)} >
                 <p>Medium Bundle</p>
                 <i className="fa-solid fa-coins balance-icon"></i>
-                <p>350 iCoins: ₦2,401</p>
+                <p>210 iCoins: ₦2,550</p>
               </div>
 
-              <div className="option" onClick={() => handleBundleSelection(5000)}>
+              <div className="option" onClick={() => handleBundleSelection(4650)}>
                 <p>Large Bundle</p>
                 <i className="fa-solid fa-coins balance-icon"></i>
-                <p>800 iCoins: ₦4,901</p>
+                <p>390 iCoins: ₦4,650</p>
               </div>
             </div>
           </div>

@@ -55,8 +55,8 @@ const WithdrawalPage = () => {
       return;
     }
 
-    if (withdrawAmountNumber < 5000) {
-      toast.error("You must withdraw at least 5000 iCoins");
+    if (withdrawAmountNumber < 1000) {
+      toast.error("You must withdraw at least 1000 iCoins");
       return;
     }
 
@@ -66,13 +66,13 @@ const WithdrawalPage = () => {
     }
 
     // Proceed to withdrawal process (e.g., redirect to Paystack or call another function)
-    toast.success(`Proceeding to withdraw ${withdrawAmountNumber} iCoins (₦${withdrawAmountNumber * 10}).`);
-    navigate(`/withdrawal/${withdrawAmountNumber * 10}`);
+    toast.success(`Proceeding to withdraw ${withdrawAmountNumber} iCoins (₦${withdrawAmountNumber * 5}).`);
+    navigate(`/withdrawal/${withdrawAmountNumber * 5}`);
   };
 
   const calculateWorthInNaira = () => {
     const withdrawAmountNumber = parseInt(withdrawAmount);
-    return isNaN(withdrawAmountNumber) ? 0 : withdrawAmountNumber * 10; // 1 iCoin = ₦10
+    return isNaN(withdrawAmountNumber) ? 0 : withdrawAmountNumber * 5; // 1 iCoin = ₦5
   };
 
   if (loading) {
@@ -88,7 +88,7 @@ const WithdrawalPage = () => {
       <h1>Enter the amount of iCoins you want to withdraw</h1>
       <p>Available Balance: {userData.icoins || 0} iCoins</p>
       <p>
-        The worth of your withdrawal: ₦{calculateWorthInNaira()} (based on entered iCoins)
+        The worth of your withdrawal is  ₦{calculateWorthInNaira()}
       </p>
       <input
         type="number"

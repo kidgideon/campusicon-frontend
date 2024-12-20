@@ -17,16 +17,13 @@ const SuccessPage = () => {
   let purchasedIcoins = 0;
 
   const getCoinsForBundle = (price) => {
-    if (price == 800) {
-    purchasedIcoins = 50;
-    } else if (price == 1700) {
-     purchasedIcoins = 120;
-    }  else if (price == 3500) {
-     purchasedIcoins = 250;
+    if (price == 1200) {
+    purchasedIcoins = 80;
+    } else if (price == 2550) {
+     purchasedIcoins = 210;
+    }  else if (price == 4650) {
+     purchasedIcoins = 390;
     }
-      else if (price == 8000){
-      purchasedIcoins = 600;
-      } 
   };
 
   useEffect(() => {
@@ -57,15 +54,13 @@ const SuccessPage = () => {
             // Calculate company funds details
             let profit = 0;
 
-            if (purchasedIcoins == 50) {
-              profit = 300;}
-             else if (purchasedIcoins == 120) {
-              profit = 500;}
-            else if (purchasedIcoins == 250) {
-              profit = 1000;}
-            else if (purchasedIcoins == 600){ 
-              profit = 2000;}
-
+            if (purchasedIcoins == 80) {
+              profit = 800;}
+             else if (purchasedIcoins == 210) {
+              profit = 1490;}
+            else if (purchasedIcoins == 390) {
+              profit = 2651}
+          
             const liability = bundlePrice - profit;
 
             // Update company funds
@@ -75,7 +70,7 @@ const SuccessPage = () => {
               profit: increment(profit),
             });
 
-            toast.success("Your iCoin balance and company funds have been updated!");
+            toast.success("Your iCoin balance been updated!");
           } catch (error) {
             console.error("Error updating user or company funds:", error);
             toast.error("Failed to update iCoin balance or company funds.");
