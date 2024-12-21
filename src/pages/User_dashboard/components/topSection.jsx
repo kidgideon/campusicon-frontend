@@ -19,7 +19,7 @@ const TopSection = ({ userData }) => {
         </Link>
       </span>
       <span className="company-logo">
-        <img src={icon} alt="logo" />
+        <img src={icon} alt="logo" className='logo-logo' />
       </span>
       <span className="nav-bar">
         {/* Corrected Link to menu page */}

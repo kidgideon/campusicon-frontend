@@ -282,14 +282,15 @@ const Feeds = ({ feeds: initialFeeds ,  userData: userData}) => {
                 )}    
         </div>
       ) : feed.mediaType === 'video' ? (
-        <video 
-          src={feed.mediaUrl} 
-          controls 
-          className="feed-video"
-          ref={(el) => (videoRefs.current[index] = el)}
-        >
-          Your browser does not support the video tag.
-        </video>
+        <video
+        src={feed.mediaUrl}
+        controls
+        className="feed-video"
+        ref={(el) => (videoRefs.current[index] = el)}
+        controlsList="nodownload nofullscreen" // Disables the download button
+      >
+        Your browser does not support the video tag.
+      </video>
       ) : (
         <p>Unsupported media format</p>
       )}

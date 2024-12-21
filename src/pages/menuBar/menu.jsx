@@ -41,7 +41,7 @@ const Menu = () => {
     // Logout function
     const handleLogout = () => {
         auth.signOut().then(() => {
-            navigate("/home"); // Navigate to home page after logout
+            navigate("/login"); // Navigate to home page after logout
         }).catch((error) => {
             console.error("Logout error:", error);
         });

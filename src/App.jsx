@@ -37,6 +37,7 @@ import WithdrawalPage from './pages/Icoins/icoins_withdrawal';
 import WithdrawalPayment from './pages/Icoins/withdrawal_payment';
 import BankAccountForm from './pages/Icoins/bankAccountForm';
 
+
 const queryClient = new QueryClient();
 
 function App() {

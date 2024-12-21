@@ -127,7 +127,7 @@ const Settings = () => {
   const handleLogout = async () => {
     await signOut(auth);
     toast.success('Logged out successfully!');
-    window.location.href = '/';
+  navigate('/login')
   };
 
   const handleDeactivateAccount = async () => {
