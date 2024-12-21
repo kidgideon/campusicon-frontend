@@ -19,7 +19,7 @@ const StepTwo = ({
         </div>
       </div>
       <i className="fas fa-arrow-left back-icon" onClick={goBack}></i>
-      <h2>Enter Verification Code</h2>
+      <h2>Enter Verification Code Sent To Your Email</h2>
       <input
         type="text"
         placeholder="Enter the 4-digit code"
