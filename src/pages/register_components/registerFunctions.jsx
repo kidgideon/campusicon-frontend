@@ -113,9 +113,9 @@ export const handleVerifyCode = async ({
         hobbies: [],
         wins: [],
         notifications: [],
-        icoins : 100,
+        icoins : 10,
         icoin_History: [
-          "earned 100 icoins as login bonus"
+          "earned 10 icoins as login bonus"
         ]
       });
 
