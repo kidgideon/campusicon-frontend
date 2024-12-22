@@ -304,7 +304,7 @@ const VideoWatch = () => {
   }
   return (
     <div className="full-house">
- <div className="video-watch-area">
+ <div className="video-watch-area-movie">
  <div className="top-top-sideliners">
         <i className="fas fa-arrow-left " onClick={goBack}></i>
         <h2>Watch Videos</h2>

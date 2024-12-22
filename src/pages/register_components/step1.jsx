@@ -122,8 +122,13 @@ const StepOne = ({
 
 
     <button onClick={handleSendVerificationCode} disabled={loading}>
-      {loading ? <div className="spinner"></div> : 'Get Code'}
+      {loading ? <div className="spinner"> </div> : 'Get Code'}
     </button>
+
+    <p >
+      {loading? <p className="notice">We're currently performing server maintenance to improve your experience. You may notice slower speeds, but we're working to make things faster and smoother for you. Thank you for your patience!
+</p> : ''}
+    </p>
 
     <p className="direction-text">Already have an account?  <Link to="/login">Login</Link></p>
   </div>

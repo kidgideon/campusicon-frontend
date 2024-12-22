@@ -11,7 +11,22 @@
    font-weight: 300;
    gap: 10px;
    color: white;
-   padding-top: 100px;
+}
+
+.video-watch-area-movie {
+  width: 97%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 50px;
+  font-family: "SUSE", sans-serif;
+  font-weight: 300;
+  gap: 10px;
+  color: white;
+  padding: 100px;
 }
 
  body {
