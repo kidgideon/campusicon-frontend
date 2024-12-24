@@ -15,6 +15,8 @@ const Notifications = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [profilePicture, setProfilePicture] = useState(''); // Default profile pic
   const navigate = useNavigate();
+   const [scrollingUp, setScrollingUp] = useState(true); // To track scroll direction
+      let lastScrollY = 0; // Store the last scroll position
 
   // Fetch user profile picture
   const { data: userProfile, isLoading: isUserProfileLoading } = useQuery({
@@ -70,6 +72,22 @@ const Notifications = () => {
     }
     return [];
   };
+
+   // Listen to scroll events
+   const handleScroll = () => {
+    if (window.scrollY > lastScrollY) {
+      // Scrolling down
+      setScrollingUp(false);
+    } else {
+      // Scrolling up
+      setScrollingUp(true);
+    }
+    lastScrollY = window.scrollY; // Update the last scroll position
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  
 
   const fetchUserProfile = async (userId) => {
     const userDocRef = doc(db, 'users', userId);
@@ -141,38 +159,6 @@ const Notifications = () => {
   return (
     <div className="notification-page-interface">
       {/* Top Section */}
-      <div className="top-section">
-        <span className="user-dp">
-          <Link to="/profile">
-            <img src={profilePicture} alt="User Avatar" />
-          </Link>
-        </span>
-        <span className="company-logo">
-          <img src={icon} alt="logo" />
-        </span>
-        <span className="nav-bar">
-          <Link to="/menu"><i className="fa-solid fa-bars"></i></Link>
-        </span>
-      </div>
-
-      {/* Top Tab */}
-      <div className="top-tab">
-        <span className="home-tab">
-          <Link to="/"><i className="fa-solid fa-house"></i></Link>
-        </span>
-        <span className="discovery-tab">
-          <Link to="/discovery-page"><i className="fa-solid fa-compass"></i></Link>
-        </span>
-        <span className="competition-tab">
-          <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
-        </span>
-        <span className="notifications-tab">
-          <Link to="/notifications"><i className="fa-solid fa-bell" style={{color : '#205e78'}}></i></Link>
-        </span>
-        <span className="ad-tab">
-          <Link to="/ads"><i className="fa-solid fa-bullhorn"></i></Link>
-        </span>
-      </div>
 
       <h1 className="notification-title">Notifications</h1>
       {notifications.length > 0 ? (
@@ -244,6 +230,33 @@ const Notifications = () => {
       ) : (
         <p className="no-notifications">No notifications found.</p>
       )}
+
+        <div
+                    className={`user-feed-interface-navigation-panel ${
+                      scrollingUp ? "visible" : "hidden"
+                    }`}
+                  >
+                    <span>
+                      <Link to={"/"}>
+                      <i  className="fa-solid fa-house"></i>
+                      </Link>
+                    </span>
+                    <span>
+                      <Link to={"/discovery-page"}>
+                      <i className="fa-solid fa-magnifying-glass"></i>
+                      </Link>
+                    </span>
+                    <span>
+                      <Link  to={"/notifications"}>
+                      <i style={{ color: "black" }} className="fa-solid fa-bell"></i>
+                      </Link>
+                    </span>
+                    <span>
+                   <Link to={"/ads"}>
+                   <i class="fa-solid fa-bullhorn"></i>
+                   </Link>
+                    </span>
+                  </div>
     </div>
   );
 };

@@ -1,522 +1,223 @@
-     /* .top-section
-    */
-    body{
-      margin: 0px;
-      padding: 0px;
-      background-color: white;
-      color: black;
-    }
-
- .layout-dashboard {
-     width: 97%;
-     height: 100%;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     flex-direction: column;
-     font-family: "SUSE", sans-serif;
-     font-weight: 200;
-     font-size: 95%;
-     padding-top: 85px;
-     background-color: white;
-     color: black;
- }
- 
-.top-section{
-    height: 50px;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: row;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-   background-color: white;
+/* General Styles */
+body {
+  margin: 0px;
+  padding: 0px;
+  background-color: white;
+  color: black;
 }
 
- .user-dp {
-    width: 100%;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    padding-left: 5px;
- }
+.user-feed-interface {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 70px;
+}
 
-.user-dp img {
-    width: 30px;
-    height: 30px;
-    border-radius: 100%;
+
+.user-feed-interface-top {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border-bottom: 0.5px solid lightgray;
+  position: fixed;
+  top: 0;
+  background-color: white;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.top-outliner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}
+.top-outliner div {
+  padding: 5px;
+}
+
+.user-dp-div {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
 }
 
 .company-logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
 }
 
-.company-logo img {
-    width: 45px;
-    height: 45px;
-    border-radius: 100%;
-}
-
-.nav-bar {
-    width: 100%;
-    display: flex;
-    justify-content: end;
-    align-items: center;
-    padding-right: 5px;
-}
-
-.nav-bar i {
-   font-size: 20px;
-  color: rgb(88, 88, 88);
-}
-
-img {
-    width: 100px;
-}
-
-  /* top tab 
-    */
-
-    .top-tab {
-        position: fixed;
-        top: 50px;
-        left: 0px;
-        right: 0px;
-        width: 100%;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        flex-direction: row;
-        z-index: 50;
-        background-color: white;
-        padding: 5px 0px;
-        border-bottom: 1px solid rgb(184, 184, 184);
-    }
-
-
-    .top-tab i {
-        font-size: 21px;
-        color: rgb(88, 88, 88);
-
-    }
-    .notifications-tab {
-      position: relative;
-    }
-    .unread-notification-count {
-   position: absolute;
-   top: -10px;
-   right: -15px;
-   background-color: red;
-   color: white;
-   font-weight: bold;
-   width: 20px;
-   height: 20px;
-   border-radius: 100%;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-  text-align: center;
-    }
- /* top users */
-
- .h2-text {
-    text-align: center;
-    width: 100%;
- }
- a {
-   text-decoration: none; /* Removes underline */
-   color: inherit; /* Inherits the color of the parent element */
- }
-
- .top-accounts {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.user-list {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+.user-feed-interface-top p {
+  border-bottom: 1px solid black;
   padding: 0px;
-}
-
-.user-card {
- display: flex;
- height: 70px;
- justify-content: center;
- align-items: center;
- flex-direction: column;
- margin: 5px;
-}
-
-
-.user-card div {
- width: 100%;
- text-align: center;
- height: 50%;
- display: flex;
- justify-content: center;
- align-items: center;
- font-size: 80%;
-}
-
-.user-card img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 5px;
-}
-
-.user-card a {
-  text-decoration: none;
-  color: #205e78; /* User name color */
+  margin: 0px;
+  width: 100px;
+  text-align: center;
   font-weight: bold;
 }
 
-.user-card a:hover {
-  color: #277AA4; /* Hover effect */
-}
-
- /* Optional: Remove any hover, active, or visited styling */
- a:hover,
- a:active,
- a:visited {
-   text-decoration: none;
-   color: inherit;
- }
-
-   /* //competion  */
- .competion-list {
-    list-style-type: none;
- }
-
- .active-competitions {
-     width: 100%;
-     height: 100%;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     flex-direction: column;
-     position: relative;
- }
- .notice {
+.user-feed-interface-navigation-panel {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #fff;
-  padding: 15px 30px;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  font-size: 16px;
-  color: #333;
-  z-index: 9999;
+  bottom: 0px;
+  height: 30px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+  max-width: 500px;
+  background-color: white;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
+.user-feed-interface-navigation-panel i {
+  color: rgb(184, 184, 184);
+  font-size: 22px;
+}
 
+/* Animation Classes */
+.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
 
- .logo-logo {
-  width: 30px;
-  height: 30px;
- }
- .competion-list {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    flex-direction: row;
-    overflow-x: auto;
-    padding: 10px 0; /* Padding around the list */
-    margin: 0 auto; /* Center the list */
-    list-style-type: none; /* Remove default list item markers */
-    border-bottom: 1px solid rgb(231, 225, 225);
-    border-top: 1px solid rgb(231, 225, 225);
-   
- }
+.hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+}
 
- .competion-list::-webkit-scrollbar{
-    display: none;
- }
+.user-feed-interface-navigation-panel.hidden {
+  transform: translateY(100%);
+}
 
- .competion {
-    width: 100px;
-    margin: 0px 5px;
-    height: 150px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    position: relative;
-    border-radius: 10px;
-    gap: 5px;
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), /* subtle shadow */
-    0 6px 20px rgba(0, 0, 0, 0.1); /* deeper shadow */
- }
-
- .competion-image {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
- }
-
- .competion-image img {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
- }
-
- .competion-name {
-    width: 100%;
-    height: 10%;
-    text-align: center;
-    font-weight: bold;
-    position: absolute;
-    color: white;
-    font-size: 70%;
- }
-
- .participation {
-   position: absolute;
-   bottom: 0px;
-   color: white;
-   font-weight: bold;
-   font-size: 70%;
- }
-
- .competion-award {
-    position: absolute;
-    top: 10px;
-    left: -4px;
- }
-
- .competion-award img {
-    width: 40px;
-    height: 40px;
- }
-
- .dashboard-interface-feeds{
-   width: 100%;
-   height: 100%;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   flex-direction: column;
- }
-
- .dashboard-interface-feed {
-   width: 100%;
-   height: 100%;
-   max-width: 500px;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   flex-direction: column;
-   border: 1px solid rgb(197, 197, 197);
-   margin: 10px;
-   border-radius: 10px;
- }
-
-  .dashboard-interface-feed-top {
-   width: 100%;
-   display: flex;
-   justify-content: start;
-   align-items: center;
-   flex-direction: row;
-   margin: 0px;
-   color: black;
-   font-weight: bold;
-   font-size: 140%;
-  }
-
-
-  .dashboard-interface-feed-top img {
-    width: 60px;
-    height: 60px;
-    border-radius: 60px;
-   margin: 10px;
-  }
-
-  .dashboard-interface-text-content {
-   width: 100%;
-   margin: 0px;
-   text-align: start;
-   word-wrap: break-word;
-   display: flex;
-   justify-content: start;
-   align-items: start;
-   flex-direction: row;  
-  }
-
-  .dashboard-interface-text-content p {
-   margin: 4px 20px;
-   color: black;
-  font-size: 105%;
-  }
-
-  .dashboard-interface-media-content {
-   width: 100%;
-   height: 100%;
-  }
-
-  .dashboard-interface-media-content video {
-   width: 100%;
-   height: 400px;
-  }
-
-  .dashboard-interface-media-content img {
-   width: 100%;
-   height: 400px;
-   object-fit: cover;
-  }
-
-  .dashboard-interface-interactions {
-   width: 100%;
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   flex-direction: row;
-  }
-
-  .dashboard-interface-interactions div {
+.feed-top {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: row;
-  }
-
-  .dashboard-interface-interactions div i {
-   font-size: 20px;
-   margin: 5px;
-   color: rgb(88, 88, 88);
-  }
-
-
-  .dashboard-interface-interactions div span {
-   font-size: 17px;
-  }
-
-    
-
-  .modal-overlay {
-   position: fixed;
-   top: 0;
-   left: 0;
-   right: 0;
-   bottom: 0;
-   background-color: rgba(0, 0, 0, 0.8); /* Dark overlay */
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   z-index: 1000;
- }
- 
- .modal-content {
-   position: relative;
-   max-width: 90%;
-   max-height: 90%;
-   display: flex;
-   justify-content: center;
-   align-items: center;
- }
- 
- .modal-image {
-   max-width: 100%;
-   max-height: 100%;
-   border-radius: 8px;
- }
- 
- .close-button {
-   position: absolute;
-   top: 10px;
-   right: 10px;
-   background-color: white;
-   border: none;
-   font-size: 24px;
-   cursor: pointer;
-   padding: 5px 10px;
-   border-radius: 50%;
- }
- 
- .feed-image {
-   width: 100%;
-   object-fit: cover;
- }
- .image-container {
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  transition: transform 0.3s ease;
 }
 
-.image-container.zoomed {
-  transform: scale(1.5); /* Adjust zoom level */
-}
-
-.feed-image {
-  display: block;
+.user-feeds-container {
   width: 100%;
-  height: auto;
-  transition: transform 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-.like-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  font-size: 3rem;
-  color: red;
-  opacity: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.like-icon.liked {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
-}
-
-.like-animation {
-  transform: translate(-50%, -50%) scale(1.5);
-  opacity: 1;
-}
-
-.feed-video {
-  width: 200px;
-}
-
-.add-comment {
+.user-feeds {
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.user-feed-feed-body {
+  width: 95%;
+  border-top: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
+}
+
+.feed-context {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  flex-direction: column;
+ 
+}
+
+.feed-context p { 
+  width: 85%;
+}
+
+.feed-content {
+  width: 85%;
+   padding: 4px;
+}
+
+.feed-actions {
+  width: 85%;
+   padding: 4px;
+}
+
+.feed-actions span {
+ margin: 10px;
+ padding: 4px;
+}
+.feed-actions i {
+   color: rgb(184, 184, 184);
+  font-size: 22px;
+  margin: 3px;
+}
+
+.right-side {
+  width: 50%;
   display: flex;
   justify-content: start;
   align-items: center;
   flex-direction: row;
-  color: black;
 }
 
-.add-comment img {
-  width: 50px;
-  height: 50px;
-  border-radius: 40px;
+.company-logo-feed {
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
   margin: 10px;
+}
+
+.left-side {
+  width: 50%;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  color: rgb(158, 158, 158);
+}
+
+
+.feed-media {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 10px;
+}
+
+.like-button {
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.like-button:active {
+  transform: scale(1.2);
+}
+
+.like-button.animate {
+  animation: likeShake 0.3s ease;
+}
+
+@keyframes likeShake {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  75% {
+    transform: rotate(-10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }

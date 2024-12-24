@@ -16,6 +16,22 @@ const DiscoveryPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false); // State for spinner
+   const [scrollingUp, setScrollingUp] = useState(true); // To track scroll direction
+    let lastScrollY = 0; // Store the last scroll position
+
+    // Listen to scroll events
+   const handleScroll = () => {
+    if (window.scrollY > lastScrollY) {
+      // Scrolling down
+      setScrollingUp(false);
+    } else {
+      // Scrolling up
+      setScrollingUp(true);
+    }
+    lastScrollY = window.scrollY; // Update the last scroll position
+  };
+
+  window.addEventListener("scroll", handleScroll);
 
   // Fetch Profile Picture using React Query
   const fetchProfilePicture = async (uid) => {
@@ -150,47 +166,7 @@ const DiscoveryPage = () => {
   return (
     <div className="full-house">
       <div className="discovery-page-interface">
-        {/* Top section */}
-        <div className="top-section">
-          <span className="user-dp">
-            <Link to="/profile">
-              <img src={profileLoading ? defaultProfilePictureURL : profilePicture} alt="User Avatar" />
-            </Link>
-          </span>
-          <span className="company-logo">
-            <img src={logo} alt="logo" />
-          </span>
-         
-          <span className="nav-bar">
-          <Link to="/menu">
-            <i className="fa-solid fa-bars"></i>
-              </Link>
-          </span>
-        
-        </div>
-
-        {/* Top navigation tabs */}
-        <div className="top-tab">
-          <span className="home-tab">
-            <Link to="/"><i className="fa-solid fa-house"></i></Link>
-          </span>
-          <span className="discovery-tab">
-            <Link to="/discovery-page"><i className="fa-solid fa-compass" style={{ color: '#205e78' }}></i></Link>
-          </span>
-          <span className="competition-tab">
-            <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
-          </span>
-          <span className="notifications-tab">
-            <Link to="/notifications"><i className="fa-solid fa-bell" onClick={markAllAsRead}></i></Link>
-            <span className='unread-notification-count' style={{ display: unreadNotificationCount > 0 ? 'block' : 'none' }}>
-              {unreadNotificationCount > 15 ? '15+' : unreadNotificationCount}
-            </span>
-          </span>
-          <span className="ad-tab">
-            <Link to="/ads"><i className="fa-solid fa-bullhorn"></i></Link>
-          </span>
-        </div>
-
+       
         {/* Search Interface */}
         <div className="Discovery-page-search-interface">
           <input
@@ -239,6 +215,32 @@ const DiscoveryPage = () => {
           ) : null}
         </div>
       </div>
+      <div
+              className={`user-feed-interface-navigation-panel ${
+                scrollingUp ? "visible" : "hidden"
+              }`}
+            >
+              <span>
+                <Link to={"/"}>
+                <i  className="fa-solid fa-house"></i>
+                </Link>
+              </span>
+              <span>
+                <Link to={"/discovery-page"}>
+                <i style={{ color: "black" }} className="fa-solid fa-magnifying-glass"></i>
+                </Link>
+              </span>
+              <span>
+                <Link to={"/notifications"}>
+                <i className="fa-solid fa-bell"></i>
+                </Link>
+              </span>
+              <span>
+             <Link to={"/ads"}>
+             <i class="fa-solid fa-bullhorn"></i>
+             </Link>
+              </span>
+            </div>
     </div>
   );
 };

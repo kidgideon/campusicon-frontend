@@ -57,7 +57,22 @@ const markNotificationsAsRead = async () => {
 const AdsPage = () => {
   const [profilePicture, setProfilePicture] = useState('');
   const queryClient = useQueryClient();
+  const [scrollingUp, setScrollingUp] = useState(true); // To track scroll direction
+      let lastScrollY = 0; // Store the last scroll position
 
+      // Listen to scroll events
+   const handleScroll = () => {
+    if (window.scrollY > lastScrollY) {
+      // Scrolling down
+      setScrollingUp(false);
+    } else {
+      // Scrolling up
+      setScrollingUp(true);
+    }
+    lastScrollY = window.scrollY; // Update the last scroll position
+  };
+
+  window.addEventListener("scroll", handleScroll);
   // Fetch user data using React Query
   const { data: userData } = useQuery({
     queryKey: ['userData'],
@@ -97,41 +112,6 @@ const AdsPage = () => {
   return (
     <div className="full-house">
       <div className="ads-page-interface">
-        <div className="top-section">
-          <span className="user-dp">
-            <Link to="/profile">
-              <img src={profilePicture} alt="User Avatar" />
-            </Link>
-          </span>
-          <span className="company-logo">
-            <img src={icon} alt="logo" />
-          </span>
-          <span className="nav-bar">
-            <Link to="/menu"><i className="fa-solid fa-bars"></i></Link>
-          </span>
-        </div>
-
-        {/* Top Tab */}
-        <div className="top-tab">
-          <span className="home-tab">
-            <Link to="/"><i className="fa-solid fa-house"></i></Link>
-          </span>
-          <span className="discovery-tab">
-            <Link to="/discovery-page"><i className="fa-solid fa-compass"></i></Link>
-          </span>
-          <span className="competition-tab">
-            <Link to="/competitions"><i className="fa-solid fa-trophy"></i></Link>
-          </span>
-          <span className="notifications-tab" onClick={() => mutation.mutate()}> {/* Mark all as read on click */}
-            <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
-            <span className='unread-notification-count' style={{ display: unreadNotificationCount > 0 ? 'block' : 'none' }}>
-              {unreadNotificationCount > 15 ? '15+' : unreadNotificationCount}
-            </span>
-          </span>
-          <span className="ad-tab">
-            <Link to="/ads"><i className="fa-solid fa-bullhorn" style={{ color: '#205e78' }}></i></Link>
-          </span>
-        </div>
 
         <h1>Advertise on Campus Icon</h1>
         <p style={{ color: 'black' }}>Contact the Campus Icon team to create your ad:</p>
@@ -142,6 +122,32 @@ const AdsPage = () => {
           </button>
         </a> 
       </div>
+       <div
+                    className={`user-feed-interface-navigation-panel ${
+                      scrollingUp ? "visible" : "hidden"
+                    }`}
+                  >
+                    <span>
+                      <Link to={"/"}>
+                      <i  className="fa-solid fa-house"></i>
+                      </Link>
+                    </span>
+                    <span>
+                      <Link to={"/discovery-page"}>
+                      <i  className="fa-solid fa-magnifying-glass"></i>
+                      </Link>
+                    </span>
+                    <span>
+                      <Link to={"/notifications"}>
+                      <i className="fa-solid fa-bell"></i>
+                      </Link>
+                    </span>
+                    <span>
+                   <Link to={"/ads"}>
+                   <i style={{ color: "black" }} class="fa-solid fa-bullhorn"></i>
+                   </Link>
+                    </span>
+                  </div>
     </div>
   );
 };
