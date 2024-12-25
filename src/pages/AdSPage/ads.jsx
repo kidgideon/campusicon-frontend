@@ -6,7 +6,7 @@ import { auth, db } from '../../../config/firebase_config';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 const icon = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
-
+import influence from './influence.svg'
 
 // Function to fetch user data
 const fetchUserData = async (uid) => {
@@ -60,19 +60,7 @@ const AdsPage = () => {
   const [scrollingUp, setScrollingUp] = useState(true); // To track scroll direction
       let lastScrollY = 0; // Store the last scroll position
 
-      // Listen to scroll events
-   const handleScroll = () => {
-    if (window.scrollY > lastScrollY) {
-      // Scrolling down
-      setScrollingUp(false);
-    } else {
-      // Scrolling up
-      setScrollingUp(true);
-    }
-    lastScrollY = window.scrollY; // Update the last scroll position
-  };
-
-  window.addEventListener("scroll", handleScroll);
+     
   // Fetch user data using React Query
   const { data: userData } = useQuery({
     queryKey: ['userData'],
@@ -109,10 +97,33 @@ const AdsPage = () => {
     }
   }, [userData]);
 
+  useEffect(() => {
+     const handleScroll = () => {
+       if (window.scrollY > lastScrollY) {
+         // Scrolling down
+         setScrollingUp(false);
+       } else {
+         // Scrolling up
+         setScrollingUp(true);
+       }
+       lastScrollY = window.scrollY; // Update the last scroll position
+     };
+ 
+     window.addEventListener("scroll", handleScroll);
+ 
+     // Cleanup the listener on unmount
+     return () => {
+       window.removeEventListener("scroll", handleScroll);
+     };
+    }, [])
+
   return (
     <div className="full-house">
       <div className="ads-page-interface">
-
+      <div className="notification-title"><p style={{margin : '10px'}}>Advertise</p></div>
+       <div className='img-div-ad'>
+        <img className='influence' src={influence} alt="" />
+       </div>
         <h1>Advertise on Campus Icon</h1>
         <p style={{ color: 'black' }}>Contact the Campus Icon team to create your ad:</p>
      
@@ -122,32 +133,35 @@ const AdsPage = () => {
           </button>
         </a> 
       </div>
-       <div
-                    className={`user-feed-interface-navigation-panel ${
-                      scrollingUp ? "visible" : "hidden"
-                    }`}
-                  >
-                    <span>
-                      <Link to={"/"}>
-                      <i  className="fa-solid fa-house"></i>
-                      </Link>
-                    </span>
-                    <span>
-                      <Link to={"/discovery-page"}>
-                      <i  className="fa-solid fa-magnifying-glass"></i>
-                      </Link>
-                    </span>
-                    <span>
-                      <Link to={"/notifications"}>
-                      <i className="fa-solid fa-bell"></i>
-                      </Link>
-                    </span>
-                    <span>
-                   <Link to={"/ads"}>
-                   <i style={{ color: "black" }} class="fa-solid fa-bullhorn"></i>
-                   </Link>
-                    </span>
-                  </div>
+      <div
+                  className={`user-feed-interface-navigation-panel`}
+                >
+                  <span>
+                    <Link to={"/"}>
+                    <i  className="fa-solid fa-house"></i>
+                    </Link>
+                  </span>
+                  <span>
+                    <Link to={"/discovery-page"}>
+                    <i  className="fa-solid fa-magnifying-glass"></i>
+                    </Link>
+                  </span>
+                  <span>
+                  <Link to={"/competitions"}>
+                  <i class="fa-solid fa-trophy"></i>
+                  </Link>
+                  </span> 
+                  <span>
+                    <Link to={"/notifications"}>
+                    <i className="fa-solid fa-bell"></i>
+                    </Link>
+                  </span>
+                  <span>
+                 <Link to={"/ads"}>
+                 <i style={{ color: "black" }} class="fa-solid fa-bullhorn"></i>
+                 </Link>
+                  </span>
+                </div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { collection, getDocs, doc, getDoc, updateDoc, query, where } from 'firebase/firestore';
 import { db } from '../../../config/firebase_config';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
@@ -23,10 +23,13 @@ const awardImages = {
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 
 const CompetitionsPage = () => {
+  const [filteredCompetitions, setFilteredCompetitions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  const auth = getAuth();
-
-  // Fetch competitions with React Query
+  const [activeStatus, setActiveStatus] = useState('All'); // Track the active status filter
+   
+  // Fetch all competitions
   const { data: competitions, isLoading: competitionsLoading } = useQuery({
     queryKey: ['competitions'],
     queryFn: async () => {
@@ -37,8 +40,8 @@ const CompetitionsPage = () => {
         ...doc.data(),
       }));
 
-      const ongoingCompetitions = competitionsList.filter(c => c.status === 'ongoing');
-      const otherCompetitions = competitionsList.filter(c => c.status !== 'ongoing');
+      const ongoingCompetitions = competitionsList.filter((c) => c.status === 'ongoing');
+      const otherCompetitions = competitionsList.filter((c) => c.status !== 'ongoing');
 
       const sortedOngoingCompetitions = ongoingCompetitions.sort((a, b) => {
         const aVideosCount = a.videos?.length || 0;
@@ -52,82 +55,44 @@ const CompetitionsPage = () => {
     cacheTime: 1000 * 60 * 10, // 10 minutes
   });
 
-  // Fetch profile picture using React Query
-  const { data: profilePicture, isLoading: profileLoading } = useQuery({
-    queryKey: ['profilePicture'],
-    queryFn: async () => {
-      return new Promise((resolve) => {
-        onAuthStateChanged(auth, async (user) => {
-          if (user) {
-            const userDocRef = collection(db, 'users');
-            const q = query(userDocRef, where('uid', '==', user.uid));
-            const querySnapshot = await getDocs(q);
-            let profilePic = defaultProfilePictureURL;
-            querySnapshot.forEach((doc) => {
-              const userData = doc.data();
-              profilePic = userData.profilePicture || defaultProfilePictureURL;
-            });
-            resolve(profilePic);
-          } else {
-            resolve(defaultProfilePictureURL);
-          }
-        });
-      });
-    },
-    staleTime: 1000 * 60 * 20, // 20 minutes
-    cacheTime: 1000 * 60 * 60, // 1 hour
-  });
+  // Fetch competitions by status
+  const fetchCompetitionsByStatus = async (status) => {
+    setMessage('');
+    setActiveStatus(status);
+    if (status === 'All') {
+      setFilteredCompetitions(competitions || []);
+      return;
+    }
 
-  // Fetch Unread Notifications using React Query
-  const fetchUnreadNotifications = async () => {
-    const userRef = collection(db, 'users');
-    const q = query(userRef); // Get all user documents
-    const querySnapshot = await getDocs(q);
-    let unreadCount = 0;
-    querySnapshot.forEach((doc) => {
-      const user = doc.data();
-      const notifications = user.notifications || [];
-      notifications.forEach((notification) => {
-        if (!notification.read) {
-          unreadCount++;
-        }
-      });
-    });
-    return unreadCount;
-  };
+    try {
+      const competitionsCollection = collection(db, 'competitions');
+      const q = query(competitionsCollection, where('status', '==', status));
+      const querySnapshot = await getDocs(q);
+      const competitionsList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-  const { data: unreadNotificationCount = 0, isLoading: notificationsLoading } = useQuery({
-    queryKey: ['unreadNotifications'],
-    queryFn: fetchUnreadNotifications,
-    staleTime: 20 * 60 * 1000,  // 20 minutes
-    cacheTime: 60 * 60 * 1000   // 1 hour
-  });
-
-  // Mark all notifications as read
-  const markAllAsRead = async () => {
-    const currentUser = auth.currentUser;
-
-    if (currentUser) {
-      const userRef = doc(db, 'users', currentUser.uid);
-      const userSnapshot = await getDocs(query(collection(db, 'users'), where('uid', '==', currentUser.uid)));
-
-      if (!userSnapshot.empty) {
-        const userDoc = userSnapshot.docs[0];
-        const notifications = userDoc.data().notifications || [];
-
-        // Update all notifications to "read"
-        const updatedNotifications = notifications.map((notification) => ({
-          ...notification,
-          read: true
-        }));
-
-        await updateDoc(userRef, { notifications: updatedNotifications });
+      if (competitionsList.length === 0) {
+        setMessage(`No competitions found for status: ${status}.`);
+      } else {
+        setMessage('');
       }
+
+      setFilteredCompetitions(competitionsList);
+    } catch (error) {
+      setMessage('Error fetching competitions.');
     }
   };
 
+  // Set default competitions (all) when React Query data loads
+  React.useEffect(() => {
+    if (competitions) {
+      setFilteredCompetitions(competitions);
+    }
+  }, [competitions]);
 
-  if (competitionsLoading || profileLoading) {
+  if (competitionsLoading) {
     return <CompetitionsPageSkeleton />;
   }
 
@@ -135,75 +100,99 @@ const CompetitionsPage = () => {
     return <p>No competitions available at the moment.</p>;
   }
 
+
   return (
     <div className="full-house">
       <div className="competitions-page">
-        <div className="top-section">
-          <span className="user-dp">
-            <Link to="/profile">
-              <img src={profilePicture || defaultProfilePictureURL} alt="User Avatar" />
-            </Link>
-          </span>
-          <span className="company-logo">
-            <img src={iconLogo} alt="logo" />
-          </span>
-          <span className="nav-bar">
-            <Link to="/menu"><i className="fa-solid fa-bars"></i></Link>
-          </span>
-        </div>
-        <div className="top-tab">
-          <span className="home-tab">
-            <Link to="/"><i className="fa-solid fa-house"></i></Link>
-          </span>
-          <span className="discovery-tab">
-            <Link to="/discovery-page"><i className="fa-solid fa-compass"></i></Link>
-          </span>
-          <span className="competition-tab">
-            <Link to="/competitions"><i className="fa-solid fa-trophy" style={{ color: '#205e78' }}></i></Link>
-          </span>
-          <span className="notifications-tab" onClick={markAllAsRead}>
-            <Link to="/notifications"><i className="fa-solid fa-bell"></i></Link>
-            <span className="unread-notification-count" style={{ display: unreadNotificationCount > 0 ? 'block' : 'none' }}>
-              {unreadNotificationCount > 15 ? '15+' : unreadNotificationCount}
-            </span>
-          </span>
-          <span className="ad-tab">
-            <Link to="/ads"><i className="fa-solid fa-bullhorn"></i></Link>
-          </span>
-        </div>
-       
-        <div className="competition-list">
-          {competitions.map((competition) => (
-            <div 
-              className="competition-card" 
-              key={competition.id}
-              onClick={() => navigate(`/competition/${competition.id}`)}
+        <div className="competitions-list-top">
+          <h2>Competitions</h2>
+          <div className="sort-functions">
+            <button
+              className={activeStatus === 'All' ? 'active' : ''}
+              onClick={() => fetchCompetitionsByStatus('All')}
             >
-              {competition.imageUrl && (
-                <img
-                  src={competition.imageUrl}
-                  alt={competition.name}
-                  className="competition-image"
-                />
-              )}
-              <h3 className="comp-name">{competition.name}</h3>
-              <p className="status">{competition.status}</p>
-              <p className="part">{competition.participations?.length || 0} participators</p>
-              <p className="amt">{competition.videos?.length || 0} Videos</p>
-              {competition.type && (
-                <img
-                  src={awardImages[competition.type] || ''}
-                  alt={competition.type}
-                  className="award-image"
-                />
-              )}
-              <p className="comp-type"> {competition.type}</p>
-            </div>
-          ))}
+              All
+            </button>
+            <button
+              className={activeStatus === 'Ongoing' ? 'active' : ''}
+              onClick={() => fetchCompetitionsByStatus('Ongoing')}
+            >
+              Ongoing
+            </button>
+            <button
+              className={activeStatus === 'Not started' ? 'active' : ''}
+              onClick={() => fetchCompetitionsByStatus('Not started')}
+            >
+              Not started
+            </button>
+            <button
+              className={activeStatus === 'Ended' ? 'active' : ''}
+              onClick={() => fetchCompetitionsByStatus('Ended')}
+            >
+              Ended
+            </button>
+          </div>
         </div>
+        {message && <p className="message">{message}</p>}
+        <div className="competition-list">
+          {!loading &&
+            filteredCompetitions.map((competition) => (
+              <div
+                className="competition-card"
+                key={competition.id}
+                onClick={() => navigate(`/competition/${competition.id}`)}
+              >
+                {competition.imageUrl && (
+                  <img
+                    src={competition.imageUrl}
+                    alt={competition.name}
+                    className="competition-image"
+                  />
+                )}
+                <h3 className="comp-name">{competition.name}</h3>
+                <p className="status">{competition.status}</p>
+                <p className="part">{competition.participations?.length || 0} participators</p>
+                <p className="amt">{competition.videos?.length || 0} Videos</p>
+                {competition.type && (
+                  <img
+                    src={awardImages[competition.type] || ''}
+                    alt={competition.type}
+                    className="award-image"
+                  />
+                )}
+                <p className="comp-type"> {competition.type}</p>
+              </div>
+            ))}
+        </div>
+      </div>
+      <div className={`user-feed-interface-navigation-panel`}>
+        <span>
+          <Link to={'/'}>
+            <i className="fa-solid fa-house"></i>
+          </Link>
+        </span>
+        <span>
+          <Link to={'/discovery-page'}>
+            <i className="fa-solid fa-magnifying-glass"></i>
+          </Link>
+        </span>
+        <span>
+          <Link to={'/competitions'}>
+            <i style={{ color: 'black' }} className="fa-solid fa-trophy"></i>
+          </Link>
+        </span>
+        <span>
+          <Link to={'/notifications'}>
+            <i className="fa-solid fa-bell"></i>
+          </Link>
+        </span>
+        <span>
+          <Link to={'/ads'}>
+            <i className="fa-solid fa-bullhorn"></i>
+          </Link>
+        </span>
       </div>
     </div>
   );
 };
-
 export default CompetitionsPage;

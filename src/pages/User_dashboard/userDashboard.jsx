@@ -5,6 +5,7 @@ import { onAuthStateChanged } from "firebase/auth"; // Auth state listener
 import { doc, getDoc, collection, onSnapshot } from "firebase/firestore"; // Firestore functions
 import "./userDashboard.css";
 import { handleVideoLike } from "./feed.js";
+import Spinner from '../../assets/loadingSpinner.jsx'
 
 
 const whiteLogo =
@@ -96,7 +97,7 @@ const UserDashboard = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Show a loading indicator while data is being fetched
+    return <Spinner></Spinner>; // Show a loading indicator while data is being fetched
   }
 
   return (
@@ -192,6 +193,11 @@ const UserDashboard = () => {
           <i className="fa-solid fa-magnifying-glass"></i>
           </Link>
         </span>
+        <span>
+        <Link to={"/competitions"}>
+        <i class="fa-solid fa-trophy"></i>
+        </Link>
+        </span> 
         <span>
           <Link to={"/notifications"}>
           <i className="fa-solid fa-bell"></i>

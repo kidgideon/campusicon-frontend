@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Spinner from "../../assets/loadingSpinner";
 import './notification.css';
 import { useQuery } from '@tanstack/react-query';
+
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
 const icon = "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/logo.png?alt=media&token=97374df9-684d-44bf-ba79-54f5cb7d48b7";
 
@@ -54,6 +55,27 @@ const Notifications = () => {
     }
   }, [userProfile]);
 
+   useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY) {
+        // Scrolling down
+        setScrollingUp(false);
+      } else {
+        // Scrolling up
+        setScrollingUp(true);
+      }
+      lastScrollY = window.scrollY; // Update the last scroll position
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Cleanup the listener on unmount
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+   }, [navigate])
+
+
   useEffect(() => {
     if (userNotifications) {
       // Sort notifications by timestamp (newest first)
@@ -72,20 +94,6 @@ const Notifications = () => {
     }
     return [];
   };
-
-   // Listen to scroll events
-   const handleScroll = () => {
-    if (window.scrollY > lastScrollY) {
-      // Scrolling down
-      setScrollingUp(false);
-    } else {
-      // Scrolling up
-      setScrollingUp(true);
-    }
-    lastScrollY = window.scrollY; // Update the last scroll position
-  };
-
-  window.addEventListener("scroll", handleScroll);
 
   
 
@@ -160,7 +168,7 @@ const Notifications = () => {
     <div className="notification-page-interface">
       {/* Top Section */}
 
-      <h1 className="notification-title">Notifications</h1>
+      <div className="notification-title"><p style={{margin : '10px'}}>Notifications</p></div>
       {notifications.length > 0 ? (
         notifications.map((notification, index) => (
           <div
@@ -232,31 +240,34 @@ const Notifications = () => {
       )}
 
         <div
-                    className={`user-feed-interface-navigation-panel ${
-                      scrollingUp ? "visible" : "hidden"
-                    }`}
-                  >
-                    <span>
-                      <Link to={"/"}>
-                      <i  className="fa-solid fa-house"></i>
-                      </Link>
-                    </span>
-                    <span>
-                      <Link to={"/discovery-page"}>
-                      <i className="fa-solid fa-magnifying-glass"></i>
-                      </Link>
-                    </span>
-                    <span>
-                      <Link  to={"/notifications"}>
-                      <i style={{ color: "black" }} className="fa-solid fa-bell"></i>
-                      </Link>
-                    </span>
-                    <span>
-                   <Link to={"/ads"}>
-                   <i class="fa-solid fa-bullhorn"></i>
-                   </Link>
-                    </span>
-                  </div>
+                     className={`user-feed-interface-navigation-panel`}
+                   >
+                     <span>
+                       <Link to={"/"}>
+                       <i  className="fa-solid fa-house"></i>
+                       </Link>
+                     </span>
+                     <span>
+                       <Link to={"/discovery-page"}>
+                       <i className="fa-solid fa-magnifying-glass"></i>
+                       </Link>
+                     </span>
+                     <span>
+                     <Link to={"/competitions"}>
+                     <i class="fa-solid fa-trophy"></i>
+                     </Link>
+                     </span> 
+                     <span>
+                       <Link to={"/notifications"}>
+                       <i style={{ color: "black" }}  className="fa-solid fa-bell"></i>
+                       </Link>
+                     </span>
+                     <span>
+                    <Link to={"/ads"}>
+                    <i class="fa-solid fa-bullhorn"></i>
+                    </Link>
+                     </span>
+                   </div>
     </div>
   );
 };

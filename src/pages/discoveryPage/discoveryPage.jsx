@@ -19,20 +19,8 @@ const DiscoveryPage = () => {
    const [scrollingUp, setScrollingUp] = useState(true); // To track scroll direction
     let lastScrollY = 0; // Store the last scroll position
 
-    // Listen to scroll events
-   const handleScroll = () => {
-    if (window.scrollY > lastScrollY) {
-      // Scrolling down
-      setScrollingUp(false);
-    } else {
-      // Scrolling up
-      setScrollingUp(true);
-    }
-    lastScrollY = window.scrollY; // Update the last scroll position
-  };
 
-  window.addEventListener("scroll", handleScroll);
-
+    
   // Fetch Profile Picture using React Query
   const fetchProfilePicture = async (uid) => {
     const userDocRef = collection(db, 'users');
@@ -86,6 +74,29 @@ const DiscoveryPage = () => {
     staleTime: 20 * 60 * 1000,  // 20 minutes
     cacheTime: 60 * 60 * 1000   // 1 hour
   });
+
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY) {
+        // Scrolling down
+        setScrollingUp(false);
+      } else {
+        // Scrolling up
+        setScrollingUp(true);
+      }
+      lastScrollY = window.scrollY; // Update the last scroll position
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Cleanup the listener on unmount
+    return () => {
+     
+      window.removeEventListener("scroll", handleScroll);
+    };
+ 
+   }, [])
 
   // Mark all notifications as read
   const markAllAsRead = async () => {
@@ -166,19 +177,19 @@ const DiscoveryPage = () => {
   return (
     <div className="full-house">
       <div className="discovery-page-interface">
-       
-        {/* Search Interface */}
-        <div className="Discovery-page-search-interface">
-          <input
-            type="text"
-            placeholder="Search"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button onClick={handleSearch}>
-            <i className="fa-solid fa-magnifying-glass"></i>
-          </button>
-        </div>
+      <div className="Discovery-page-search-interface">
+  <h2>Search</h2>
+  <div className="search-container">
+    <i className="fa-solid fa-magnifying-glass"></i>
+    <input
+      onClick={handleSearch}
+      type="text"
+      placeholder="Search"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
+  </div>
+</div>
 
         {/* Search Output Area */}
         <div className="discovery-page-output-area">
@@ -215,32 +226,36 @@ const DiscoveryPage = () => {
           ) : null}
         </div>
       </div>
-      <div
-              className={`user-feed-interface-navigation-panel ${
-                scrollingUp ? "visible" : "hidden"
-              }`}
-            >
-              <span>
-                <Link to={"/"}>
-                <i  className="fa-solid fa-house"></i>
-                </Link>
-              </span>
-              <span>
-                <Link to={"/discovery-page"}>
-                <i style={{ color: "black" }} className="fa-solid fa-magnifying-glass"></i>
-                </Link>
-              </span>
-              <span>
-                <Link to={"/notifications"}>
-                <i className="fa-solid fa-bell"></i>
-                </Link>
-              </span>
-              <span>
-             <Link to={"/ads"}>
-             <i class="fa-solid fa-bullhorn"></i>
+        <div
+             className={`user-feed-interface-navigation-panel`}
+           
+           >
+             <span>
+               <Link to={"/"}>
+               <i  className="fa-solid fa-house"></i>
+               </Link>
+             </span>
+             <span>
+               <Link to={"/discovery-page"}>
+               <i style={{ color: "black" }} className="fa-solid fa-magnifying-glass"></i>
+               </Link>
+             </span>
+             <span>
+             <Link to={"/competitions"}>
+             <i class="fa-solid fa-trophy"></i>
              </Link>
-              </span>
-            </div>
+             </span> 
+             <span>
+               <Link to={"/notifications"}>
+               <i className="fa-solid fa-bell"></i>
+               </Link>
+             </span>
+             <span>
+            <Link to={"/ads"}>
+            <i class="fa-solid fa-bullhorn"></i>
+            </Link>
+             </span>
+           </div>
     </div>
   );
 };
