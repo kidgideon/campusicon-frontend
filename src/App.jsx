@@ -2,7 +2,6 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Register from './pages/register_components/register';
 import Login from './pages/login_components/login';
 import UserDashboard from './pages/User_dashboard/userDashboard';
 import ProtectedRoute from '../src/utils/protectedRoute';
@@ -38,6 +37,7 @@ import WithdrawalPayment from './pages/Icoins/withdrawal_payment';
 import BankAccountForm from './pages/Icoins/bankAccountForm';
 import Offline from './pages/offline';
 import OfflineHandler from './offlineHandler';
+import Register from './pages/Register/register';
 
 
 

@@ -11,7 +11,9 @@ const Offline = () => {
     const handleOnline = () => {
       setIsOnline(true);
       toast.success('Connection restored! Redirecting...');
-      setTimeout(() => navigate(-1), 2000); // Navigate back after a brief delay
+      setTimeout(() => {
+        navigate(-1)// Navigate back after a brief delay
+      }, 2000);
     };
 
     const handleOffline = () => {

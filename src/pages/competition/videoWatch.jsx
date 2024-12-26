@@ -333,7 +333,7 @@ const VideoWatch = () => {
                 controls
                 width="100%"
                 height="auto"
-               
+                
               />
       </div>
       
@@ -403,10 +403,7 @@ const VideoWatch = () => {
 </div>
 
       </div>
-      <div className="add-comment">
-            <div className="user-image" onClick={userPage}><img src={userDataItem?.profilePicture || defaultProfilePictureURL} alt="profile" /></div>
-            <div className="comment-prompt" onClick={() => handleOpenComments(video.id)}>add your comment...</div>
-            </div>
+   
     {/* Comment Panel (only show if open) */}
     {showCommentPanel === video.id && (
 <div className="comment-panel" id={`comment-panel-${video.id}`} ref={commentPanelRef}>

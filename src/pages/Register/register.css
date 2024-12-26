@@ -1,0 +1,147 @@
+/* Styling specific to the registration page */
+.register-page__custom {
+    width: 100%;
+    height: 100vh;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 90%;
+  }
+  
+  .register-container__custom {
+    width: 90%;
+    max-width: 300px;
+    padding: 5%;
+    border-radius: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .register-container__custom img {
+    width: 35%;
+    max-width: 150px; /* Set image width */
+    border-radius: 150px;
+  }
+  .register-container__custom h1 {
+    font-size: 20px;
+  }
+  
+  /* Form and input fields */
+  .register-form__custom {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .register-page__custom a {
+    color: #277AA4;
+  }
+  
+  .form-group__custom {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  
+  .form-group__custom input {
+    width: 95%;
+    min-width: 300px;
+    margin: 15px 0px;
+    padding: 15px 5px;
+    border: 0px solid #ddd;
+    border-radius: 5px;
+    background-color: lightgray;
+    transition: all 0.3s ease;
+ /* Centering placeholder text */
+  }
+  
+  .form-group__custom input:focus {
+    outline-color: #277AA4;
+    border-color: #277AA4; /* Company color */
+    background-color: #fff;
+  }
+  
+  .form-group__custom label {
+    position: absolute;
+    top: 25px;
+    left: 15px;
+    font-size: 16px;
+    color: #777;
+    pointer-events: none;
+    transition: 0.3s ease all;
+  }
+  
+  .form-group__custom input:focus + label,
+  .form-group__custom input:not(:placeholder-shown) + label {
+    top: -5px;
+    font-size: 12px;
+    color: #277AA4; /* Company color */
+  }
+  
+  .form-group__custom input:not(:placeholder-shown) {
+    padding-top: 20px;
+  }
+
+
+  
+  /* Button Styling */
+  .register-button__custom,
+  .google-signup-button__custom {
+    padding: 12px 20px;
+    background-color: #277AA4; /* Company color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+.register-button__custom {
+  margin-left: 0px;
+}
+  
+  .register-button__custom:hover,
+  .google-signup-button__custom:hover {
+    background-color: #1f6491; /* Darker shade for hover effect */
+  }
+  
+  .google-signup-button__custom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  
+  /* Spinner Styling */
+  .spinner__custom {
+    border: 2px solid transparent;
+    border-top: 2px solid #fff;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 0.8s linear infinite;
+  }
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @media (min-width: 1200px) {
+    /* Your styles here */
+      .register-container__custom {
+        height: 100%;
+        box-shadow: none;
+      }
+  }
+  
