@@ -82,8 +82,6 @@ const VideoWatch = () => {
   });
   
 
-  
-
   const fetchVideos = async () => {
     try {
       const videosQuery = query(
@@ -309,8 +307,6 @@ const VideoWatch = () => {
         <i className="fas fa-arrow-left " onClick={goBack}></i>
         <h2>Watch Videos</h2>
       </div>
-
-  
   {videos.map((video) => (
     <div key={video.id} className="video-watch-item">
       <Link to={`/profile/${creators[video.userId]?.username }`}>

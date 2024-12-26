@@ -181,3 +181,7 @@ h1 {
     transition: 0.2s;
   }
   
+
+  .competion-award-details-render img {
+    width: 100px;
+  }

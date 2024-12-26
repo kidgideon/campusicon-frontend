@@ -36,6 +36,9 @@ import SuccessPage from './pages/Icoins/sucessPage';
 import WithdrawalPage from './pages/Icoins/icoins_withdrawal';
 import WithdrawalPayment from './pages/Icoins/withdrawal_payment';
 import BankAccountForm from './pages/Icoins/bankAccountForm';
+import Offline from './pages/offline';
+import OfflineHandler from './offlineHandler';
+
 
 
 const queryClient = new QueryClient();
@@ -57,6 +60,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+      <OfflineHandler>
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/friends" element={<Friends />} />
@@ -91,7 +95,9 @@ function App() {
           <Route path="/withdraw" element={<WithdrawalPage/>} />
           <Route path="/withdrawal/:amount" element={<WithdrawalPayment/>} />
           <Route path="/account-verification" element={<BankAccountForm/>} />
+          <Route path="/offline" element={<Offline/>} />
         </Routes>
+        </OfflineHandler>
         <Toaster
           toastOptions={{
             success: {
