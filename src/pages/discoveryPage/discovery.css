@@ -25,7 +25,7 @@
    }
    
    .search-container {
-     width: 97%;
+     width: 85%;
      display: flex;
      align-items: center; /* Aligns input and icon vertically */
      position: relative;

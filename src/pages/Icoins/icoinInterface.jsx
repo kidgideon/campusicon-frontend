@@ -118,7 +118,7 @@ useEffect(() => {
         <div className="coin-balance-area">
           <div className="balance-itself">
             <p>
-              <span> <i className="fa-solid fa-coins balance-icon-main"></i></span> {userData.icoins}
+              <span> <i className="fa-solid fa-coins balance-icon-main"></i></span> {userData.icoins.toFixed(2)}
             </p>
           </div>
           <div className="controls">

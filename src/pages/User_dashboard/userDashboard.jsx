@@ -12,7 +12,7 @@ import { handleVideoLike, handleFeedLike,
   handleEditComment } from "./feed.js";
 import Spinner from '../../assets/loadingSpinner.jsx'
 import { toast } from 'react-hot-toast';
-
+import Skeleton from "../competition/competionSkeleton.jsx"
 
 const whiteLogo =
   "https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/campusicon.lightlogo.jpg?alt=media&token=00ac4bd4-f813-409d-a534-70b2c472bd04";
@@ -173,11 +173,11 @@ useEffect(() => {
 
 // Handle loading states
 if (userLoading || feedsLoading) {
-  return <Spinner />;
+  return <Skeleton />;
 }
 
 if (!user || !feedsData) {
-  return <Spinner />;
+  return <Skeleton />;
 }
 //  checks if the user has not completed his or her profile 
 

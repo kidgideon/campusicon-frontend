@@ -301,31 +301,32 @@ const VideoWatch = () => {
     return <p>Error loading videos</p>;
   }
   return (
-    <div className="full-house">
- <div className="video-watch-area-movie">
+    <div className="video-watch-own">
+ <div className="user-feeds">
  <div className="top-top-sideliners">
         <i className="fas fa-arrow-left " onClick={goBack}></i>
         <h2>Watch Videos</h2>
       </div>
   {videos.map((video) => (
-    <div key={video.id} className="video-watch-item">
+
+<div key={video.id} className="user-feed-feed-body">
       <Link to={`/profile/${creators[video.userId]?.username }`}>
-      <div className="video-watch-top">
-        <div className="video-creator-profile">
-          <div className="video-watch-profile-picture">
-            <img 
-              src={creators[video.userId]?.profilePicture || defaultProfilePictureURL} 
+<div className="feed-top">
+  <div className="right-side">
+  <img className="company-logo-feed"
+src={creators[video.userId]?.profilePicture || defaultProfilePictureURL} 
               alt="Creator Profile" 
             />
-          </div>
-          <div className="video-watch-username">
-            {creators[video.userId]?.username || 'Unknown User'}
-          </div>
-        </div>
-      </div>   
+    <p>{creators[video.userId]?.username || 'Unknown User'}</p>
+  </div>
+  <div className="left-side">
+  <i className="fa-solid fa-ellipsis"></i>
+  </div>
+</div>
       </Link>
-   
-      <div className="video-watch-video-body">
+<div className="feed-context">
+        <p>{video.description}</p>
+      <div className="feed-content">
       <video
                 ref={(el) => (videoRefs.current[video.id] = el)}
                 data-videoid={video.id}
@@ -336,13 +337,11 @@ const VideoWatch = () => {
                 
               />
       </div>
-      
-      <div className="video-watch-video-data">
-        <p>{video.description}</p>
       </div>
       
-      <div className="video-watch-icon-and-button">
-      <div className="like" onClick={() => {
+      
+      <div className="feed-actions">
+      <span className="like" onClick={() => {
   // Toggle the like status immediately
   const isLiked = video.likes.includes(currentUser.uid);
   const updatedLikes = isLiked
@@ -363,14 +362,14 @@ const VideoWatch = () => {
     className="fa-solid fa-heart" 
     style={{ color: video.likes.includes(currentUser.uid) ? '#277AA4' : 'inherit' }} // Apply company color if liked
   />
-  <span>{video.likes.length}</span>
-</div>
+{video.likes.length}
+</span>
 
-        <div className="comment" onClick={() => handleOpenComments(video.id)}>
+        <span className="comment" onClick={() => handleOpenComments(video.id)}>
           <i className="fa-solid fa-comment" />
-          <span>{video.comments.length}</span>
-        </div>
-      <div className="vote" onClick={() => {
+          {video.comments.length}
+        </span>
+      <span className="vote" onClick={() => {
   // Check if the video is already voted by the user
   const isVoted = votedVideos[video.id];
 
@@ -399,8 +398,8 @@ const VideoWatch = () => {
       pointerEvents: loadingVotes ? 'none' : 'auto'  // Disable button while loading
     }}
   />
-  <span>{video.votes.length}</span>
-</div>
+ {video.votes.length}
+</span>
 
       </div>
    
@@ -505,3 +504,20 @@ comments[video.id]
 };
 
 export default VideoWatch;
+
+// <div className="video-watch-top">
+//         <div className="video-creator-profile">
+//           <div className="video-watch-profile-picture">
+//             <img 
+//               src={creators[video.userId]?.profilePicture || defaultProfilePictureURL} 
+//               alt="Creator Profile" 
+//             />
+//           </div>
+//           <div className="video-watch-username">
+//             {creators[video.userId]?.username || 'Unknown User'}
+//           </div>
+//           <div className="left-side">
+//                   <i className="fa-solid fa-ellipsis"></i>
+//                 </div>
+//         </div>
+//       </div>  

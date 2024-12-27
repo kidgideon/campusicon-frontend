@@ -86,7 +86,7 @@ const WithdrawalPage = () => {
           <h2>Withdraw</h2>
         </div>
       <h1>Enter the amount of iCoins you want to withdraw</h1>
-      <p>Available Balance: {userData.icoins || 0} iCoins</p>
+      <p>Available Balance: {userData.icoins.toFixed(2) || 0} iCoins</p>
       <p>
         The worth of your withdrawal is  ₦{calculateWorthInNaira()}
       </p>

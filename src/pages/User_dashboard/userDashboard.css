@@ -150,10 +150,12 @@ body {
 .feed-actions {
   width: 85%;
    padding: 4px;
+   display: flex;
+   flex-direction: row;
 }
 
 .feed-actions span {
- margin: 10px;
+ margin: 5px;
  padding: 4px;
 }
 .feed-actions i {
