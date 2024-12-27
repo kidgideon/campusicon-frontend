@@ -7,7 +7,6 @@ import { storage, db, auth } from '../../../config/firebase_config'; // Firebase
 import Spinner from '../../assets/loadingSpinner'; // Spinner component
 import './uploadvideo.css'; // Add some styles for the form
 import { useParams, useNavigate } from 'react-router-dom';
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
 const UploadVideoForm = () => {
   const { competitionId } = useParams(); // Get competition ID from route params
@@ -119,8 +118,6 @@ const UploadVideoForm = () => {
     setShowTrashIcon(false);
   };
 // Initialize ffmpeg.js
-const ffmpeg = createFFmpeg({ log: true });
-
 const handleUpload = async (e) => {
   e.preventDefault();
 
@@ -172,26 +169,9 @@ const handleUpload = async (e) => {
 
     setUploading(true);
 
-    // Step 5: Compress the video before upload
-    await ffmpeg.load();
-    const videoData = await fetchFile(videoFile);
-    ffmpeg.FS('writeFile', videoFile.name, videoData);
-
-    // Set the output file name and compression settings
-    const outputFileName = 'compressed_video.mp4';
-
-    await ffmpeg.run('-i', videoFile.name, '-vcodec', 'libx264', '-crf', '35', outputFileName); // Adjust CRF for compression
-
-    // Retrieve the compressed video
-    const compressedVideoData = ffmpeg.FS('readFile', outputFileName);
-
-    // Convert the compressed video data into a Blob URL
-    const compressedBlob = new Blob([compressedVideoData.buffer], { type: 'video/mp4' });
-    const compressedVideoURL = URL.createObjectURL(compressedBlob);
-
-    // Step 6: Upload compressed video to Firebase Storage
+    // Step 5: Upload video to Firebase Storage
     const storageRef = ref(storage, `videos/${currentUser.uid}/${videoFile.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, compressedBlob);
+    const uploadTask = uploadBytesResumable(storageRef, videoFile);
 
     uploadTask.on(
       'state_changed',
@@ -269,7 +249,6 @@ const handleUpload = async (e) => {
     toast.error('User not found.');
   }
 };
-  
   
   const goBack = () => {
     navigate(-1);
