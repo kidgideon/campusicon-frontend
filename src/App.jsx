@@ -38,6 +38,7 @@ import BankAccountForm from './pages/Icoins/bankAccountForm';
 import Offline from './pages/offline';
 import OfflineHandler from './offlineHandler';
 import Register from './pages/Register/register';
+import CompleteProfile from './pages/complete-profile/complete-profile';
 
 
 
@@ -96,6 +97,7 @@ function App() {
           <Route path="/withdrawal/:amount" element={<WithdrawalPayment/>} />
           <Route path="/account-verification" element={<BankAccountForm/>} />
           <Route path="/offline" element={<Offline/>} />
+          <Route path="/complete-profile" element={<CompleteProfile/>}/>
         </Routes>
         </OfflineHandler>
         <Toaster

@@ -66,7 +66,7 @@ const Menu = () => {
                                 <img src={user.profilePicture || defaultProfilePictureURL} alt="User Profile" />
                             </div>
                             <div className="menu-page-username">
-                                {`${user.firstName}  ${user.surname}`}
+                                {`${user.firstName}  ${user.lastName}`}
                             </div>
                         </div>
                     </div>

@@ -53,18 +53,28 @@ function Login() {
     }
   };
 
-  // Email and password login handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+  
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      toast.success("Logged in successfully!");
-      setTimeout(() => {
-        navigate("/"); // Redirect to homepage
-      }, 2000);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+  
+      // Check if the email is verified
+      if (user.emailVerified) {
+        toast.success("Logged in successfully!");
+        setTimeout(() => {
+          navigate("/"); // Redirect to homepage
+        }, 2000);
+      } else {
+        // Email not verified
+        toast.error("Please verify your email before logging in.");
+        // Optionally, you can re-send the verification email
+        // await user.sendEmailVerification();
+      }
     } catch (error) {
-      toast.error("signin unsucessfull please check your email and password or try again later");
+      toast.error("Sign-in unsuccessful. Please check your email and password or try again later.");
     } finally {
       setLoading(false);
     }

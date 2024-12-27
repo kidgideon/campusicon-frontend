@@ -177,8 +177,10 @@ if (userLoading || feedsLoading) {
 }
 
 if (!user || !feedsData) {
-  return <div>No data available</div>;
+  return <Spinner />;
 }
+//  checks if the user has not completed his or her profile 
+
 
   const toggleLike = (video) => {
     const isLiked = video.likes.includes(user.uid);
