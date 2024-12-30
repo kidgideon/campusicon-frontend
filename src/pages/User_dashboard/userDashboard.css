@@ -84,6 +84,33 @@ body {
   font-size: 22px;
 }
 
+.notification-dot {
+  position: absolute;
+  top: 0%; /* Adjust to position it slightly above the bell */
+  right: 25%; /* Adjust to position it slightly to the right of the bell */
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%; /* Make it a circle */
+  animation: pulse 1.5s infinite ease-in-out; /* Breathing effect */
+}
+
+/* Define the pulse animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1); /* Initial size */
+    opacity: 1; /* Full opacity */
+  }
+  50% {
+    transform: scale(1.5); /* Enlarges the dot */
+    opacity: 0.7; /* Slightly transparent at max size */
+  }
+  100% {
+    transform: scale(1); /* Returns to original size */
+    opacity: 1; /* Full opacity */
+  }
+}
+
 /* Animation Classes */
 .visible {
   transform: translateY(0);

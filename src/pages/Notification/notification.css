@@ -101,6 +101,7 @@
 @media screen and (max-width: 768px) {
   .notification-page-interface {
     padding: 10px;
+    padding-top: 60px;
   }
 
   .notification-card {

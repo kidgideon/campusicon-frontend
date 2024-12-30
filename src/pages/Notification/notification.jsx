@@ -254,7 +254,7 @@ const Notifications = () => {
                      </span>
                      <span>
                      <Link to={"/competitions"}>
-                     <i class="fa-solid fa-trophy"></i>
+                     <i className="fa-solid fa-trophy"></i>
                      </Link>
                      </span> 
                      <span>
@@ -264,7 +264,7 @@ const Notifications = () => {
                      </span>
                      <span>
                     <Link to={"/ads"}>
-                    <i class="fa-solid fa-bullhorn"></i>
+                    <i className="fa-solid fa-bullhorn"></i>
                     </Link>
                      </span>
                    </div>

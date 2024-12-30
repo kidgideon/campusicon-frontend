@@ -42,7 +42,7 @@ const CompleteProfile = () => {
       {step === 1 && (
         <div className="profile-complete-prompt-modal">
             <div>
-            <i class="fa-solid fa-user"></i>
+            <i className="fa-solid fa-user"></i>
             <h2>complete your profile</h2>
             </div>
           <label className="profile-complete-prompt-label">
@@ -79,7 +79,7 @@ const CompleteProfile = () => {
       {step === 2 && (
         <div className="profile-complete-prompt-modal">
             <div>
-            <i class="fa-solid fa-school"></i>
+            <i className="fa-solid fa-school"></i>
             </div>
           <label className="profile-complete-prompt-label">
             <input
@@ -102,7 +102,7 @@ const CompleteProfile = () => {
       {step === 3 && (
         <div className="profile-complete-prompt-modal">
             <div>
-            <i class="fa-brands fa-hornbill"></i>
+            <i className="fa-brands fa-hornbill"></i>
             </div>
           <label className="profile-complete-prompt-label">
             Hobbies

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendEmailVerification } from "firebase/auth";
-import { doc, setDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { doc, setDoc, collection, getDocs, query, where, updateDoc, arrayUnion } from "firebase/firestore";
 import { auth, db } from "../../../config/firebase_config";
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import "./register.css";
 import toast from 'react-hot-toast';
 
@@ -16,7 +16,7 @@ const Register = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-    const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const provider = new GoogleAuthProvider();
 
@@ -31,6 +31,27 @@ const Register = () => {
     const fieldQuery = query(usersRef, where(field, "==", value));
     const querySnapshot = await getDocs(fieldQuery);
     return !querySnapshot.empty; // True if duplicate exists
+  };
+
+  // Add welcome notification
+  const addWelcomeNotification = async (userId) => {
+    const notification = {
+      link: "/awards-ranks",
+      read: false,
+      text: "Welcome to Campus Icon, get to know more about our app",
+      timestamp: Date.now(), // Static timestamp as provided
+      type: "notify",
+    };
+
+    try {
+      const userRef = doc(db, "users", userId);
+      await updateDoc(userRef, {
+        notifications: arrayUnion(notification),
+      });
+      console.log("Notification added successfully!");
+    } catch (error) {
+      console.error("Error adding notification:", error);
+    }
   };
 
   // Email Signup
@@ -51,7 +72,7 @@ const Register = () => {
 
       if (emailExists) {
         toast.error("Email is already registered. Please log in.");
-        navigate('/login')
+        navigate('/login');
         setLoading(false);
         return;
       }
@@ -91,6 +112,9 @@ const Register = () => {
         icoin_History: ["earned 10 icoins as login bonus"],
       });
 
+      // Add welcome notification
+      await addWelcomeNotification(user.uid);
+
       toast.success("Verification email sent! Please check your inbox.");
       setLoading(false);
       setTimeout(() => {
@@ -98,7 +122,7 @@ const Register = () => {
       }, 2000);
     } catch (error) {
       console.error("Error during email signup:", error);
-      toast.error("oops couldnt sign you in try again later");
+      toast.error("Oops, couldn't sign you in. Try again later.");
       setLoading(false);
     }
   };
@@ -155,6 +179,9 @@ const Register = () => {
         icoin_History: ["earned 10 icoins as login bonus"],
       });
 
+      // Add welcome notification
+      await addWelcomeNotification(user.uid);
+
       toast.success("Account created successfully! Please log in.");
       setLoading(false);
       setTimeout(() => {
@@ -162,70 +189,69 @@ const Register = () => {
       }, 2000);
     } catch (error) {
       console.error("Error during Google signup:", error);
-      toast.error("oops there was an error signing you in! please try again later");
+      toast.error("Oops, there was an error signing you in! Please try again later.");
       setLoading(false);
     }
   };
 
   return (
     <div className="register-page__custom">
-   <div className="register-container__custom">
-      <img src={whiteLogo} alt="Campus Icon Logo" className="register-logo__custom" />
-      <h1>Signup</h1>
-      <form className="register-form__custom" onSubmit={(e) => e.preventDefault()}>
-        <div className="form-group__custom">
-          <input
-            type="text"
-            id="username"
-            name="username"
-            placeholder=" "
-            value={formData.username}
-            onChange={handleInputChange}
-          />
-          <label htmlFor="username">Username</label>
-        </div>
-        <div className="form-group__custom">
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder=" "
-            value={formData.email}
-            onChange={handleInputChange}
-          />
-          <label htmlFor="email">Email</label>
-        </div>
-        <div className="form-group__custom">
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder=" "
-            value={formData.password}
-            onChange={handleInputChange}
-          />
-          <label htmlFor="password">Password</label>
-        </div>
+      <div className="register-container__custom">
+        <img src={whiteLogo} alt="Campus Icon Logo" className="register-logo__custom" />
+        <h1>Signup</h1>
+        <form className="register-form__custom" onSubmit={(e) => e.preventDefault()}>
+          <div className="form-group__custom">
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder=" "
+              value={formData.username}
+              onChange={handleInputChange}
+            />
+            <label htmlFor="username">Username</label>
+          </div>
+          <div className="form-group__custom">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder=" "
+              value={formData.email}
+              onChange={handleInputChange}
+            />
+            <label htmlFor="email">Email</label>
+          </div>
+          <div className="form-group__custom">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder=" "
+              value={formData.password}
+              onChange={handleInputChange}
+            />
+            <label htmlFor="password">Password</label>
+          </div>
+          <button
+            type="button"
+            className="register-button__custom"
+            onClick={handleEmailSignup}
+            disabled={loading}
+          >
+            {loading ? <span className="spinner__custom"></span> : "Sign Up"}
+          </button>
+        </form>
+        <p>Already have an account? <a href="/login">Sign in</a></p>
         <button
-          type="button"
-          className="register-button__custom"
-          onClick={handleEmailSignup}
+          className="google-signup-button__custom"
+          onClick={handleGoogleSignup}
           disabled={loading}
         >
-          {loading ? <span className="spinner__custom"></span> : "Sign Up"}
+          {loading ? <span className="spinner__custom"></span> : <i style={{ margin: '5px' }} className="fa-brands fa-google"></i>} Sign Up with Google
         </button>
-      </form>
-      <p>Already have an account ?<a href="/login">signin</a></p>
-      <button
-        className="google-signup-button__custom"
-        onClick={handleGoogleSignup}
-        disabled={loading}
-      >
-        {loading ? <span className="spinner__custom"></span> : <i style={{margin : '5px'}} className="fa-brands fa-google"></i>} Sign Up with Google
-      </button>
+      </div>
     </div>
-    </div>
- 
   );
 };
 

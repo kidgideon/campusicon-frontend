@@ -26,7 +26,6 @@ const UserDashboard = () => {
   const navigate = useNavigate(); // Navigation hook
   const [feeds, setFeeds] = useState([]);
   const [scrollingUp, setScrollingUp] = useState(true); // To track scroll direction
-  const [selectedFeed, setSelectedFeed] = useState(null);  // To keep track of the selected feed for comments
   const [showCommentPanel, setShowCommentPanel] = useState(false);  // To toggle the comment panel visibility
   const [comments, setComments] = useState([]);
   const videoRefs = useRef([]);
@@ -36,12 +35,9 @@ const UserDashboard = () => {
   const [commentLoading, setCommentLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState([])
   const [loadingCommentLikes, setLoadingCommentLikes] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(1); // For image zooming
-  const [lastTapTime, setLastTapTime] = useState(0); // For double-tap detection
-  const [likeAnimating, setLikeAnimating] = useState(false);
-  const [zoomingImageId, setZoomingImageId] = useState(null); // Tracks the currently zooming image
-  const [authInitialized, setAuthInitialized] = useState(false); // Track auth in
   const [iconPopup, setIconPopup] = useState(false);
+  const [hasUnreadNotification, setHasUnreadNotification] = useState(false); // To track unread notifications
+
 
    // Fetch user data with React Query
  const { data: userData, isLoading: userLoading, error: userError } = useQuery({
@@ -69,11 +65,21 @@ const UserDashboard = () => {
   },
 
 });
-
 useEffect(() => {
-  if (userData) {
+  if (userData && userData.notifications ) {
     setUser(userData);
     setLoading(false); // Once the user data is loaded, set loading to false
+    if (!userData.firstName || !userData.lastName) {
+      navigate("/complete-profile");
+    }
+    // Check if any notification is unread
+    const unreadNotifications = userData.notifications.filter(notification => notification.read === false);
+
+    // Check if there are any unread notifications
+    const hasUnread = unreadNotifications.length > 0;
+
+    // Update state for unread notifications
+    setHasUnreadNotification(hasUnread);
   }
 }, [userData]);
 
@@ -94,7 +100,6 @@ useEffect(() => {
   }, [showCommentPanel]); // Listen to showCommentPanel changes
   
   
-
   useEffect(() => {
     const observer = new IntersectionObserver((entries, observer) => {
       entries.forEach(entry => {
@@ -169,6 +174,7 @@ useEffect(() => {
   if (feedsData) {
     setFeeds(feedsData);
   }
+
 }, [feedsData]);
 
 // Handle loading states
@@ -471,38 +477,42 @@ const handleSendComment = async (feedId) => {
 
  
 
-      {/* Bottom Navigation */}
-      <div
-        className={`user-feed-interface-navigation-panel ${
-          scrollingUp ? "visible" : "hidden"
-        }`}
-      >
-        <span>
-          <Link to={"/"}>
-          <i style={{ color: "black" }} className="fa-solid fa-house"></i>
-          </Link>
-        </span>
-        <span>
-          <Link to={"/discovery-page"}>
-          <i className="fa-solid fa-magnifying-glass"></i>
-          </Link>
-        </span>
-        <span>
-        <Link to={"/competitions"}>
-        <i class="fa-solid fa-trophy"></i>
-        </Link>
-        </span> 
-        <span>
-          <Link to={"/notifications"}>
-          <i className="fa-solid fa-bell"></i>
-          </Link>
-        </span>
-        <span>
-       <Link to={"/ads"}>
-       <i class="fa-solid fa-bullhorn"></i>
-       </Link>
-        </span>
-      </div>
+<div
+  className={`user-feed-interface-navigation-panel ${
+    scrollingUp ? "visible" : "hidden"
+  }`}
+>
+  <span>
+    <Link to={"/"}>
+      <i style={{ color: "black" }} className="fa-solid fa-house"></i>
+    </Link>
+  </span>
+  <span>
+    <Link to={"/discovery-page"}>
+      <i className="fa-solid fa-magnifying-glass"></i>
+    </Link>
+  </span>
+  <span>
+    <Link to={"/competitions"}>
+      <i className="fa-solid fa-trophy"></i>
+    </Link>
+  </span>
+  <span>
+    <Link to={"/notifications"}>
+      <i className="fa-solid fa-bell"></i>
+      {/* Red dot for unread notifications */}
+      {hasUnreadNotification && (
+        <span className="notification-dot"></span>
+      )}
+    </Link>
+  </span>
+  <span>
+    <Link to={"/ads"}>
+      <i className="fa-solid fa-bullhorn"></i>
+    </Link>
+  </span>
+</div>
+
     </div>
   );
 };

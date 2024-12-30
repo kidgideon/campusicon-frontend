@@ -148,7 +148,7 @@ const AdsPage = () => {
                   </span>
                   <span>
                   <Link to={"/competitions"}>
-                  <i class="fa-solid fa-trophy"></i>
+                  <i className="fa-solid fa-trophy"></i>
                   </Link>
                   </span> 
                   <span>
@@ -158,7 +158,7 @@ const AdsPage = () => {
                   </span>
                   <span>
                  <Link to={"/ads"}>
-                 <i style={{ color: "black" }} class="fa-solid fa-bullhorn"></i>
+                 <i style={{ color: "black" }} className="fa-solid fa-bullhorn"></i>
                  </Link>
                   </span>
                 </div>
