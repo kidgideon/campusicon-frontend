@@ -100,8 +100,9 @@
 /* Responsive styling */
 @media screen and (max-width: 768px) {
   .notification-page-interface {
-    padding: 10px;
+    padding: 15px;
     padding-top: 60px;
+    padding-bottom: 30px;
   }
 
   .notification-card {

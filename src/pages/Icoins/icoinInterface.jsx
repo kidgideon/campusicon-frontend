@@ -154,7 +154,7 @@ useEffect(() => {
     valuePopup && (
       <div className="overlay" onClick={closeValue}>
 <div className="value-popup">
-   your icoins is valued at {userData.icoins * 5} NGN
+   your icoins is valued at {(userData.icoins * 5).toFixed(2)} NGN
 </div>
       </div>
     )
