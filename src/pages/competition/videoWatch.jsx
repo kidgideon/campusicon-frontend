@@ -332,9 +332,7 @@ src={creators[video.userId]?.profilePicture || defaultProfilePictureURL}
                 data-videoid={video.id}
                 src={video.videoURL}
                 controls
-                width="100%"
-                height="auto"
-                
+                className='video-in-proper'
               />
       </div>
       </div>
