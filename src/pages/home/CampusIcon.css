@@ -1,0 +1,288 @@
+/* Global container */
+.campus-icon-container {
+  background-color: white;
+  padding-top: 70px; /* Give space for the fixed navbar */
+}
+
+/* Navbar */
+.campus-icon-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.campus-icon-logo {
+  font-size: 16px;
+  font-weight: bold;
+  color: #277aa4;
+}
+
+.campus-icon-nav-links {
+  display: flex;
+  gap: 24px;
+}
+
+.campus-icon-nav-link {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.campus-icon-nav-link:hover {
+  color: #277aa4;
+}
+
+.campus-icon-auth-buttons {
+  display: flex;
+  gap: 16px;
+}
+
+.campus-icon-auth-button {
+  padding: 8px 16px;
+  color: white;
+  background-color: black;
+  border: 1px solid white;
+  border-radius: 8px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.campus-icon-auth-button:hover {
+  background-color: #277aa4;
+  color: white;
+}
+
+.campus-icon-mobile-menu {
+  display: none;
+}
+
+.campus-icon-menu-toggle {
+  color: #333;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Hamburger Icon Animation */
+.campus-icon-menu-toggle.open {
+  transform: rotate(90deg);
+}
+
+.campus-icon-nav-links.open {
+  display: block;
+  position: absolute;
+  top: 70px;
+  right: 0;
+  background-color: white;
+  width: 100%;
+  text-align: center;
+  padding: 16px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.campus-icon-nav-links {
+  display: flex;
+  gap: 24px;
+}
+
+.campus-icon-mobile-link {
+  display: block;
+  margin: 8px 0;
+  color: #333;
+  text-decoration: none;
+}
+
+.campus-icon-mobile-link:hover {
+  color: #277aa4;
+}
+
+/* Content */
+.campus-icon-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.campus-icon-text-content {
+  width: 50%;
+}
+
+.campus-icon-headline {
+  font-size: 32px;
+  font-weight: 600;
+  color: black;
+}
+
+.campus-icon-description {
+  margin-top: 16px;
+  font-size: 16px;
+  color: black;
+}
+
+.campus-icon-image-content {
+  width: 40%;
+}
+
+.campus-icon-image {
+  width: 100%;
+  border-radius: 50%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  margin: 0 auto;
+}
+
+/* Reward Section */
+.campus-icon-reward-section {
+  padding: 40px 0;
+}
+
+.campus-icon-reward-content {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.campus-icon-reward-text {
+  width: 50%;
+}
+
+.campus-icon-reward-title {
+  font-size: 36px;
+  font-weight: 600;
+}
+
+.campus-icon-reward-description {
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+.campus-icon-get-started {
+  padding: 12px 24px;
+  background-color: #277aa4;
+  color: white;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-top: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.campus-icon-get-started:hover {
+  background-color: #1c5a77;
+}
+
+.campus-icon-reward-image {
+  width: 40%;
+}
+
+.campus-icon-talent-showcase {
+  padding: 40px 0;
+}
+
+.campus-icon-talent-title {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 32px;
+}
+
+.campus-icon-talent-cards {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+}
+
+.campus-icon-talent-card {
+  text-align: center;
+}
+
+.campus-icon-talent-image {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  margin-bottom: 16px;
+}
+
+.campus-icon-talent-text {
+  font-weight: 600;
+}
+
+.campus-icon-learn-more {
+  color: #277aa4;
+  text-decoration: none;
+  margin-top: 8px;
+}
+
+.campus-icon-learn-more:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .campus-icon-navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .campus-icon-nav-links {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .campus-icon-nav-links.open {
+    display: block;
+  }
+
+  .campus-icon-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .campus-icon-text-content {
+    width: 100%;
+    text-align: center;
+  }
+
+  .campus-icon-image-content {
+    width: 100%;
+  }
+
+  .campus-icon-reward-content {
+    flex-direction: column;
+  }
+
+  .campus-icon-reward-text {
+    width: 100%;
+    text-align: center;
+  }
+
+  .campus-icon-reward-image {
+    width: 100%;
+  }
+
+  .campus-icon-talent-cards {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .campus-icon-talent-card {
+    width: 100%;
+    text-align: center;
+  }
+
+  .campus-icon-image {
+    width: 80%;
+  }
+}

@@ -39,7 +39,7 @@ import Offline from './pages/offline';
 import OfflineHandler from './offlineHandler';
 import Register from './pages/Register/register';
 import CompleteProfile from './pages/complete-profile/complete-profile';
-
+import CampusIcon from './pages/home/homepagecampus';
 
 
 const queryClient = new QueryClient();
@@ -64,6 +64,7 @@ function App() {
       <OfflineHandler>
         <Routes>
           <Route path="/register" element={<Register />} />
+          <Route path="/campusicon-homepage" element={<CampusIcon />} />
           <Route path="/friends" element={<Friends />} />
           <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<CreateComp />} />

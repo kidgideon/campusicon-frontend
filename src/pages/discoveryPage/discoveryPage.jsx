@@ -18,8 +18,6 @@ const DiscoveryPage = () => {
   const [loading, setLoading] = useState(false); // State for spinner
    const [scrollingUp, setScrollingUp] = useState(true); // To track scroll direction
     let lastScrollY = 0; // Store the last scroll position
-
-
     
   // Fetch Profile Picture using React Query
   const fetchProfilePicture = async (uid) => {

@@ -117,7 +117,7 @@ const UploadVideoForm = () => {
     setVideoPreviewURL(null);
     setShowTrashIcon(false);
   };
-// Initialize ffmpeg.js
+
 const handleUpload = async (e) => {
   e.preventDefault();
 
