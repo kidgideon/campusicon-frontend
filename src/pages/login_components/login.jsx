@@ -136,7 +136,7 @@ function Login() {
 
             </button>
 
-            <p>Don't have an account yet? <a href="/register">sign up</a></p>
+            <p>Don't have an account yet? <a className="link-link" href="/register">sign up</a></p>
           </form>
         ) : (
           <form onSubmit={handleForgotPassword} className="forgot-password-form">

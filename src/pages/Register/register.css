@@ -10,8 +10,7 @@
   }
   
   .register-container__custom {
-    width: 90%;
-    max-width: 300px;
+    width: 100%;
     padding: 5%;
     border-radius: 10px;
     text-align: center;
@@ -20,7 +19,15 @@
     justify-content: center;
     align-items: center;
   }
-  
+
+  .input-field-area-register{
+     width: 100%;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     flex-direction: column;
+  }
+
   .register-container__custom img {
     width: 35%;
     max-width: 150px; /* Set image width */
@@ -35,6 +42,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+    max-width: 500px;
   }
 
   .register-page__custom a {
@@ -47,7 +55,7 @@
   }
   
   .form-group__custom input {
-    width: 95%;
+    width: 100%;
     min-width: 300px;
     margin: 15px 0px;
     padding: 15px 5px;
@@ -104,6 +112,8 @@
 
 .register-button__custom {
   margin-left: 0px;
+  width: 100%;
+
 }
   
   .register-button__custom:hover,
@@ -112,10 +122,12 @@
   }
   
   .google-signup-button__custom {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 10px;
+    margin-left: 0px;
   }
   
   /* Spinner Styling */
@@ -142,6 +154,10 @@
       .register-container__custom {
         height: 100%;
         box-shadow: none;
+        display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
       }
   }
   

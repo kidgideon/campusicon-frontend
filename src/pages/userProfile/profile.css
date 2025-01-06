@@ -156,7 +156,7 @@ a {
 
 .normal-star-count, .super-star-count, .icon-awards-count {
     position: absolute;
-    top: 40px;
+    top: 50px;
     left: 20px;
     font-size: 20px;
     font-weight: bold;

@@ -200,7 +200,8 @@ const Register = () => {
         <img src={whiteLogo} alt="Campus Icon Logo" className="register-logo__custom" />
         <h1>Signup</h1>
         <form className="register-form__custom" onSubmit={(e) => e.preventDefault()}>
-          <div className="form-group__custom">
+         <div className=".input-field-area-register">
+         <div className="form-group__custom">
             <input
               type="text"
               id="username"
@@ -241,8 +242,8 @@ const Register = () => {
           >
             {loading ? <span className="spinner__custom"></span> : "Sign Up"}
           </button>
-        </form>
-        <p>Already have an account? <a href="/login">Sign in</a></p>
+
+          <p>Already have an account? <a href="/login">Sign in</a></p>
         <button
           className="google-signup-button__custom"
           onClick={handleGoogleSignup}
@@ -250,6 +251,9 @@ const Register = () => {
         >
           {loading ? <span className="spinner__custom"></span> : <i style={{ margin: '5px' }} className="fa-brands fa-google"></i>} Sign Up with Google
         </button>
+         </div>
+        </form>
+       
       </div>
     </div>
   );

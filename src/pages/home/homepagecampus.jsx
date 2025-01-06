@@ -1,32 +1,39 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";  // Import Link for navigation
+import { Link, useNavigate } from "react-router-dom";  // Import Link for navigation
 import PeopleImage from './images/undraw_people_ka7y-removebg-preview.png';
 import WinnersImage from './images/undraw_winners_fre4.png';
 import SingingTalentImage from './images/2933.jpg';
 import DancingTalentImage from './images/14166.jpg';
 import './CampusIcon.css';  // Import the vanilla CSS file
 
+
 const CampusIcon = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setMenuOpen((prev) => !prev);
   };
+
+   const nav = () => {
+    console.log("works")
+    navigate("/login")
+   }
 
   return (
     <div className="campus-icon-container">
       <nav className="campus-icon-navbar">
         <div className="campus-icon-logo">CampusIcon</div>
         <div className={`campus-icon-nav-links ${menuOpen ? 'open' : ''}`}>
-          <Link className="campus-icon-nav-link" to={'/home'}>Home</Link>
-          <Link className="campus-icon-nav-link" to={'/about-us'}>About Us</Link>
-          <Link className="campus-icon-nav-link" to={'/how-it-works'}>How It Works</Link>
-          <Link className="campus-icon-nav-link" to={'/testimonials'}>Testimonials</Link>
-          <Link className="campus-icon-nav-link" to={'/contact'}>Contact</Link>
+          <Link className="campus-icon-nav-link">Home</Link>
+          <Link className="campus-icon-nav-link" to="/awards-ranks">Awards & Ranks</Link>
+          <Link className="campus-icon-nav-link" to="/awards-ranks">How It Works</Link>
+          <Link className="campus-icon-nav-link" to="/awards-ranks">Testimonials</Link>
+          <Link className="campus-icon-nav-link" to="/mailto:campusicon.com@gmail.com">Contact</Link>
         </div>
         <div className="campus-icon-auth-buttons">
-          <a href="#" className="campus-icon-auth-button">Log In</a>
-          <a href="#" className="campus-icon-auth-button">Sign Up</a>
+          <Link to="/login" className="campus-icon-auth-button">Log In</Link>
+          <Link to="/register" className="campus-icon-auth-button">Sign Up</Link>
         </div>
 
         <div className="campus-icon-mobile-menu">
@@ -62,7 +69,7 @@ const CampusIcon = () => {
             <p className="campus-icon-reward-description">
               The Campus Icon App lets you earn iCoins by competing in challenges, which you can cash out, plus enjoy daily tasks and exclusive levels.
             </p>
-            <button className="campus-icon-get-started">Get started</button>
+            <Link to="/register" className="campus-icon-auth-buttons" >Get started</Link>
           </div>
           <div className="campus-icon-reward-image">
             <img className="campus-icon-image" src={WinnersImage} alt="Transform Your Passion" />
@@ -84,6 +91,12 @@ const CampusIcon = () => {
               <Link to="/login" className="campus-icon-learn-more">Learn More</Link>
             </div>
           </div>
+        </div>
+
+
+        <div className="campus-icon-contact-email">
+          <p>Want to learn more?</p>
+          <a href="mailto:campusicon.com@gmail.com" className="campus-icon-email-link">campusicon.com@gmail.com</a>
         </div>
       </div>
     </div>

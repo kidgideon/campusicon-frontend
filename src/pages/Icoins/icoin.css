@@ -25,11 +25,11 @@
 }
 
 .balance-itself {
-    height: 80%;
+    height: 50%;
     width: 100%;
     display: flex;
     justify-content: center;
-    align-items: end;
+    align-items: center;
 }
 
 .controls {
