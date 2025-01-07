@@ -324,7 +324,8 @@ src={creators[video.userId]?.profilePicture || defaultProfilePictureURL}
   </div>
 </div>
       </Link>
-<div className="feed-context">
+      <Link to={`/video/${video.id}`}>
+      <div className="feed-context">
         <p>{video.description}</p>
       <div className="feed-content">
       <video
@@ -337,6 +338,8 @@ src={creators[video.userId]?.profilePicture || defaultProfilePictureURL}
       </div>
       </div>
       
+      </Link>
+
       
       <div className="feed-actions">
       <span className="like" onClick={() => {

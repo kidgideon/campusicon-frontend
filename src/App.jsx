@@ -40,7 +40,7 @@ import OfflineHandler from './offlineHandler';
 import Register from './pages/Register/register';
 import CompleteProfile from './pages/complete-profile/complete-profile';
 import CampusIcon from './pages/home/homepagecampus';
-
+import VideoBody from './pages/Video/video';
 
 const queryClient = new QueryClient();
 
@@ -81,6 +81,7 @@ function App() {
           <Route path="/upload/:competitionId" element={<UploadVideoForm />} />
           <Route path="/video-performance/:competitionId" element={<Performance />} />
           <Route path="/ranks/:competitionId" element={<CompetionRank />} />
+          <Route path="/video/:videoId" element={<VideoBody />} />
           <Route path="/watch-video/:competitionId" element={<VideoWatch />} />
           <Route path="/discovery-page" element={<DiscoveryPage />} />
           <Route path="/menu" element={<Menu />} />

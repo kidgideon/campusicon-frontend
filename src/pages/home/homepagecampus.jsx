@@ -15,10 +15,6 @@ const CampusIcon = () => {
     setMenuOpen((prev) => !prev);
   };
 
-   const nav = () => {
-    console.log("works")
-    navigate("/login")
-   }
 
   return (
     <div className="campus-icon-container">
