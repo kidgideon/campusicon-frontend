@@ -1,199 +1,86 @@
+/* Floating Comments Overlay */
 
 .single-video-interface-layout-body {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    padding-top: 60px;
-}
-
-.single-video-interface-layout-body Link {
-   display: none;
-}
-
-.single-video-interface-layout-body img {
-    width: 50px;
-    height: 50px;
-    border-radius: 100%;
-}
-
-.single-video-interface-layout-player-container {
-    width: 95%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-.single-video-interface-layout-creator-profile {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: row;
-}
-
-
-.single-video-interface-layout-creator-profile img {
-    width: 50px;
-    height: 50px;
-    border-radius: 100%;
-}
-
-.single-video-interface-layout-creator-profile div{
-  width: 50%;
-  margin: 10px;
-  display: flex;
-  flex-direction: row;
-}
-
-.single-video-interface-creator-props {
-    justify-content: start;
-    align-items: center;
-}
-
-.single-video-interface-creator-props p {
-    margin: 10px; 
-}
-.eclipse-area-single-video-interface {
-    justify-content: end;
-    align-items: center;
-}
-
-.single-video-interface-layout-player {
-    width: 100%;
-    height: 270px;
-    max-width: 500px;
-    border-radius: 10px;
-}
-
-.single-video-interface-layout-details {
-    width: 93%;
-    margin: 4px;
-}
-
-.single-video-interface-layout-title {
- font-size: 120%;
- font-weight: bold;
-}
-
-.single-video-interface-layout-engagement {
-    width: 90%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: row;
-    font-size: 110%;
-    color: rgb(150, 150, 150);
-}
-
-
-.single-video-interface-layout-engagement i {
-   margin: 5px;
-} 
-
-.single-video-interface-layout-comments {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    margin-top: 30px;
-}
-
-.single-video-interface-layout-comments-header {
-    font-size: 120%;
-    font-weight: bold;
-}
-
-.single-video-interface-layout-comments-list {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.single-video-interface-layout-comment-item {
      width: 100%;
-     display: flex;
-     justify-content: start;
-     align-items: start;
-     flex-direction: row;
-}
-
-.s-v-i-commenters-dp {
-     width: 20%;
+     height: 100vh;
      display: flex;
      justify-content: center;
      align-items: center;
-     flex-direction: row;
-     gap: 5px;
-}
-
-.s-v-i-commenters-dp p {
-   height: 100%;
-   background-color: white;
-}
-
-.s-v-i-commenters-text {
-     width: 65%;
-     display: flex;
-     justify-content: center;
-     align-items: start;
      flex-direction: column;
-     background-color: rgb(241, 241, 241);
-     border-radius: 10px;
-     padding: 5px;
-     word-wrap: break-word;
 }
 
-.s-v-i {
-    width: 10%;
+.floating-comments {
+    position: absolute;
+    top: 15%;
+    left: 5%;
+    width: 250px;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 110%;
-    color: rgb(129, 129, 129);
+    flex-direction: column-reverse;
+    gap: 12px;
+    pointer-events: none; /* Allow clicks to pass through to the video */
+    height: 300px; /* Adjust based on how many comments you want to show */
+    overflow-y: auto; /* Allows scrolling of comments */
 }
 
-.s-v-i i {
-    margin: 5px;
-    margin-left: 10px ;
-}
-
-.s-v-i-username {
-    font-size: 110%;
-    font-weight: bold;
-}
-
-.comment-send-input-area {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
+.comment-item {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: white;
+    gap: 8px;
+    align-items: flex-start;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 12px;
+    width: 90%;
+    margin: 0 auto;
+    animation: slideInFromBottom 1s ease-out;
 }
 
-.comment-send-input-area input {
-    width: 80%;
-    border: 1px solid lightgray;
-    height: 40px;
-    border-radius: 5px;
-    outline: none;
-    padding: 10px;
+.comment-profile-picture {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
-.comment-send-input-area i {
-    font-size: 35px;
+.comment-content {
+    flex: 1;
+}
+
+.comment-username {
     font-weight: bold;
-    margin: 10px;
-    color: #277AA4;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 4px;
 }
 
+.comment-item p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Animation for Comment Entry */
+@keyframes slideInFromBottom {
+    from {
+        transform: translateY(30%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Add a "marquee-like" effect for smooth scroll */
+.floating-comments::-webkit-scrollbar {
+    width: 5px;
+}
+
+.floating-comments::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+.floating-comments::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
