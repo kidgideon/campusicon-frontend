@@ -66,7 +66,9 @@ export const fetchCommentUserDetails = async (comments, batchSize = 10, setComme
  * @param {object} notification - Notification object to be added.
  * 
  * 
- */const sendNotification = async (creatorId, notification, currentUserId) => {
+ */
+
+  export const sendNotification = async (creatorId, notification, currentUserId) => {
   // Do not send a notification to yourself
   if (creatorId === currentUserId) return;
 

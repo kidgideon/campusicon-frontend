@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getDoc, doc } from 'firebase/firestore';
-import { db } from '../../../config/firebase_config'; // Adjust this path to your Firebase configuration file
+import { onAuthStateChanged } from 'firebase/auth'; // Ensure this is imported
+import { db, auth } from '../../../config/firebase_config'; // Adjust this path to your Firebase configuration file
 import './video.css';
-import { useNavigate } from "react-router-dom"; // For navigation
+import { useNavigate, Link } from "react-router-dom"; // For navigation
 import Skeleton from '../Notification/skeleton'
 
 const defaultProfilePictureURL = 'https://firebasestorage.googleapis.com/v0/b/campus-icon.appspot.com/o/empty-profile-image.webp?alt=media';
@@ -13,9 +14,24 @@ const VideoBody = () => {
     const [videoData, setVideoData] = useState(null);
     const [creatorData, setCreatorData] = useState(null);
     const [commenters, setCommenters] = useState({});
+    const [currentUserId, setCurrentUserId] = useState(null); // Track the current user
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+
+    const isLiked = () => {
+        return videoData && videoData.likes && currentUserId
+            ? videoData.likes.includes(currentUserId)
+            : false;
+    };
+
+    // Fetch the current user's ID
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setCurrentUserId(user ? user.uid : null);
+        });
+        return () => unsubscribe(); // Cleanup listener
+    }, []);
 
     useEffect(() => {
         const fetchVideoAndCreatorDetails = async () => {
@@ -68,21 +84,8 @@ const VideoBody = () => {
         fetchVideoAndCreatorDetails();
     }, [videoId]);
 
-    const handleShare = (name, id) => {
-        if (navigator.share) {
-            navigator.share({
-                title: `Check out ${name}'s video on Campus Icon`,
-                text: 'Join the best talent competition in Nigeria and win cash prizes. Visit now!',
-                url: `https://www.campusicon.ng/video/${id}`, // Include the full URL with protocol
-            })
-            .then(() => console.log('Share successful!'))
-            .catch((error) => console.error('Error sharing:', error));
-        } else {
-            console.log("Sharing not supported on this device.");
-        }
-    };
-    
 
+   
     const goBack = () => {
         navigate(-1);
     };
@@ -99,6 +102,8 @@ const VideoBody = () => {
         return <div className="single-video-interface-layout-error">Incomplete data</div>;
     }
 
+    isLiked()
+
     return (
         <div className="single-video-interface-layout-body">
             <div className="top-top-sideliners">
@@ -106,6 +111,7 @@ const VideoBody = () => {
                 <h2>{creatorData.firstName} {creatorData.lastName}'s post</h2>
             </div>
             <div className="single-video-interface-layout-player-container">
+                <Link to={`/profile/${creatorData.username}`} style={{width: "100%"}}>
                 <div className="single-video-interface-layout-creator-profile">
                     <div className="single-video-interface-creator-props">
                         <img src={creatorData.profilePicture || defaultProfilePictureURL}
@@ -118,6 +124,8 @@ const VideoBody = () => {
                         <i className="fa-solid fa-ellipsis"></i>
                     </div>
                 </div>
+                </Link>
+               
 
                 <video
                     src={videoData.videoURL}
@@ -130,14 +138,7 @@ const VideoBody = () => {
                     <h2 className="single-video-interface-layout-title">{videoData.title}</h2>
                     <p className="single-video-interface-layout-description">{videoData.description}</p>
                 </div>
-                <div className="single-video-interface-layout-engagement">
-                    <span><i className="fa-solid fa-heart"></i>{videoData.likes.length}</span>
-                    <span><i className="fa-solid fa-comment"></i>{videoData.comments.length}</span>
-                    <span><i className="fa-solid fa-thumbs-up"></i>{videoData.votes.length}</span>
-                    <span><i onClick={() => handleShare(creatorData.name, videoData.videoId)} className="fa-solid fa-share-from-square"></i></span>
-                </div>
                 <div className="single-video-interface-layout-comments">
-                    <h3 className="single-video-interface-layout-comments-header">Comments</h3>
                     {videoData.comments && videoData.comments.length > 0 ? (
                         <ul className="single-video-interface-layout-comments-list">
                             {videoData.comments.map((comment, index) => {
@@ -157,10 +158,7 @@ const VideoBody = () => {
                                             {comment.text}
                                                 </p>
                                         </div>
-                                        <div className="s-v-i">
-                                            <i className="fa-solid fa-thumbs-up"></i>
-                                            {comment.likes.length || 0}
-                                        </div>
+
                                     </li>
                                 );
                             })}
@@ -170,10 +168,7 @@ const VideoBody = () => {
                     )}
                 </div>
 
-                <div className="comment-send-input-area">
-                    <input type="text" placeholder='make your comments' />
-                    <i class="fa-brands fa-telegram"></i>
-                </div>
+             
             </div>
         </div>
     );
